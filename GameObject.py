@@ -19,4 +19,10 @@ class GameObject:
     
     def GetID(self):
         return self.__id
-        
+    
+    def Update(self):
+        pass
+    
+    def Show(self):
+        if self.__components.__contains__("Sprite"):
+            self.__components["Sprite"].Update()
