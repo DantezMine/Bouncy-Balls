@@ -1,6 +1,6 @@
 class GameObject:
     def __init__(self, parentScene):
-        self.__id = parentScene.createID()
+        self.__id = parentScene.CreateID()
         self.__components = {key: value for key, value in []} #initialize an empty dictionary using dictionary comprehension
         
     def AddComponent(self, component):

@@ -1,4 +1,4 @@
-import sys
+import GameObject
 
 class Scene:
     ID = 0
@@ -14,7 +14,4 @@ class Scene:
         
     def CreateID(self):
         Scene.ID += 1
-        if Scene.ID == sys.maxsize * 2 + 1:
-            print("Maximum SceneID reached")
-            return False
         return Scene.ID
