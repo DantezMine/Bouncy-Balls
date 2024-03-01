@@ -1,4 +1,4 @@
-import ExtFunc
+import World
 
 def setup():
     size(400,400)
