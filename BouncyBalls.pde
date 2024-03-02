@@ -2,6 +2,8 @@ import World
 import Scene
 import GameObject
 import ComponentSprite
+from Vector import Vec2
+import sys
 
 world = World.World()
 scene = Scene.Scene()

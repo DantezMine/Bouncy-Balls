@@ -17,6 +17,12 @@ class GameObject:
         print("Component doesn't exist in object %d"%self.__id)
         return False
     
+    def GetComponent(self,compName):
+        if self.__components.__contains__(compName):
+            return self.__components[compName]
+        print("Component doesn't exist in object %d"%self.__id)
+        return None
+    
     def GetID(self):
         return self.__i_id
     
