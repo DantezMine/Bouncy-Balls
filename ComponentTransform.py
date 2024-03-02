@@ -3,6 +3,7 @@ from Vector import Vec2
 
 class ComponentTransform(Component.Component):
     def __init__(self):
+        self.name = "Transform"
         self.position = Vec2(0,0)
         self.rotation = 0 #in radians
         self.scale = Vec2(1,1)
@@ -14,7 +15,7 @@ class ComponentTransform(Component.Component):
         self.forward.Rotate(angle)
         self.up.Rotate(angle)
         
-    def LookAt(self,gameObj):
-        da = self.forward.AngleBetween(gameObj.GetComponent("Transform").position-self.position) #angle between forward and gameObj
+    def LookAt(self,targetPos):
+        da = self.forward.AngleBetween(targetPos-self.position) #angle between forward and target
         self.Rotate(da)
         

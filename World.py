@@ -30,6 +30,17 @@ class World:
     def UpdateActiveScene(self):
         deltaTime = self.CalculateDeltaTime()
         self.__activeScene.UpdateScene(deltaTime)
+    
+    def StartActiveScene(self):
+        self.__activeScene.StartScene()
+        
+    def SetActiveScene(self,sceneName):
+        if self.__scenes.__contains__(sceneName):
+            self.__activeScene = self.__scenes[sceneName]
+            self.__activeSceneKey = sceneName
+            return True
+        print("Scene %s doesn't exist"%sceneName)
+        return False
         
     def CalculateDeltaTime(self):
         dt = time.time()-self.__prevTime if self.__prevTime is not None else 0

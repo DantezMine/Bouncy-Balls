@@ -5,8 +5,9 @@ class ComponentSprite(Component.Component):
         self.name = "Sprite"
         self.b_proc = b_proc
         self.spritePath = s_spritePath
+        self.parent = None
         
-    def Update(self):
+    def Update(self,deltaTime):
         if self.b_proc:
             self.DisplayProc()
         else:
@@ -29,5 +30,10 @@ class ComponentSpriteBallSlime(ComponentSprite):
         ellipse(mouseX,mouseY,30,30)
         
     def DisplayImg(self):
+        parentTransform = self.parent.GetComponent("Transform")
         sprite = loadImage(self.spritePath)
-        image(sprite,mouseX-15,mouseY-15,30,30)
+        pushMatrix()
+        translate(parentTransform.position.x, parentTransform.position.y)
+        rotate(parentTransform.rotation)
+        image(sprite,-sprite.width*parentTransform.scale.x/2,-sprite.height*parentTransform.scale.y/2,sprite.width*parentTransform.scale.x,sprite.height*parentTransform.scale.y)
+        popMatrix()

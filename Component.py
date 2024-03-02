@@ -5,5 +5,5 @@ class Component:
     def Start(self):
         pass
     
-    def Update(self):
+    def Update(self,deltaTime):
         pass       

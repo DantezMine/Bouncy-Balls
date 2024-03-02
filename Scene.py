@@ -17,6 +17,8 @@ class Scene:
     def UpdateScene(self,deltaTime):
         for go in self.__GameObjects:
             go.Update(deltaTime)
-        
-        for go in self.__GameObjects:
             go.Show(deltaTime)
+
+    def StartScene(self):
+        for go in self.__GameObjects:
+            go.Start()

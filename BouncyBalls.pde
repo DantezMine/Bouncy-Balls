@@ -1,20 +1,19 @@
 import World
 import Scene
 import GameObject
-import ComponentSprite
-from Vector import Vec2
-import sys
+import BehaviorTesting
 
 world = World.World()
 scene = Scene.Scene()
 ball = GameObject.GameObject(scene)
-ballSprite = ComponentSprite.ComponentSpriteBallSlime(False, "SlimeBallMC.png")
-ball.AddComponent(ballSprite)
+behaviourTesting = BehaviorTesting.BehaviorTesting()
+ball.AddComponent(behaviourTesting)
 scene.AddGameObject(ball)
 world.AddScene("scene",scene)
 
 def setup():
     size(400,400)
+    world.StartActiveScene()
 
 def draw():
     background(255)
