@@ -18,11 +18,11 @@ class GameObject:
         return False
     
     def GetID(self):
-        return self.__id
+        return self.__i_id
     
-    def Update(self):
+    def Update(self,deltaTime):
         pass
     
-    def Show(self):
+    def Show(self,deltaTime):
         if self.__components.__contains__("Sprite"):
             self.__components["Sprite"].Update()

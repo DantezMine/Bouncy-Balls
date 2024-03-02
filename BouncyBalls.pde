@@ -1,14 +1,12 @@
 from World import World
 from Scene import Scene
 from GameObject import GameObject
-#from ComponentSprite import ComponentSprite
-import ComponentSprite
+from ComponentSprite import ComponentSprite
 
 world = World()
 scene = Scene()
 ball = GameObject(scene)
-print(ball)
-ballSprite = ComponentSprite.ComponentSpriteClass()
+ballSprite = ComponentSprite.ComponentSpriteBallSlime(b_proc=True)
 ball.AddComponent(ballSprite)
 scene.AddGameObject(ball)
 world.AddScene("scene",scene)
@@ -18,4 +16,4 @@ def setup():
 
 def draw():
     background(255)
-    ball.Show()
+    world.UpdateActiveScene()

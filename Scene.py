@@ -1,5 +1,3 @@
-import GameObject
-
 class Scene:
     ID = 0
     def __init__(self):
@@ -15,3 +13,10 @@ class Scene:
     def CreateID(self):
         Scene.ID += 1
         return Scene.ID
+    
+    def UpdateScene(self,deltaTime):
+        for go in self.__GameObjects:
+            go.Update(deltaTime)
+        
+        for go in self.__GameObjects:
+            go.Show(deltaTime)
