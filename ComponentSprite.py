@@ -1,9 +1,10 @@
 import Component
 
 class ComponentSprite(Component.Component):
-    def __init__(self, b_proc):
+    def __init__(self, b_proc, s_spritePath = None): #if b_proc is False, s_spritePath must be given
         self.name = "Sprite"
         self.b_proc = b_proc
+        self.spritePath = s_spritePath
         
     def Update(self):
         if self.b_proc:
@@ -26,3 +27,7 @@ class ComponentSpriteBallSlime(ComponentSprite):
         stroke(20,200,20)
         strokeWeight(2)
         ellipse(mouseX,mouseY,30,30)
+        
+    def DisplayImg(self):
+        sprite = loadImage(self.spritePath)
+        image(sprite,mouseX-15,mouseY-15,30,30)

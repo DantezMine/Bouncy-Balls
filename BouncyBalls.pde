@@ -1,12 +1,12 @@
-from World import World
-from Scene import Scene
-from GameObject import GameObject
-from ComponentSprite import ComponentSprite
+import World
+import Scene
+import GameObject
+import ComponentSprite
 
-world = World()
-scene = Scene()
-ball = GameObject(scene)
-ballSprite = ComponentSprite.ComponentSpriteBallSlime(b_proc=True)
+world = World.World()
+scene = Scene.Scene()
+ball = GameObject.GameObject(scene)
+ballSprite = ComponentSprite.ComponentSpriteBallSlime(False, "SlimeBallMC.png")
 ball.AddComponent(ballSprite)
 scene.AddGameObject(ball)
 world.AddScene("scene",scene)
