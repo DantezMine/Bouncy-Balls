@@ -14,6 +14,22 @@ class Scene:
         Scene.ID += 1
         return Scene.ID
     
+    def GetObjectsWithComponent(self,compName):
+        outList = list()
+        for gameObj in self.__GameObjects:
+            comp = gameObj.GetComponentNoPrint(compName)
+            if comp is not None:
+                outList.append(comp.parent)
+        return outList
+    
+    def GetComponents(self,compName):
+        outList = list()
+        for gameObj in self.__GameObjects:
+            comp = gameObj.GetComponentNoPrint(compName)
+            if comp is not None:
+                outList.append(comp)
+        return outList
+    
     def UpdateScene(self,deltaTime):
         for go in self.__GameObjects:
             go.Update(deltaTime)

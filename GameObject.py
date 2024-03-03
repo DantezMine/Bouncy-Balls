@@ -4,6 +4,7 @@ class GameObject:
     def __init__(self, parentScene):
         self.__id = parentScene.CreateID()
         self.__components = {key: value for key, value in []} #initialize an empty dictionary using dictionary comprehension
+        self.__parentSene = parentScene
         
         self.AddComponent(ComponentTransform.ComponentTransform())
         
@@ -28,8 +29,16 @@ class GameObject:
         print("Component doesn't exist in object %d"%self.__id)
         return None
     
+    def GetComponentNoPrint(self,compName):
+        if self.__components.__contains__(compName):
+            return self.__components[compName]
+        return None
+        
     def GetID(self):
         return self.__id
+    
+    def GetParentScene(self):
+        return self.__parentSene
     
     def Start(self):
         for key in self.__components.keys():
