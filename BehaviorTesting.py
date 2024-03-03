@@ -1,5 +1,5 @@
-import Component
 import ComponentSprite
+import Component
 from Vector import Vec2
 
 class BehaviorTesting(Component.Component):
@@ -8,7 +8,7 @@ class BehaviorTesting(Component.Component):
         self.parent = None
     
     def Start(self):
-        ballSprite = ComponentSprite.ComponentSpriteBallSlime(False, "SlimeBallMC.png")
+        ballSprite = ComponentSprite.SpriteBallSlime(False, "SlimeBallMC.png")
         self.parent.AddComponent(ballSprite)
     
     def Update(self,deltaTime):

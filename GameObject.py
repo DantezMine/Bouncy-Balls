@@ -29,7 +29,7 @@ class GameObject:
         return None
     
     def GetID(self):
-        return self.__i_id
+        return self.__id
     
     def Start(self):
         for key in self.__components.keys():

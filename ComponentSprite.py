@@ -1,6 +1,6 @@
 import Component
 
-class ComponentSprite(Component.Component):
+class Sprite(Component.Component):
     def __init__(self, b_proc, s_spritePath = None): #if b_proc is False, s_spritePath must be given
         self.name = "Sprite"
         self.b_proc = b_proc
@@ -19,7 +19,7 @@ class ComponentSprite(Component.Component):
     def DisplayImg(self):
         pass
     
-class ComponentSpriteBallSlime(ComponentSprite):
+class ComponentSpriteBallSlime(Sprite):
     # def __init__(self,b_proc):
     #     super().__init__(b_proc)
     
