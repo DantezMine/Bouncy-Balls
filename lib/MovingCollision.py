@@ -8,11 +8,10 @@ class MovingCollision(Component.Component):
         self.name = "MovingCollision"
         self.parent = None
         
-        self.velocity = Vec2(0,0)
-        self.speed = 60
+        self.inputForce = Vec2(0,0)
+        self.jumpForce = 10000
         self.controllable = False
-        self.keyPressedLastFrame = False
-        self.keyReleasedLastFrame = False
+        self.keyReleased = True
     
     def Start(self):
         rectColl = ComponentCollider.ColliderRect()
@@ -21,7 +20,8 @@ class MovingCollision(Component.Component):
     
     def Update(self,deltaTime):
         self.HandleInput(deltaTime)
-        self.parent.GetComponent("Transform").position += self.velocity * self.speed * deltaTime
+        self.parent.GetComponent("Physics").AddForce(Vec2(0,200*self.parent.GetComponent("Physics").mass))
+        self.parent.GetComponent("Physics").AddForce(self.inputForce*self.jumpForce)
         
         collider = self.parent.GetComponent("Collider")
         collider.DisplayCollider()
@@ -33,24 +33,12 @@ class MovingCollision(Component.Component):
             ellipse(collisionPoint.x,collisionPoint.y,5,5)
             
     def HandleInput(self,deltaTime):
+        self.inputForce = Vec2(0,0)
         if keyPressed:
-            if self.controllable:
-                if key == "w":
-                    self.velocity = Vec2(0,-1)
-                elif key == "s":
-                    self.velocity = Vec2(0,1)
-                elif key == "a":
-                    self.velocity = Vec2(-1,0)
-                elif key == "d":
-                    self.velocity = Vec2(1,0)
-                elif key == "q":
-                    self.parent.GetComponent("Transform").Rotate(-deltaTime*0.5)
-                elif key == "r":
-                    self.parent.GetComponent("Transform").Rotate(deltaTime*0.5)
-            self.keyPressedLastFrame = True
+            if self.controllable and self.keyReleased:
+                if key == " ":
+                    self.inputForce = Vec2(0,-1)
+            self.keyReleased = False
         else:
-            if self.keyPressedLastFrame:
-                self.keyReleasedLastFrame = True
-                self.velocity = Vec2(0,0)
-            self.keyPressedLastFrame = False
+            self.keyReleased = True
         
