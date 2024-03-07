@@ -24,7 +24,8 @@ def SetupScene1(world):
     rect1.GetComponent("MovingCollision").velocity = Vec2(0,1)
     rect2.GetComponent("Transform").position = Vec2(400,450)
     rect2.AddComponent(ComponentPhysics.Physics())
-    rect2.GetComponent("Physics").constraintPositionY = True
+    rect2.GetComponent("Physics").constraintPosition = True
+    rect2.GetComponent("Physics").constraintRotation = True
         
     scene.AddGameObject(rect1)
     scene.AddGameObject(rect2)

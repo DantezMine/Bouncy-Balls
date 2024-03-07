@@ -17,7 +17,13 @@ class Sprite(Component.Component):
         pass
     
     def DisplayImg(self):
-        pass
+        parentTransform = self.parent.GetComponent("Transform")
+        sprite = loadImage(self.spritePath)
+        pushMatrix()
+        translate(parentTransform.position.x, parentTransform.position.y)
+        rotate(parentTransform.rotation)
+        image(sprite,-sprite.width*parentTransform.scale.x/2,-sprite.height*parentTransform.scale.y/2,sprite.width*parentTransform.scale.x,sprite.height*parentTransform.scale.y)
+        popMatrix()
     
 class SpriteBallSlime(Sprite):
     # def __init__(self,b_proc):
