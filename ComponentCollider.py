@@ -52,7 +52,7 @@ class ColliderRect(Collider):
                         if AP.Dot(normal) >= 0:
                             inside = False
                             break
-                    if inside:
+                    if inside: #find closest border/face to the vertex of collision
                         minH = 100000
                         indX = -1
                         for i in range(4):

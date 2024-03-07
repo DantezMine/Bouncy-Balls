@@ -19,7 +19,7 @@ class Sprite(Component.Component):
     def DisplayImg(self):
         pass
     
-class ComponentSpriteBallSlime(Sprite):
+class SpriteBallSlime(Sprite):
     # def __init__(self,b_proc):
     #     super().__init__(b_proc)
     
