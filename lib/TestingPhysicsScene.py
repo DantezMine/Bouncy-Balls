@@ -3,6 +3,8 @@ import GameObject
 import BehaviorTesting
 import ComponentCollider
 import ComponentPhysics
+import ComponentSprite
+import ballscript
 from Vector import Vec2
 
 from lib import MovingCollision
@@ -35,3 +37,16 @@ def SetupScene2(world):
     behaviourTesting = BehaviorTesting.BehaviorTesting()
     ball.AddComponent(behaviourTesting)
     scene.AddGameObject(ball)
+    
+def SetupScene3(world):
+    scene = Scene.Scene()
+    world.AddScene("scene",scene)
+    slingshot = GameObject.GameObject(scene)
+    ball = GameObject.GameObject(scene)
+    ball.AddComponent(ComponentSprite.Sprite(b_proc=False, s_spritePath="data/SlimeBallMC.png"))
+    slingshot.GetComponent("Transform").position = Vec2(200,400)
+    ball.AddComponent(ballscript.Ball())
+    ball.GetComponent("Ball").sling = slingshot
+    ball.GetComponent("Transform").scale = Vec2(.2,.2)
+    scene.AddGameObject(ball)
+    scene.AddGameObject(slingshot)
