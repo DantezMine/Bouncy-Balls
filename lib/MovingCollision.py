@@ -34,7 +34,7 @@ class MovingCollision(Component.Component):
             stroke(220,30,30)
             strokeWeight(1)
             line(p.x,p.y,p.x+n.x*20,p.y+n.y*20)
-            self.parent.GetComponent("Physics").CollisionResponseLinear(collisionInfo)
+            self.parent.GetComponent("Physics").CollisionResponseDynamic(collisionInfo)
             
     def HandleInput(self,deltaTime):
         self.inputForce = Vec2(0,0)

@@ -29,11 +29,14 @@ class Vec2:
     def SqMag(self):
         return (self.x**2)+(self.y**2)
     
+    def Perp(self):
+        return Vec2(-self.y,self.x)
+    
     def Normalize(self):
         mag = self.Mag()
         self.x /= mag
         self.y /= mag
-        return Vec2(self.x,self.y)
+        return self
     
     def Normalized(self):
         mag = self.Mag()

@@ -1,7 +1,5 @@
 import Scene
 import GameObject
-import Scene
-import GameObject
 import BehaviorTesting
 import ComponentCollider
 import ComponentPhysics

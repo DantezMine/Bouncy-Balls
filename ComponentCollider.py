@@ -22,6 +22,9 @@ class Collider(Component.Component):
     def BoolCollision(self):
         pass
 
+    def DisplayCollider(self):
+        pass
+
 class ColliderCircle(Collider):
     def SetCollider(self, radius = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = 1):
         self.colliderType = "Circle"
@@ -31,6 +34,9 @@ class ColliderCircle(Collider):
         self.radius = radius
         
     def BoolCollision(self):
+        pass
+    
+    def DisplayCollider(self):
         pass
 
 class ColliderRect(Collider):
