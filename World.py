@@ -27,8 +27,9 @@ class World:
             return True
         return False
     
-    def UpdateActiveScene(self):
-        deltaTime = self.CalculateDeltaTime()
+    def UpdateActiveScene(self,deltaTime = None):
+        if deltaTime is None:
+            deltaTime = self.CalculateDeltaTime()
         self.__activeScene.UpdateScene(deltaTime)
     
     def StartActiveScene(self):

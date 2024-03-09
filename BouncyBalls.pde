@@ -11,6 +11,13 @@ def setup():
     world.StartActiveScene()
 
 def draw():
-    if GlobalVars.update:
+    if GlobalVars.update or GlobalVars.step:
+        GlobalVars.step = False
         background(255)
-        world.UpdateActiveScene()
+        world.UpdateActiveScene(1/60.0)
+    elif keyPressed and GlobalVars.keyReleased:
+        if key == " ":
+            GlobalVars.step = True
+            GlobalVars.keyReleased = False
+    if not keyPressed:
+        GlobalVars.keyReleased = True

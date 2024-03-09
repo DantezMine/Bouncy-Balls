@@ -6,7 +6,7 @@ class Physics(Component.Component):
     def __init__(self):
         self.name = "Physics"
         self.mass = 1.0 #kg
-        self.momentOfInertia = 1.0 #
+        self.momentOfInertia = 50 #
         self.coefficientOfRestitution = 1
         
         self.velocity = Vec2(0,0) #m/s
@@ -118,11 +118,12 @@ class Physics(Component.Component):
         deltaWA = rAP_.Dot(normal*deltaP)/self.momentOfInertia
         deltaWB = rBP_.Dot(normal*-deltaP)/physicsB.momentOfInertia
         
-        stroke(30,30,200)
-        strokeWeight(1)
-        line(transfA.position.x, transfA.position.y, transfA.position.x + self.velocity.x * 1, transfA.position.y + self.velocity.y * 1)
-        line(collisionInfo.collisionPoint.x,collisionInfo.collisionPoint.y,collisionInfo.collisionPoint.x+deltaVA.x*1,collisionInfo.collisionPoint.y+deltaVA.y*1)
-        print(collisionInfo.collisionPoint,self.velocity, deltaVA)
+        # stroke(30,30,200)
+        # strokeWeight(1)
+        # line(transfA.position.x, transfA.position.y, transfA.position.x + self.velocity.x * 1, transfA.position.y + self.velocity.y * 1)
+        # line(collisionInfo.collisionPoint.x,collisionInfo.collisionPoint.y,collisionInfo.collisionPoint.x+deltaVA.x*1,collisionInfo.collisionPoint.y+deltaVA.y*1)
+        # print("Object ID: %s, Collision Point: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(self.parent.GetID(),collisionInfo.collisionPoint,self.velocity,deltaVA,self.angularSpeed,deltaWA))
+        # print("Object ID: %s, Collision Point: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(physicsB.parent.GetID(),collisionInfo.collisionPoint,physicsB.velocity,deltaVA,physicsB.angularSpeed,deltaWB))
         #GlobalVars.update = False
         self.velocity += deltaVA
         self.angularSpeed += deltaWA

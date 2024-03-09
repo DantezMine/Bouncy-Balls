@@ -21,19 +21,15 @@ class MovingCollision(Component.Component):
     def Update(self,deltaTime):
         self.HandleInput(deltaTime)
         # self.parent.GetComponent("Physics").AddForce(Vec2(0,200*self.parent.GetComponent("Physics").mass))
-        self.parent.GetComponent("Physics").AddTorque(1)
+        # self.parent.GetComponent("Physics").AddTorque(1)
         # self.parent.GetComponent("Physics").AddForce(self.inputForce*self.jumpForce)
         
         collider = self.parent.GetComponent("Collider")
         collider.DisplayCollider()
         allColliders = self.parent.GetParentScene().GetComponents("Collider")
         collisionInfo = collider.CheckCollision(allColliders)
+        print("Object ID: %s, Position: %s, Velocity: %s"%(self.parent.GetID(),self.parent.GetComponent("Transform").position,self.parent.GetComponent("Physics").velocity))
         if collisionInfo is not None:
-            p = collisionInfo.collisionPoint
-            n = collisionInfo.collisionNormal
-            stroke(220,30,30)
-            strokeWeight(1)
-            line(p.x,p.y,p.x+n.x*20,p.y+n.y*20)
             self.parent.GetComponent("Physics").CollisionResponseDynamic(collisionInfo)
             
     def HandleInput(self,deltaTime):
