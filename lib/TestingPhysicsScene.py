@@ -15,18 +15,17 @@ def SetupScene1(world):
 
     rect1 = GameObject.GameObject(scene)
     rect1.AddComponent(MovingCollision.MovingCollision())
-    rect1.GetComponent("MovingCollision").controllable = True
-    rect1.GetComponent("Transform").position = Vec2(320,150)
+    rect1.GetComponent("Transform").position = Vec2(399,150)
     rect1.AddComponent(ComponentPhysics.Physics())
     rect1.GetComponent("Physics").velocity = Vec2(0,100)
-    # rect1.GetComponent("Physics").AddTorque(1)
+    rect1.GetComponent("Physics").constraintRotation = False
     
     rect2 = GameObject.GameObject(scene)
     rect2.AddComponent(MovingCollision.MovingCollision())
     rect2.GetComponent("Transform").position = Vec2(400,250)
     rect2.AddComponent(ComponentPhysics.Physics())
-    # rect2.GetComponent("Physics").constraintPosition = True
-    # rect2.GetComponent("Physics").constraintRotation = True
+    rect2.GetComponent("Physics").constraintPosition = True
+    rect2.GetComponent("Physics").constraintRotation = True
         
     scene.AddGameObject(rect1)
     scene.AddGameObject(rect2)

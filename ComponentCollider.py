@@ -12,6 +12,8 @@ class Collider(Component.Component):
     def __init__(self):
         self.name = "Collider"
         self.parent = None
+        
+        self.collisions = []
     
     def SetCollider(self, colliderType,localPosition,localRotation,localScale): #tried to use super(), but shit doesn't work and I don't understand why
         self.colliderType = colliderType
@@ -24,6 +26,9 @@ class Collider(Component.Component):
 
     def DisplayCollider(self):
         pass
+    
+    def Update(self,deltaTime,colliders):
+        pass
 
 class ColliderCircle(Collider):
     def SetCollider(self, radius = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = 1):
@@ -32,6 +37,7 @@ class ColliderCircle(Collider):
         self.localRotation = localRotation
         self.localScale = localScale        
         self.radius = radius
+        self.sqRadius = radius**2
         
     def BoolCollision(self):
         pass
@@ -47,6 +53,11 @@ class ColliderRect(Collider):
         self.localScale = localScale
         self.lenX = lenX
         self.lenY = lenY
+        self.sqRadius = Vec2(25,25).SqMag()
+    
+    def Update(self,deltaTime,colliders):
+        self.collisions = []
+        self.CheckCollision(colliders)
         
     def CheckCollision(self, colliders):
         for collider in colliders:
@@ -71,11 +82,11 @@ class ColliderRect(Collider):
                         
                         #check if objects have a physics component whose velocity we need to consider
                         if parentPhysics is not None:
-                            combinedVelocity += parentPhysics.velocity
+                            combinedVelocity -= parentPhysics.velocity
                         if otherPhysics is not None:
                             combinedVelocity += otherPhysics.velocity
                         if parentPhysics is None and otherPhysics is None:
-                            return None
+                            break
                         #if the velocities cancel out perfectly, the velocity of the other object (with vertex inside this one) is chosen
                         if combinedVelocity.SqMag() == 0:
                             combinedVelocity = otherPhysics.velocity
@@ -88,24 +99,8 @@ class ColliderRect(Collider):
                             if combinedVelocity.Dot(n) < minDot:
                                 minDot = combinedVelocity.Dot(n)
                                 minNormal = n
-                        return CollisionInfo(p,minNormal.Normalized(),collider.parent)
-                        
-                    # if inside: #find closest border/face to the vertex of collision
-                    #     minH = 100000
-                    #     indX = -1
-                    #     for i in range(4):
-                    #         AB = verts[(i+1)%4] - verts[i]
-                    #         AP = p - verts[i]
-                    #         height = AP.Mag() * math.sin(AB.AngleBetween(AP))
-                    #         if height < minH:
-                    #             minH = height
-                    #             indX = i
-                    #     A = verts[indX]
-                    #     AB = verts[(indX+1)%4] - A
-                    #     AP = p - A
-                    #     closestPointOnBorder = A + AP.ProjectedOn(AB)
-                    #     return closestPointOnBorder
-        return None
+                        self.collisions.append(CollisionInfo(p,minNormal.Normalized(),collider.parent))
+        return
     
     def GetVertices(self):#CCW starting top left if not rotated
         transf = self.parent.GetComponent("Transform")

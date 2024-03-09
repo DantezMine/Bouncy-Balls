@@ -7,7 +7,7 @@ class Physics(Component.Component):
         self.name = "Physics"
         self.mass = 1.0 #kg
         self.momentOfInertia = 50 #
-        self.coefficientOfRestitution = 1
+        self.restitution = 0.7
         
         self.velocity = Vec2(0,0) #m/s
         self.acceleration = Vec2(0,0) #m/s^2
@@ -22,17 +22,25 @@ class Physics(Component.Component):
         self.parent = None
         
     def Update(self,deltaTime):
+        collisions = self.parent.GetComponent("Collider").collisions
+        for collision in collisions:
+            self.CollisionResponseDynamic(collision)
+        self.VelocityVerletIntegration(deltaTime)
+    
+    def VelocityVerletIntegration(self,deltaTime):
         transform = self.parent.GetComponent("Transform")
-        if self.constraintPosition:
-            self.velocity.x = 0
-            self.acceleration.x = 0
-            self.velocity.y = 0
-            self.acceleration.y = 0
         
-        if self.constraintRotation:
-            self.angularSpeed = 0
-            self.angularAcc = 0
+        #bit of a hacky solution, can theoretically be removed once collision response accounts for the constraints
+        # if self.constraintPosition:
+        #     self.velocity.x = 0
+        #     self.acceleration.x = 0
+        #     self.velocity.y = 0
+        #     self.acceleration.y = 0
+        # if self.constraintRotation:
+        #     self.angularSpeed = 0
+        #     self.angularAcc = 0
             
+        #Velocity verlet p.696
         nextPos = transform.position + self.velocity * deltaTime + self.acceleration * (deltaTime * deltaTime * 0.5)
         nextVel = self.velocity + self.acceleration * (deltaTime * 0.5)
         nextAcc = self.ApplyForces()
@@ -43,6 +51,7 @@ class Physics(Component.Component):
         self.acceleration = nextAcc
         self.netForce = Vec2(0,0)
         
+        #Solving the angular equations of motion in two dimension p.700
         nextAngle = transform.rotation + self.angularSpeed * deltaTime + self.angularAcc * (deltaTime * deltaTime * 0.5)
         nextAngSpeed = self.angularSpeed + self.angularAcc * (deltaTime * 0.5)
         nextAngAcc = self.ApplyTorque()
@@ -52,7 +61,6 @@ class Physics(Component.Component):
         self.angularSpeed =nextAngSpeed
         self.angularAcc = nextAngAcc
         self.netTorque = 0
-        
         
     def ApplyForces(self):
         if self.constraintPosition:
@@ -82,10 +90,10 @@ class Physics(Component.Component):
             return
         physicsB = collisionInfo.objectB.GetComponent("Physics")
         if physicsB is None or physicsB.constraintPosition: #objectB will not move
-            deltaV = collisionInfo.collisionNormal * (-1 * (self.coefficientOfRestitution+1) * self.velocity.Dot(collisionInfo.collisionNormal))
+            deltaV = collisionInfo.collisionNormal * (-1 * (self.restitution+1) * self.velocity.Dot(collisionInfo.collisionNormal))
             self.velocity += deltaV
             return
-        topLeft = (self.coefficientOfRestitution+physicsB.coefficientOfRestitution)/2 + 1
+        topLeft = (self.restitution+physicsB.restitution)/2 + 1
         topRight = physicsB.velocity.Dot(collisionInfo.collisionNormal) - self.velocity.Dot(collisionInfo.collisionNormal)
         bottom = (1.0/self.mass) + (1/physicsB.mass)
         deltaP = collisionInfo.collisionNormal * (topLeft * topRight / bottom)
@@ -95,36 +103,48 @@ class Physics(Component.Component):
     
     #Fully dynamic collision response as per Chris Hecker: http://www.chrishecker.com/images/e/e7/Gdmphys3.pdf
     def CollisionResponseDynamic(self,collisionInfo):
-        if self.constraintPosition:
-            return
         physicsB = collisionInfo.objectB.GetComponent("Physics")
         transfA = self.parent.GetComponent("Transform")
         transfB = physicsB.parent.GetComponent("Transform")
-        if physicsB is None:# or physicsB.constraintPosition: #objectB will not move
-            pass
-            return
+        
         vAB = self.velocity-physicsB.velocity
         rAP_ = (collisionInfo.collisionPoint - transfA.position).Perp().Normalize()
-        rBP_ = (collisionInfo.collisionPoint - transfB.position).Perp().Normalize()
+        rBP_ = (collisionInfo.collisionPoint - transfB.position).Perp().Normalize() * -1
         normal = collisionInfo.collisionNormal
-        top = -1 * (1 + (self.coefficientOfRestitution+physicsB.coefficientOfRestitution)/2.0) * vAB.Dot(normal)
-        bottomLeft= normal.Dot(normal*(1.0/self.mass+1.0/physicsB.mass))
-        bottomMid = (rAP_.Dot(normal)**2)/self.momentOfInertia
-        bottomRight = (rBP_.Dot(normal)**2)/physicsB.momentOfInertia
+        top = -1 * (1 + (self.restitution+physicsB.restitution)/2.0) * vAB.Dot(normal)
+        
+        moveA, moveB, rotateA, rotateB = 1,1,1,1
+        if physicsB is not None and not physicsB.constraintPosition and not self.constraintPosition: #both objects will move
+            bottomLeft= normal.Dot(normal*(1.0/self.mass+1.0/physicsB.mass))
+        if physicsB is None or physicsB.constraintPosition: #objectB is immovable
+            bottomLeft= normal.Dot(normal*(1.0/self.mass))
+            moveB = 0
+        if self.constraintPosition: #self is immovable
+            bottomLeft= normal.Dot(normal*(1.0/physicsB.mass))
+            moveA = 0
+        
+        if physicsB is not None and not physicsB.constraintRotation and not self.constraintRotation: #both objects will rotate
+            bottomMid = (rAP_.Dot(normal)**2)/self.momentOfInertia
+            bottomRight = (rBP_.Dot(normal)**2)/physicsB.momentOfInertia
+        if physicsB is None or physicsB.constraintRotation: #objectB is nonrotatable
+            bottomMid = (rAP_.Dot(normal)**2)/self.momentOfInertia
+            bottomRight = 0
+            rotateB = 0
+        if self.constraintRotation: #self is nonrotatable
+            bottomMid = 0
+            bottomRight = (rBP_.Dot(normal)**2)/physicsB.momentOfInertia
+            rotateA = 0
+        
         deltaP = top / (bottomLeft + bottomMid + bottomRight)
         
-        deltaVA = normal * (deltaP/self.mass)
-        deltaVB = normal * (-deltaP/physicsB.mass)
-        deltaWA = rAP_.Dot(normal*deltaP)/self.momentOfInertia
-        deltaWB = rBP_.Dot(normal*-deltaP)/physicsB.momentOfInertia
+        deltaVA = normal * (deltaP/self.mass) * moveA
+        deltaVB = normal * (-deltaP/physicsB.mass) * moveB
+        deltaWA = rAP_.Dot(normal*deltaP)/self.momentOfInertia * rotateA
+        deltaWB = rBP_.Dot(normal*-deltaP)/physicsB.momentOfInertia * rotateB
         
-        # stroke(30,30,200)
-        # strokeWeight(1)
-        # line(transfA.position.x, transfA.position.y, transfA.position.x + self.velocity.x * 1, transfA.position.y + self.velocity.y * 1)
-        # line(collisionInfo.collisionPoint.x,collisionInfo.collisionPoint.y,collisionInfo.collisionPoint.x+deltaVA.x*1,collisionInfo.collisionPoint.y+deltaVA.y*1)
-        # print("Object ID: %s, Collision Point: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(self.parent.GetID(),collisionInfo.collisionPoint,self.velocity,deltaVA,self.angularSpeed,deltaWA))
-        # print("Object ID: %s, Collision Point: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(physicsB.parent.GetID(),collisionInfo.collisionPoint,physicsB.velocity,deltaVA,physicsB.angularSpeed,deltaWB))
-        #GlobalVars.update = False
+        # print("Object ID: %s, Collision Point: %s, Collision Normal: %s Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(self.parent.GetID(),collisionInfo.collisionPoint, collisionInfo.collisionNormal,self.velocity,deltaVA,self.angularSpeed,deltaWA))
+        # print("Object ID: %s, Collision Point: %s, Collision Normal: %s Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(physicsB.parent.GetID(),collisionInfo.collisionPoint,collisionInfo.collisionNormal,physicsB.velocity,deltaVB,physicsB.angularSpeed,deltaWB))
+        # GlobalVars.update = False
         self.velocity += deltaVA
         self.angularSpeed += deltaWA
         

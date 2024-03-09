@@ -46,9 +46,17 @@ class GameObject:
     
     def Update(self,deltaTime):
         for key in self.__components.keys():
-            if key != "Sprite":
+            if key != "Sprite" and key != "Collider" and key != "Physics":
                 self.__components[key].Update(deltaTime)
     
+    def UpdateCollider(self,deltaTime, colliders):
+        if self.__components.__contains__("Collider"):
+            self.__components["Collider"].Update(deltaTime, colliders)
+    
+    def UpdatePhysics(self,deltaTime):
+        if self.__components.__contains__("Physics"):
+            self.__components["Physics"].Update(deltaTime)
+            
     def Show(self,deltaTime):
         if self.__components.__contains__("Sprite"):
             self.__components["Sprite"].Update(deltaTime)
