@@ -1,14 +1,16 @@
 import World
 from lib import TestingPhysicsScene
+from lib import GlobalVars
 
 world = World.World()
 change = 0
 
 def setup():
     size(600,600)
-    TestingPhysicsScene.SetupScene3(world)
+    TestingPhysicsScene.SetupScene1(world)
     world.StartActiveScene()
 
 def draw():
-    background(255)
-    world.UpdateActiveScene()
+    if GlobalVars.update:
+        background(255)
+        world.UpdateActiveScene()

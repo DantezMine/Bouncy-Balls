@@ -20,9 +20,9 @@ class MovingCollision(Component.Component):
     
     def Update(self,deltaTime):
         self.HandleInput(deltaTime)
-        self.parent.GetComponent("Physics").AddForce(Vec2(0,200*self.parent.GetComponent("Physics").mass))
+        # self.parent.GetComponent("Physics").AddForce(Vec2(0,200*self.parent.GetComponent("Physics").mass))
         self.parent.GetComponent("Physics").AddTorque(1)
-        self.parent.GetComponent("Physics").AddForce(self.inputForce*self.jumpForce)
+        # self.parent.GetComponent("Physics").AddForce(self.inputForce*self.jumpForce)
         
         collider = self.parent.GetComponent("Collider")
         collider.DisplayCollider()
