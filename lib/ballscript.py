@@ -8,6 +8,7 @@ class Ball(Component.Component):
     def __init__(self):
         self.name = "Ball"
         self.parent = None
+        
         self.state = "Origin"
         self.sling = None
         self.mousePosStart = None
@@ -31,7 +32,7 @@ class Ball(Component.Component):
             if self.state == "Dragged" and mouseButton == 37:
                 self.mousePos = Vec2(mouseX, mouseY)
                 self.Delta = self.mousePosStart - self.mousePos
-                self.parent.GetComponent("Transform").position - self.Delta
+                self.parent.GetComponent("Transform").position = self.sling.GetComponent("Transform").position - self.Delta
         if not mousePressed:
             if self.state == "Dragged":
                 self.state = "Released"
