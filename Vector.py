@@ -34,6 +34,8 @@ class Vec2:
     
     def Normalize(self):
         mag = self.Mag()
+        if mag == 0:
+            return self
         self.x /= mag
         self.y /= mag
         return self
@@ -46,6 +48,7 @@ class Vec2:
         return math.acos(self.Dot(other)/(self.Mag()*other.Mag()))
     
     def ProjectedOn(self,other):
+        '''Returns the projection of self (self: Point - Vector begin) onto vector'''
         return other * (self.Dot(other) / other.SqMag())
     
     def Rotate(self,angle): #in radians

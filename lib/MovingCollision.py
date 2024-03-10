@@ -12,7 +12,10 @@ class MovingCollision(Component.Component):
         rectColl = ComponentCollider.ColliderRect()
         rectColl.SetCollider(100,50)
         self.parent.AddComponent(rectColl)
+        self.parent.GetComponent("Physics").AddForce(Vec2(0,100))
     
     def Update(self,deltaTime):
         collider = self.parent.GetComponent("Collider")
         collider.DisplayCollider()
+        # if self.parent.GetID() == 1:
+        #     self.parent.GetComponent("Transform").position = Vec2(mouseX,mouseY)

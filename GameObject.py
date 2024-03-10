@@ -53,9 +53,9 @@ class GameObject:
         if self.__components.__contains__("Collider"):
             self.__components["Collider"].Update(deltaTime, colliders)
     
-    def UpdatePhysics(self,deltaTime):
+    def UpdatePhysics(self,deltaTime,mode):
         if self.__components.__contains__("Physics"):
-            self.__components["Physics"].Update(deltaTime)
+            self.__components["Physics"].Update(deltaTime,mode)
             
     def Show(self,deltaTime):
         if self.__components.__contains__("Sprite"):
