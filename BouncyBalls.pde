@@ -7,7 +7,7 @@ change = 0
 
 def setup():
     size(600,600)
-    TestingPhysicsScene.SetupScene1(world)
+    TestingPhysicsScene.SetupScene4(world)
     world.StartActiveScene()
 
 def draw():
