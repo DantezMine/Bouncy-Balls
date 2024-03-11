@@ -4,7 +4,7 @@ class GameObject:
     def __init__(self, parentScene):
         self.__id = parentScene.CreateID()
         self.__components = {key: value for key, value in []} #initialize an empty dictionary using dictionary comprehension
-        self.__parentSene = parentScene
+        self.__parentScene = parentScene
         
         self.AddComponent(ComponentTransform.ComponentTransform())
         
@@ -26,7 +26,7 @@ class GameObject:
     def GetComponent(self,compName):
         if self.__components.__contains__(compName):
             return self.__components[compName]
-        print("Component doesn't exist in object %d"%self.__id)
+        #print("Component doesn't exist in object %d"%self.__id)
         return None
     
     def GetComponentNoPrint(self,compName):
@@ -38,7 +38,7 @@ class GameObject:
         return self.__id
     
     def GetParentScene(self):
-        return self.__parentSene
+        return self.__parentScene
     
     def Start(self):
         for key in self.__components.keys():
@@ -60,3 +60,7 @@ class GameObject:
     def Show(self,deltaTime):
         if self.__components.__contains__("Sprite"):
             self.__components["Sprite"].Update(deltaTime)
+            
+    def UpdateOnCollision(self,collider):
+        for component in self.__components:
+            component.OnCollision(collider)

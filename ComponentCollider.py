@@ -34,15 +34,18 @@ class Collider(Component.Component):
         self.localPosition = localPosition
         self.localRotation = localRotation
         self.localScale = localScale
-        
-    def BoolCollision(self):
-        pass
 
     def DisplayCollider(self):
         pass
     
     def Update(self,deltaTime,colliders):
-        pass
+        self.collisions = []
+        self.CheckCollision(colliders)
+        self._UpdateOnCollision()
+    
+    def _UpdateOnCollision(self):
+        for collider in self.collisions:
+            self.parent.UpdateOnCollision(self,collider)
 
 class ColliderCircle(Collider):
     def SetCollider(self, radius = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = 1):
@@ -94,6 +97,7 @@ class ColliderRect(Collider):
     def Update(self,deltaTime,colliders):
         self.collisions = []
         self.CheckCollision(colliders)
+        self._UpdateOnCollision()
         
     def CheckCollision(self, colliders):
         for collider in colliders:
@@ -134,9 +138,9 @@ class ColliderRect(Collider):
                     #check if closest point to edge is inside the rectangle
                     inside = True
                     for i in range(len(verts)):
-                        AB = verts[(i+1)%4] - verts[i]
+                        _AB = verts[(i+1)%4] - verts[i]
                         AVc = Vc - verts[i]
-                        normal = Vec2(-AB.y,AB.x)
+                        normal = Vec2(-_AB.y,_AB.x)
                         if AVc.Dot(normal) >= 0:
                             inside = False
                             break
