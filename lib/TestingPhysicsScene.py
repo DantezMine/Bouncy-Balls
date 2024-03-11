@@ -50,3 +50,17 @@ def SetupScene3(world):
     ball.GetComponent("Transform").scale = Vec2(.2,.2)
     scene.AddGameObject(ball)
     scene.AddGameObject(slingshot)
+    
+def SetupScene4(world):
+    scene = Scene.Scene()
+    world.AddScene("scene",scene)
+    ball1 = GameObject.GameObject(scene)
+    ball1.AddComponent(ballscript.Ball())
+    ball1.GetComponent("Transform").position = Vec2(200,200)
+    ball1.GetComponent("Ball").startVelocity = Vec2(0,100)
+    ball2 = GameObject.GameObject(scene)
+    ball2.AddComponent(ballscript.Ball())
+    ball2.GetComponent("Transform").position = Vec2(200,400)
+    
+    scene.AddGameObject(ball1)
+    scene.AddGameObject(ball2)
