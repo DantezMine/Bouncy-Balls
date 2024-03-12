@@ -1,6 +1,9 @@
 ```plantuml
 @startuml
     skinparam backgroundColor white
+    skinparam linetype ortho
+    skinparam ranksep 50
+
     class Vector{
         {field} x : float
         {field} y : float
@@ -45,6 +48,7 @@
         {method} + Update(deltaTime)
         {method} + UpdateCollider(deltaTime, colliders : list)
         {method} + UpdatePhysics(deltaTime, mode : int)
+        {method} + UpdateOnCollision(collider : Collider)
     }
 
     class Component{
@@ -52,6 +56,7 @@
         {field} + parent : GameObject
         {method} + Start()
         {method} + Update(deltaTime)
+        {method} + OnCollision(collider : Collider)
     }
 
     class Collider{
@@ -61,14 +66,28 @@
         {method} # UpdateOnCollision()
     }
 
+    together{
     class ColliderRect{
         {field} + colliderType : string
-        {field} + 
-        {field} + 
-        {field} + 
-        {field} + 
-        {field} + 
-        {field} + 
+        {field} + localPosition : Vec2
+        {field} + localRotation : float
+        {field} + localScale : float
+        {field} + lenX : float
+        {field} + lenY : float
+        {field} + sqRadius : float
+        {method} + SetCollider()
+        {method} + SqDistancePointSegment(sqD\n : float, onLine : bool, A, B, P)
+    }
+    
+    class ColliderCircle{
+        {field} + colliderType : string
+        {field} + localPosition : Vec2
+        {field} + localRotation : float
+        {field} + localScale : float
+        {field} + radius : float
+        {field} + sqRadius : float
+        {method} + SetCollider()
+    }
     }
 
     class Physics{
@@ -101,14 +120,18 @@
         {method} + LookAt(targetPos : Vec2)
     }
 
+
     World "1 " *--r "1..* " Scene : contains >
     Scene "1 " *-- "1..* " GameObject : contains >
     GameObject o-- Component
     GameObject -l[hidden] Vector
-    Component <-- Collider
-    Component <-- Physics
-    Component <-- Sprite
-    Component <-- Transform
+    Component <-- "0..1" Collider
+    Component <-- "0..1" Physics
+    Component <-- "0..1" Sprite
+    Component <-- "1" Transform
+
+    Collider <--d ColliderRect
+    Collider <--d ColliderCircle
 
 @enduml
 ```

@@ -58,7 +58,8 @@ class ColliderCircle(Collider):
         
     def Update(self,deltaTime,colliders):
         self.collisions = []
-        self.CheckCollision(colliders)    
+        self.CheckCollision(colliders)
+        self._UpdateOnCollision()
     
     def CheckCollision(self, colliders):
         transform = self.parent.GetComponent("Transform")
