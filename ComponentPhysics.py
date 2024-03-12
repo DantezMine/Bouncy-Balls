@@ -155,7 +155,7 @@ class Physics(Component.Component):
             bottomLeft = normal.Dot(normal*(1.0/physicsB.mass))
         
         #if an object is nonrotatable, its moment of inertia approaches infinity, thus 1/momentOfInertia goes to zero
-        if not rotateA and not rotateB: #both objects will rotate
+        if rotateA and rotateB: #both objects will rotate
             bottomMid   = (rAP_.Dot(normal)**2)/self.momentOfInertia
             bottomRight = (rBP_.Dot(normal)**2)/physicsB.momentOfInertia
         if not rotateB: #objectB is nonrotatable
@@ -164,7 +164,7 @@ class Physics(Component.Component):
         if not rotateA: #self is nonrotatable
             bottomMid   = 0
             bottomRight = (rBP_.Dot(normal)**2)/physicsB.momentOfInertia
-            
+        
         deltaP = top / (bottomLeft + bottomMid + bottomRight)
         
         #in the future maybe change to account for collisions that involve the same game objects, calculated in Scene.py

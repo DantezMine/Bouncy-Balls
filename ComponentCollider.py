@@ -9,13 +9,13 @@ class CollisionInfo:
         collisionPoint if "edge": point furthest along the collision edge
         edgeVector points from "edge" collisionPoint to the other point of the edge
         '''
-        self.collisionPoint = collisionPoint
-        self.collisionNormal = collisionNormal
-        self.otherNormal = otherNormal
-        self.edgeVector = edgeVec
-        self.objectA = objectA
-        self.objectB = objectB
-        self.collisionType = collisionType
+        self.collisionPoint = collisionPoint #Point where touch
+        self.collisionNormal = collisionNormal #One Normal from touch
+        self.otherNormal = otherNormal #opposing to collisionNormal
+        self.edgeVector = edgeVec #only edge-edge
+        self.objectA = objectA #self.parent
+        self.objectB = objectB #collider.parent
+        self.collisionType = collisionType #best "vertEdge"
         
     def __str__(self):
         return ("Object A: %s, Object B: %s, Collision Type: %s, Collision Point: %s, Collision Normal: %s, Other Normal: %s, Edge Vector: %s"%(self.objectA.GetID(),self.objectB.GetID(),self.collisionType,self.collisionPoint,self.collisionNormal,self.otherNormal,self.edgeVector))
@@ -34,15 +34,18 @@ class Collider(Component.Component):
         self.localPosition = localPosition
         self.localRotation = localRotation
         self.localScale = localScale
-        
-    def BoolCollision(self):
-        pass
 
     def DisplayCollider(self):
         pass
     
     def Update(self,deltaTime,colliders):
-        pass
+        self.collisions = []
+        self.CheckCollision(colliders)
+        self._UpdateOnCollision()
+    
+    def _UpdateOnCollision(self):
+        for collider in self.collisions:
+            self.parent.UpdateOnCollision(self,collider)
 
 class ColliderCircle(Collider):
     def SetCollider(self, radius = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = 1):
@@ -53,11 +56,33 @@ class ColliderCircle(Collider):
         self.radius = radius
         self.sqRadius = radius**2
         
-    def BoolCollision(self):
-        pass
+    def Update(self,deltaTime,colliders):
+        self.collisions = []
+        self.CheckCollision(colliders)    
+    
+    def CheckCollision(self, colliders):
+        transform = self.parent.GetComponent("Transform")
+        center = transform.position
+        for collider in colliders:
+            if collider.parent.GetID() == self.parent.GetID():
+                continue
+            if collider.colliderType == "Circle":
+                collTransform = collider.parent.GetComponent("Transform")
+                collCenter = collTransform.position
+                deltaLocalPosition = center - collCenter
+                if (collider.radius + self.radius)**2 >= deltaLocalPosition.SqMag():
+                    p2p = collCenter-center
+                    collisionPoint = center+p2p.Normalize()*self.radius
+                    self.collisions.append(CollisionInfo(collisionPoint, (center - collisionPoint).Normalized(), None, None, self.parent, collider.parent, "vertEdge"))
+        return
     
     def DisplayCollider(self):
-        pass
+        transform = self.parent.GetComponent("Transform")
+        center = transform.position
+        noFill()
+        stroke(20,220,20)
+        strokeWeight(2)
+        ellipse(center.x, center.y, self.radius*2, self.radius*2)
 
 class ColliderRect(Collider):
     def SetCollider(self, lenX = 50, lenY = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = 1):
@@ -72,6 +97,7 @@ class ColliderRect(Collider):
     def Update(self,deltaTime,colliders):
         self.collisions = []
         self.CheckCollision(colliders)
+        self._UpdateOnCollision()
         
     def CheckCollision(self, colliders):
         for collider in colliders:
@@ -112,9 +138,9 @@ class ColliderRect(Collider):
                     #check if closest point to edge is inside the rectangle
                     inside = True
                     for i in range(len(verts)):
-                        AB = verts[(i+1)%4] - verts[i]
+                        _AB = verts[(i+1)%4] - verts[i]
                         AVc = Vc - verts[i]
-                        normal = Vec2(-AB.y,AB.x)
+                        normal = Vec2(-_AB.y,_AB.x)
                         if AVc.Dot(normal) >= 0:
                             inside = False
                             break

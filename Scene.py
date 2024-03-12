@@ -1,14 +1,19 @@
 class Scene:
     ID = 0
     def __init__(self):
-        self.__GameObjects = list()
+        self.__gameObjects = list()
         
     def AddGameObject(self,gameObject):
-        self.__GameObjects.append(gameObject)
+        if self.__gameObjects.__contains__(gameObject):
+            return False
+        self.__gameObjects.append(gameObject)
         return True
     
     def RemoveGameObject(self,gameObject):
-        self.__GameObjects.remove(gameObject)
+        if self.__gameObjects.__contains__(gameObject):
+            self.__gameObjects.remove(gameObject)
+            return True
+        return False
         
     def CreateID(self):
         Scene.ID += 1
@@ -16,7 +21,7 @@ class Scene:
     
     def GetObjectsWithComponent(self,compName):
         outList = list()
-        for gameObj in self.__GameObjects:
+        for gameObj in self.__gameObjects:
             comp = gameObj.GetComponentNoPrint(compName)
             if comp is not None:
                 outList.append(comp.parent)
@@ -24,24 +29,24 @@ class Scene:
     
     def GetComponents(self,compName):
         outList = list()
-        for gameObj in self.__GameObjects:
+        for gameObj in self.__gameObjects:
             comp = gameObj.GetComponentNoPrint(compName)
             if comp is not None:
                 outList.append(comp)
         return outList
     
     def UpdateScene(self,deltaTime):
-        for go in self.__GameObjects:
+        for go in self.__gameObjects:
             go.Update(deltaTime)
             go.Show(deltaTime)
-        for go in self.__GameObjects:
+        for go in self.__gameObjects:
             go.UpdateCollider(deltaTime, self.GetComponents("Collider"))
-        for go in self.__GameObjects:
+        for go in self.__gameObjects:
             go.UpdatePhysics(deltaTime,0)
-        for go in self.__GameObjects:
+        for go in self.__gameObjects:
             go.UpdatePhysics(deltaTime,1)
     
 
     def StartScene(self):
-        for go in self.__GameObjects:
+        for go in self.__gameObjects:
             go.Start()
