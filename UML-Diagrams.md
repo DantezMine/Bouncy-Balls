@@ -121,7 +121,7 @@
     }
 
 
-    World "1 " *--r "1..* " Scene : contains >
+    World "1 " *-- "1..* " Scene : contains >
     Scene "1 " *-- "1..* " GameObject : contains >
     GameObject o-- Component
     GameObject -l[hidden] Vector
