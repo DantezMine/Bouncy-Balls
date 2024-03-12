@@ -3,7 +3,7 @@ from lib import TestingPhysicsScene
 from lib import GlobalVars
 
 world = World.World()
-change = 0
+change = 1
 
 def setup():
     size(600,600)
