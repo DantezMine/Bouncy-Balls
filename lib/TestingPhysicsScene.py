@@ -64,3 +64,8 @@ def SetupScene4(world):
     
     scene.AddGameObject(ball1)
     scene.AddGameObject(ball2)
+    
+    #example for what adding a structure should look like. minimal clutter, only add one component
+    # block1 = GameObject.GameObject(scene)
+    # block1.AddComponent(Structure("Wood",posX=300,posY=350,lenX=20,lenY=100))
+    # scene.AddGameObject(block1)
