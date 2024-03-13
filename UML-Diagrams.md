@@ -43,7 +43,7 @@
         {method} + GetID() : int
         {method} + AddComponent(component : Component) : bool
         {method} + RemoveComponent(component : Component) : bool
-        {method} + GetComponent(compName) : bool
+        {method} + GetComponent(compName) : Component
         {method} + Start()
         {method} + Update(deltaTime)
         {method} + UpdateCollider(deltaTime, colliders : list)
