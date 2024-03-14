@@ -64,6 +64,7 @@
         {method} + DisplayCollider()
         {method} + Update(deltaTime,colliders)
         {method} # UpdateOnCollision()
+        {method} + SqDistancePointSegment(sqD\n : float, onLine : bool, A, B, P)
     }
 
     together{
@@ -76,7 +77,6 @@
         {field} + lenY : float
         {field} + sqRadius : float
         {method} + SetCollider()
-        {method} + SqDistancePointSegment(sqD\n : float, onLine : bool, A, B, P)
     }
     
     class ColliderCircle{
