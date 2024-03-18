@@ -120,7 +120,7 @@ The rotate function simply takes in an angle and rotates the object according to
 
 The collider is responsible for detecting collisions with other colliders and reporting these to the physics engine. A collider is a simple shape, either a rectangle or a circle (in the future maybe also a right triangle), differentiated by the subcomponent classes of ColliderRect and ColliderCircle. The collision detection happens automatically, controlled by the scene object each update cycle.<br>
 To set the properties of the collider, the SetCollider() function can be used to specify all the transform properties of the collider. These are: the localPosition, localRotation, localScale,lenX and lenY or radius, depending on whether it's a rectangle or circle.<br>
-Finally, the Colllider class provides the SqDistancePointSegment() function, which returns the square distance from a given point P to the line segment AB. Due to the nature of its use in the class, the float SqD needs to be passed in, which also serves as the answer, and the bool onLine, which is True if the projection of P onto the infite line (not just the finite segment) is on the segment. Both of these need to be initialized before they're passed on to the function, as in the example below.
+Finally, the Colllider class provides the SqDistancePointSegment() function, which returns the square distance from a given point P to the line segment AB. Due to the nature of its use wthin the class, the float SqD needs to be passed in, which also serves as the answer, and the bool onLine, which is True if the projection of P onto the infite line (not just the finite segment) is on the segment. Both of these need to be initialized before they're passed on to the function, as in the example below.
 
 ```python
 import Collider
@@ -130,4 +130,29 @@ B = Vec2(18,12)
 P = Vec2(14,9.5)
 SqD, onLine = 0, False
 SqD, onLine = Collider.SqDistancePointSegment(SqD,onLine,A,B,P)
+```
+
+### Component Physics
+
+The Physics component updates the state of its transform based on given velocities (impulses) and acceleration (forces) from the outside. Even when there's no input given, it will update the state automatically from its previous state, i.e. previous velocity.<br> Note that adding the physics component itself doesn't make any forces like gravity apply to it, but it will react to collisions, assuming it has a collider.<br>
+To add a force or a torque, i.e. rotational force, the AddForce and AddTorque functions are used with the respective force, a vector, and torque, a scalar, given.<br>
+
+> <font color="lightblue"> AddForce(force : Vec2) </font>: Adds a directional force as a vector to the physics component during the duration of the trame.<br>
+<font color="lightblue"> AddTorque(float) </font>: Adds a torque to the object, where positive is in a counter-clockwise direction.<br>
+
+### Component Sprite
+
+A sprite is a 2D image in a 2D world. The sprite component requires a path to the sprite.
+
+```python
+import ColliderSprite
+import Component
+
+class Foo(Component.Component):
+    def __init__(self):
+        self.name = "Foo"
+        self.parent = None
+
+    def Start(self):
+        self.parent.AddComponent(ComponentSprite.Sprite(b_proc=False, s_spritePath = "data/image.png"))
 ```
