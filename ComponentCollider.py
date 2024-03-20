@@ -45,7 +45,7 @@ class Collider(Component.Component):
     
     def _UpdateOnCollision(self):
         for collider in self.collisions:
-            self.parent.UpdateOnCollision(self,collider)
+            self.parent.UpdateOnCollision(collider)
 
     def SqDistancePointSegment(self,sqD,onLine,A,B,P):
         AB = B-A
@@ -163,12 +163,13 @@ class ColliderRect(Collider):
                             inside = False
                             break
                     
+                    
                     #edge probably inside if true
                     if inside and (Vc-A).Dot(normalAB) < 0 and onLine:
                         combinedVelocity = self.GetCombinedVelocity(collider,self.parent.GetComponent("Transform").position, collider.parent.GetComponent("Transform").position)
                         
                         #choose edge that faces away from combined velocity
-                        if normalAB.Dot(combinedVelocity) < 0:
+                        if normalAB.Dot(combinedVelocity) > 0:
                             #get closest vertex of current edge to other edge for additional info
                             Pc, onLine_ = Vec2(0,0), False
                             Pc, onLine_ = self.ClosesetPointToSegment(Pc,onLine_,C,D,[A,B])
@@ -184,13 +185,13 @@ class ColliderRect(Collider):
             
         #check if objects have a physics component whose velocity we need to consider
         if parentPhysics is not None:
-            rAP_   =  (pointA - self.parent.GetComponent("Transform").position).Perp().Normalize()
+            rAP_   =  -(pointA - self.parent.GetComponent("Transform").position).Perp()
             vAP    =   parentPhysics.velocity + rAP_ * parentPhysics.angularSpeed
-            combinedVelocity -= vAP
+            combinedVelocity += vAP
         if otherPhysics is not None:
-            rBP_   =  (pointB - otherPhysics.parent.GetComponent("Transform").position).Perp().Normalize()
+            rBP_   =  -(pointB - otherPhysics.parent.GetComponent("Transform").position).Perp()
             vBP    =   otherPhysics.velocity + rBP_ * otherPhysics.angularSpeed
-            combinedVelocity += vBP
+            combinedVelocity -= vBP
         if parentPhysics is None and otherPhysics is None:
             return Vec2(0,0)
         
@@ -223,11 +224,11 @@ class ColliderRect(Collider):
                 if AP.Dot(normal) >= 0:
                     inside = False
                     break
-            if inside: #find face whose normal most opposes direction of combined velocity, i.e. normal that was most likely hit
+            if inside:
                 combinedVelocity = self.GetCombinedVelocity(collider,p,p)
-                print(combinedVelocity)
                 minDot = 0 #i think there should always be a normal going the other way and thus at least one or two dot products should be below zero
                 minNormal = None
+                #find face whose normal most opposes direction of combined velocity, i.e. normal that was most likely hit
                 for i in range(len(verts)):
                     ab = verts[(i+1)%4]-verts[i]
                     n = Vec2(-ab.y,ab.x)
@@ -235,6 +236,7 @@ class ColliderRect(Collider):
                         minDot = combinedVelocity.Dot(n)
                         minNormal = n
                 self.collisions.append(CollisionInfo(p,minNormal.Normalized(), None, None, self.parent, collider.parent, "vertEdge"))
+                return
     
     def GetVertices(self):#CCW starting top left if not rotated
         transf = self.parent.GetComponent("Transform")

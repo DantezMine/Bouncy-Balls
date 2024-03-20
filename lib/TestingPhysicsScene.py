@@ -18,7 +18,6 @@ def SetupScene1(world):
     rect1.GetComponent("Transform").position = Vec2(310,150)
     rect1.GetComponent("Transform").rotation = 0.035
     rect1.AddComponent(ComponentPhysics.Physics())
-    rect1.GetComponent("Physics").velocity = Vec2(0,100)
     
     rect2 = GameObject.GameObject(scene)
     rect2.AddComponent(MovingCollision.MovingCollision())

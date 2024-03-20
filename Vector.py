@@ -20,6 +20,9 @@ class Vec2:
     def __div__(self,scalar):
         return Vec2(self.x/scalar,self.y/scalar)
     
+    def __neg__(self):
+        return Vec2(-self.x,-self.y)
+    
     def Dot(self,other):
         return self.x*other.x+self.y*other.y
     
