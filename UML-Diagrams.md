@@ -43,7 +43,7 @@
         {method} + GetID() : int
         {method} + AddComponent(component : Component) : bool
         {method} + RemoveComponent(component : Component) : bool
-        {method} + GetComponent(compName) : bool
+        {method} + GetComponent(compName) : Component
         {method} + Start()
         {method} + Update(deltaTime)
         {method} + UpdateCollider(deltaTime, colliders : list)
@@ -64,6 +64,7 @@
         {method} + DisplayCollider()
         {method} + Update(deltaTime,colliders)
         {method} # UpdateOnCollision()
+        {method} + SqDistancePointSegment(sqD\n : float, onLine : bool, A, B, P)
     }
 
     together{
@@ -76,7 +77,6 @@
         {field} + lenY : float
         {field} + sqRadius : float
         {method} + SetCollider()
-        {method} + SqDistancePointSegment(sqD\n : float, onLine : bool, A, B, P)
     }
     
     class ColliderCircle{

@@ -47,6 +47,23 @@ class Collider(Component.Component):
         for collider in self.collisions:
             self.parent.UpdateOnCollision(self,collider)
 
+    def SqDistancePointSegment(self,sqD,onLine,A,B,P):
+        AB = B-A
+        AP = P-A
+        v = AP.ProjectedOn(AB)
+        #point is beyond A
+        if AB.Dot(v) < 0:
+            sqD = AP.SqMag()
+            onLine = False
+        #point is beyond B
+        elif AB.Dot(v) > 0 and AB.SqMag() < v.SqMag():
+            sqD = (P-B).SqMag()
+            onLine = False
+        else:
+            sqD = (P-A-v).SqMag()
+            onLine = True
+        return (sqD, onLine)
+    
 class ColliderCircle(Collider):
     def SetCollider(self, radius = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = 1):
         self.colliderType = "Circle"
@@ -83,7 +100,7 @@ class ColliderCircle(Collider):
         noFill()
         stroke(20,220,20)
         strokeWeight(2)
-        ellipse(center.x, center.y, self.radius*2, self.radius*2)
+        ellipse(center.x, center.y, self.radius*2*transform.scale, self.radius*2*transform.scale)
 
 class ColliderRect(Collider):
     def SetCollider(self, lenX = 50, lenY = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = 1):
@@ -192,22 +209,6 @@ class ColliderRect(Collider):
             Vc = verts[1]
         return (Vc, onLine)
 
-    def SqDistancePointSegment(self,sqD,onLine,A,B,P):
-        AB = B-A
-        AP = P-A
-        v = AP.ProjectedOn(AB)
-        #point is beyond A
-        if AB.Dot(v) < 0:
-            sqD = AP.SqMag()
-            onLine = False
-        #point is beyond B
-        elif AB.Dot(v) > 0 and AB.SqMag() < v.SqMag():
-            sqD = (P-B).SqMag()
-            onLine = False
-        else:
-            sqD = (P-A-v).SqMag()
-            onLine = True
-        return (sqD, onLine)
                 
     def CheckCollisionVertEdge(self,collider,verts,collVerts):
         #if furthest vertices aren't in range (within a safety margin), don't bother checking
@@ -238,10 +239,10 @@ class ColliderRect(Collider):
     def GetVertices(self):#CCW starting top left if not rotated
         transf = self.parent.GetComponent("Transform")
         center = transf.position+self.localPosition
-        A = center + Vec2(-self.lenX/2,-self.lenY/2).Rotate(transf.rotation+self.localRotation)*self.localScale
-        B = center + Vec2(-self.lenX/2, self.lenY/2).Rotate(transf.rotation+self.localRotation)*self.localScale
-        C = center + Vec2( self.lenX/2, self.lenY/2).Rotate(transf.rotation+self.localRotation)*self.localScale
-        D = center + Vec2( self.lenX/2,-self.lenY/2).Rotate(transf.rotation+self.localRotation)*self.localScale
+        A = center + Vec2(-self.lenX/2,-self.lenY/2).Rotate(transf.rotation+self.localRotation)*self.localScale*transf.scale
+        B = center + Vec2(-self.lenX/2, self.lenY/2).Rotate(transf.rotation+self.localRotation)*self.localScale*transf.scale
+        C = center + Vec2( self.lenX/2, self.lenY/2).Rotate(transf.rotation+self.localRotation)*self.localScale*transf.scale
+        D = center + Vec2( self.lenX/2,-self.lenY/2).Rotate(transf.rotation+self.localRotation)*self.localScale*transf.scale
         return [A,B,C,D]
     
     def DisplayCollider(self):

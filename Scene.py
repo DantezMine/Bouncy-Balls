@@ -38,13 +38,13 @@ class Scene:
     def UpdateScene(self,deltaTime):
         for go in self.__gameObjects:
             go.Update(deltaTime)
-            go.Show(deltaTime)
         for go in self.__gameObjects:
             go.UpdateCollider(deltaTime, self.GetComponents("Collider"))
         for go in self.__gameObjects:
             go.UpdatePhysics(deltaTime,0)
         for go in self.__gameObjects:
             go.UpdatePhysics(deltaTime,1)
+            go.Show(deltaTime)
     
 
     def StartScene(self):
