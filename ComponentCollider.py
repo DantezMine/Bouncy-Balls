@@ -3,7 +3,7 @@ import Component
 import math
 
 class CollisionInfo:
-    def __init__(self, collisionPoint, collisionNormal, otherNormal, edgeVec, objectA, objectB, collisionType): #collisionType: "vertEdge","edge"
+    def __init__(self, collisionPoint, collisionNormal, otherNormal, edgeVec, objectA, objectB, collisionType, collisionResponseTag): #collisionType: "vertEdge","edge"
         '''
         collisionType: "vertEdge","edge"
         collisionPoint if "edge": point furthest along the collision edge
@@ -16,14 +16,17 @@ class CollisionInfo:
         self.objectA = objectA #self.parent
         self.objectB = objectB #collider.parent
         self.collisionType = collisionType #best "vertEdge"
+        self.collisionResponseTag = collisionResponseTag #tells the physics engine whether the collision requires a response. if either collider has a NoCollisionResponse in its list of tags, no collision response will happen
         
     def __str__(self):
-        return ("Object A: %s, Object B: %s, Collision Type: %s, Collision Point: %s, Collision Normal: %s, Other Normal: %s, Edge Vector: %s"%(self.objectA.GetID(),self.objectB.GetID(),self.collisionType,self.collisionPoint,self.collisionNormal,self.otherNormal,self.edgeVector))
+        return ("Object A: %s, Object B: %s, Collision Type: %s, Collision Point: %s, Collision Normal: %s, Other Normal: %s, Edge Vector: %s, Collision Response: %s"%(self.objectA.GetID(),self.objectB.GetID(),self.collisionType,self.collisionPoint,self.collisionNormal,self.otherNormal,self.edgeVector, self.collisionResponseTag))
 
 class Collider(Component.Component):
     def __init__(self):
         self.name = "Collider"
         self.parent = None
+        
+        self.tags = []
                 
         self.collisions = []
         self._safetyMargin = 10
@@ -82,6 +85,7 @@ class ColliderCircle(Collider):
         transform = self.parent.GetComponent("Transform")
         center = transform.position
         for collider in colliders:
+            collisionResponseTag = False if self.tags.__contains__("NoCollisionResponse") or collider.tags.__contains__("NoCollisionResponse") else True
             if collider.parent.GetID() == self.parent.GetID():
                 continue
             if collider.colliderType == "Circle":
@@ -91,7 +95,7 @@ class ColliderCircle(Collider):
                 if (collider.radius + self.radius)**2 >= deltaLocalPosition.SqMag():
                     p2p = collCenter-center
                     collisionPoint = center+p2p.Normalize()*self.radius
-                    self.collisions.append(CollisionInfo(collisionPoint, (center - collisionPoint).Normalized(), None, None, self.parent, collider.parent, "vertEdge"))
+                    self.collisions.append(CollisionInfo(collisionPoint, (center - collisionPoint).Normalized(), None, None, self.parent, collider.parent, "vertEdge", collisionResponseTag))
         return
     
     def DisplayCollider(self):
@@ -135,7 +139,7 @@ class ColliderRect(Collider):
         #if furthest vertices aren't in range (within a safety margin), don't bother checking
         # if (self.parent.GetComponent("Transform").position - collider.parent.GetComponent("Transform").position).SqMag() > self.sqRadius + collider.sqRadius + self._safetyMargin:
         #     return False
-        
+        collisionResponseTag = False if self.tags.__contains__("NoCollisionResponse") or collider.tags.__contains__("NoCollisionResponse") else True
         #check each edge against each other
         for i in range(len(verts)):
             A, B = verts[i], verts[(i+1)%len(verts)]
@@ -174,7 +178,7 @@ class ColliderRect(Collider):
                             Pc, onLine_ = Vec2(0,0), False
                             Pc, onLine_ = self.ClosesetPointToSegment(Pc,onLine_,C,D,[A,B])
                             edgeVec = (Pc + (Pc - A - B)).Normalize() * -1
-                            self.collisions.append(CollisionInfo(Pc,normalAB,normalCD, edgeVec, self.parent, collider.parent,"edge"))
+                            self.collisions.append(CollisionInfo(Pc,normalAB,normalCD, edgeVec, self.parent, collider.parent,"edge", collisionResponseTag))
                             return True
         return False
     
@@ -215,6 +219,7 @@ class ColliderRect(Collider):
         #if furthest vertices aren't in range (within a safety margin), don't bother checking
         # if (self.parent.GetComponent("Transform").position - collider.parent.GetComponent("Transform").position).SqMag() > self.sqRadius + collider.sqRadius + self._safetyMargin:
         #     return
+        collisionResponseTag = False if self.tags.__contains__("NoCollisionResponse") or collider.tags.__contains__("NoCollisionResponse") else True
         for p in collVerts:
             inside = True
             for i in range(len(verts)):
@@ -235,7 +240,7 @@ class ColliderRect(Collider):
                     if combinedVelocity.Dot(n) < minDot:
                         minDot = combinedVelocity.Dot(n)
                         minNormal = n
-                self.collisions.append(CollisionInfo(p,minNormal.Normalized(), None, None, self.parent, collider.parent, "vertEdge"))
+                self.collisions.append(CollisionInfo(p,minNormal.Normalized(), None, None, self.parent, collider.parent, "vertEdge", collisionResponseTag))
                 return
     
     def GetVertices(self):#CCW starting top left if not rotated

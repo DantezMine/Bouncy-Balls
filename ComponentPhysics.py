@@ -32,7 +32,8 @@ class Physics(Component.Component):
             collisions = self.parent.GetComponent("Collider").collisions
             collisionCounts = self.DetermineSimilarCollisions(collisions, allCollisions)
             for i in range(len(collisions)):
-                self.CollisionResponseDynamic(collisions[i], collisionCounts, i)
+                if collisions[i].collisionResponseTag:
+                    self.CollisionResponseDynamic(collisions[i], collisionCounts, i)
         elif mode == 1:
             self.VelocityVerletIntegration(deltaTime)
     
@@ -165,6 +166,7 @@ class Physics(Component.Component):
         
         cosNormalA = 1#math.cos(normal.AngleBetween(self.gravForce))
         cosNormalB = 1#math.cos(normal.AngleBetween(physicsB.gravForce))
+        deltaAccA, deltaAccB = Vec2(0,0), Vec2(0,0) 
         if self.gravity:
             deltaAccA = -self.gravForce * cosNormalA * self.mass / collisionCounts[collisionIndex]
         if physicsB.gravity:

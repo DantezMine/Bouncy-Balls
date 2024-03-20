@@ -15,14 +15,15 @@ def SetupScene1(world):
 
     rect1 = GameObject.GameObject(scene)
     rect1.AddComponent(MovingCollision.MovingCollision())
-    rect1.GetComponent("Transform").position = Vec2(310,150)
-    rect1.GetComponent("Transform").rotation = 0.035
+    rect1.GetComponent("Transform").position = Vec2(360,150)
+    #rect1.GetComponent("Transform").rotation = 0.035
     rect1.AddComponent(ComponentPhysics.Physics())
     
     rect2 = GameObject.GameObject(scene)
     rect2.AddComponent(MovingCollision.MovingCollision())
     rect2.GetComponent("Transform").position = Vec2(400,250)
     rect2.AddComponent(ComponentPhysics.Physics())
+    rect2.GetComponent("Transform").rotation = 0.035
     rect2.GetComponent("Physics").constraintPosition = True
     rect2.GetComponent("Physics").constraintRotation = True
         

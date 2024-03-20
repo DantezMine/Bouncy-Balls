@@ -16,7 +16,4 @@ class MovingCollision(Component.Component):
         self.parent.GetComponent("Physics").gravity = True
     
     def Update(self,deltaTime):
-        collider = self.parent.GetComponent("Collider")
-        collider.DisplayCollider()
-        # if self.parent.GetID() == 1:
-        #     self.parent.GetComponent("Transform").position = Vec2(mouseX,mouseY)
+        self.parent.GetComponent("Collider").DisplayCollider()
