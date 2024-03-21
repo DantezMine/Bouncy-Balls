@@ -15,6 +15,7 @@ class Physics(Component.Component):
         self.acceleration = Vec2(0,0) #m/s^2
         self.netForce = Vec2(0,0) #N
         self.deltaV = Vec2(0,0)
+        self.deltaPos = Vec2(0,0)
         
         self.angularSpeed = 0 #radians/s
         self.angularAcc = 0 #radians/s^s
@@ -43,6 +44,10 @@ class Physics(Component.Component):
         #add deltaV from collision response
         self.velocity += self.deltaV
         self.deltaV    = Vec2(0,0)
+        
+        #move object by minimum interpenetrating collision distance along the normal of the collision
+        transform.position += self.deltaPos
+        self.deltaPos = Vec2(0,0)
         
         #Velocity verlet p.696
         nextPos = transform.position + self.velocity * deltaTime + self.acceleration * (deltaTime * deltaTime * 0.5)
@@ -146,6 +151,8 @@ class Physics(Component.Component):
         #divide total change in momentum by amount of collisions with the same object
         deltaP /= collisionCounts[collisionIndex]
         
+        deltaPos = normal * collisionInfo.collisionDistance / collisionCounts[collisionIndex]
+        
         cosNormalA = 1#math.cos(normal.AngleBetween(self.gravForce))
         cosNormalB = 1#math.cos(normal.AngleBetween(physicsB.gravForce))
         deltaAccA, deltaAccB = Vec2(0,0), Vec2(0,0) 
@@ -171,9 +178,19 @@ class Physics(Component.Component):
         self.deltaV += deltaVA
         self.deltaW += deltaWA
         self.AddForce(deltaAccA)
+        if moveA and moveB:
+            self.deltaPos -= normal * collisionInfo.collisionDistance/2.0
+        elif moveA and not moveB:
+            self.deltaPos -= normal * collisionInfo.collisionDistance
+        
         physicsB.deltaV += deltaVB
         physicsB.deltaW += deltaWB
         physicsB.AddForce(deltaAccB)
+        if moveA and moveB:
+            physicsB.deltaPos += normal * collisionInfo.collisionDistance/2.0
+        elif moveB and not moveA:
+            physicsB.deltaPos += normal * collisionInfo.collisionDistance
+        print("Collision Distance", collisionInfo.collisionDistance)
     
     #count how many collisions in the list are with the same object for each collision
     def DetermineSimilarCollisions(self, collisions, allCollisions):

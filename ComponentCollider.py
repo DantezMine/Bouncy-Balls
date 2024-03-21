@@ -3,13 +3,14 @@ import Component
 import math
 
 class CollisionInfo:
-    def __init__(self, collisionPoint, collisionNormal, otherNormal, edgeVec, objectA, objectB, collisionType, collisionResponseTag): #collisionType: "vertEdge","edge"
+    def __init__(self, collisionPoint, collisionDistance, collisionNormal, otherNormal, edgeVec, objectA, objectB, collisionType, collisionResponseTag): #collisionType: "vertEdge","edge"
         '''
         collisionType: "vertEdge","edge"
         collisionPoint if "edge": point furthest along the collision edge
         edgeVector points from "edge" collisionPoint to the other point of the edge
         '''
         self.collisionPoint = collisionPoint #Point where touch
+        self.collisionDistance = collisionDistance
         self.collisionNormal = collisionNormal #One Normal from touch
         self.otherNormal = otherNormal #opposing to collisionNormal
         self.edgeVector = edgeVec #only edge-edge
@@ -19,7 +20,7 @@ class CollisionInfo:
         self.collisionResponseTag = collisionResponseTag #tells the physics engine whether the collision requires a response. if either collider has a NoCollisionResponse in its list of tags, no collision response will happen
         
     def __str__(self):
-        return ("Object A: %s, Object B: %s, Collision Type: %s, Collision Point: %s, Collision Normal: %s, Other Normal: %s, Edge Vector: %s, Collision Response: %s"%(self.objectA.GetID(),self.objectB.GetID(),self.collisionType,self.collisionPoint,self.collisionNormal,self.otherNormal,self.edgeVector, self.collisionResponseTag))
+        return ("Object A: %s, Object B: %s, Collision Type: %s, Collision Point: %s, Collision Distance: %s, Collision Normal: %s, Other Normal: %s, Edge Vector: %s, Collision Response: %s"%(self.objectA.GetID(),self.objectB.GetID(),self.collisionType,self.collisionPoint,self.collisionDistance,self.collisionNormal,self.otherNormal,self.edgeVector, self.collisionResponseTag))
 
 class Collider(Component.Component):
     def __init__(self):
@@ -95,7 +96,8 @@ class ColliderCircle(Collider):
                 if (collider.radius + self.radius)**2 >= deltaLocalPosition.SqMag():
                     p2p = collCenter-center
                     collisionPoint = center+p2p.Normalize()*self.radius
-                    self.collisions.append(CollisionInfo(collisionPoint, (center - collisionPoint).Normalized(), None, None, self.parent, collider.parent, "vertEdge", collisionResponseTag))
+                    collisionDistance = (collCenter-center).Mag()
+                    self.collisions.append(CollisionInfo(collisionPoint, collisionDistance, (center - collisionPoint).Normalized(), None, None, self.parent, collider.parent, "vertEdge", collisionResponseTag))
         return
     
     def DisplayCollider(self):
@@ -154,8 +156,8 @@ class ColliderRect(Collider):
                 #keep going if edge normals are mostly opposed, should only ever be one possible per current edge
                 if normalAB.Dot(normalCD) < -1 + self._edgeAlignmentMargin:
                     #get closest vertex of other edge to current own edge
-                    Vc, onLine = Vec2(0,0), False
-                    Vc, onLine = self.ClosesetPointToSegment(Vc,onLine,A,B,[C,D])
+                    Vc, onLine, collisionDistance = Vec2(0,0), False, 0.0
+                    Vc, onLine, collisionDistance = self.ClosesetPointToSegment(Vc,onLine,collisionDistance,A,B,[C,D])
                     
                     #check if closest point to edge is inside the rectangle
                     inside = True
@@ -170,49 +172,51 @@ class ColliderRect(Collider):
                                         
                     #edge probably inside if true
                     if inside and (Vc-A).Dot(normalAB) < 0 and onLine:
-                        combinedVelocity = self.GetCombinedVelocity(collider,self.parent.GetComponent("Transform").position, collider.parent.GetComponent("Transform").position)
-                        print("ObjectA: %s, normal %s, combVel: %s, dot: %s" %(self.parent.GetID(), normalAB, combinedVelocity, normalAB.Dot(combinedVelocity)))
-                        #choose edge that faces away from combined velocity
-                        if normalAB.Dot(combinedVelocity) > 0:
+                        relativeVelocity = self.GetRelativeVelocity(collider,self.parent.GetComponent("Transform").position, collider.parent.GetComponent("Transform").position)
+                        print("ObjectA: %s, normal %s, combVel: %s, dot: %s" %(self.parent.GetID(), normalAB, relativeVelocity, normalAB.Dot(relativeVelocity)))
+                        #choose edge that faces away from relative velocity
+                        if normalAB.Dot(relativeVelocity) < 0:
                             #get closest vertex of current edge to other edge for additional info
-                            Pc, onLine_ = Vec2(0,0), False
-                            Pc, onLine_ = self.ClosesetPointToSegment(Pc,onLine_,C,D,[A,B])
+                            Pc, onLine_, d_ = Vec2(0,0), False, 0.0
+                            Pc, onLine_, d_ = self.ClosesetPointToSegment(Pc,onLine_,d_,C,D,[A,B])
                             edgeVec = (Pc + (Pc - A - B)).Normalize() * -1
-                            self.collisions.append(CollisionInfo(Pc,normalAB,normalCD, edgeVec, self.parent, collider.parent,"edge", collisionResponseTag))
+                            self.collisions.append(CollisionInfo(Pc,collisionDistance,normalAB,normalCD, edgeVec, self.parent, collider.parent,"edge", collisionResponseTag))
                             return True
         return False
     
-    def GetCombinedVelocity(self,collider,pointA,pointB): #points on the body whose velocity we use
+    def GetRelativeVelocity(self,collider,pointA,pointB): #points on the body whose velocity we use
         parentPhysics = self.parent.GetComponent("Physics")
         otherPhysics = collider.parent.GetComponent("Physics")
-        combinedVelocity = Vec2(0,0)
+        relativeVelocity = Vec2(0,0)
             
         #check if objects have a physics component whose velocity we need to consider
         if parentPhysics is not None:
             rAP_   =  -(pointA - self.parent.GetComponent("Transform").position).Perp()
             vAP    =   parentPhysics.velocity + rAP_ * parentPhysics.angularSpeed
-            combinedVelocity += vAP
+            relativeVelocity -= vAP
         if otherPhysics is not None:
             rBP_   =  -(pointB - otherPhysics.parent.GetComponent("Transform").position).Perp()
             vBP    =   otherPhysics.velocity + rBP_ * otherPhysics.angularSpeed
-            combinedVelocity -= vBP
+            relativeVelocity += vBP
         if parentPhysics is None and otherPhysics is None:
             return Vec2(0,0)
         
         #if the velocities cancel out perfectly, the velocity of the other object (with vertex inside this one) is chosen
-        if combinedVelocity.SqMag() == 0:
-            combinedVelocity = otherPhysics.velocity       
-        return combinedVelocity
+        if relativeVelocity.SqMag() == 0:
+            relativeVelocity = otherPhysics.velocity       
+        return relativeVelocity
             
-    def ClosesetPointToSegment(self,Vc,onLine,A,B,verts):
+    def ClosesetPointToSegment(self,Vc,onLine,d,A,B,verts):
         SqDC, SqDD = 0, 0
         SqDC, onLine = self.SqDistancePointSegment(SqDC,onLine,A,B,verts[0]) #square distance from C to edge
         SqDD, onLine = self.SqDistancePointSegment(SqDD,onLine,A,B,verts[1]) #square distance from D to edge
         if SqDC < SqDD:
             Vc = verts[0]
+            d = math.sqrt(SqDC)
         else:
             Vc = verts[1]
-        return (Vc, onLine)
+            d = math.sqrt(SqDD)
+        return (Vc, onLine, d)
 
                 
     def CheckCollisionVertEdge(self,collider,verts,collVerts):
@@ -230,17 +234,18 @@ class ColliderRect(Collider):
                     inside = False
                     break
             if inside:
-                combinedVelocity = self.GetCombinedVelocity(collider,p,p)
+                relativeVelocity = self.GetRelativeVelocity(collider,p,p)
                 minDot = 0 #i think there should always be a normal going the other way and thus at least one or two dot products should be below zero
                 minNormal = None
-                #find face whose normal most opposes direction of combined velocity, i.e. normal that was most likely hit
+                #find face whose normal most opposes direction of relative velocity, i.e. normal that was most likely hit
                 for i in range(len(verts)):
                     ab = verts[(i+1)%4]-verts[i]
                     n = Vec2(-ab.y,ab.x)
-                    if combinedVelocity.Dot(n) < minDot:
-                        minDot = combinedVelocity.Dot(n)
+                    if relativeVelocity.Dot(n) < minDot:
+                        minDot = relativeVelocity.Dot(n)
                         minNormal = n
-                self.collisions.append(CollisionInfo(p,minNormal.Normalized(), None, None, self.parent, collider.parent, "vertEdge", collisionResponseTag))
+                        collisionDistance = ((p-verts[i]).ProjectedOn(ab)).Mag()
+                self.collisions.append(CollisionInfo(p, collisionDistance, minNormal.Normalized(), None, None, self.parent, collider.parent, "vertEdge", collisionResponseTag))
                 return
     
     def GetVertices(self):#CCW starting top left if not rotated
