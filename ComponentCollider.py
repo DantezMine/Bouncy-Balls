@@ -167,11 +167,11 @@ class ColliderRect(Collider):
                             inside = False
                             break
                     
-                    
+                                        
                     #edge probably inside if true
                     if inside and (Vc-A).Dot(normalAB) < 0 and onLine:
                         combinedVelocity = self.GetCombinedVelocity(collider,self.parent.GetComponent("Transform").position, collider.parent.GetComponent("Transform").position)
-                        
+                        print("ObjectA: %s, normal %s, combVel: %s, dot: %s" %(self.parent.GetID(), normalAB, combinedVelocity, normalAB.Dot(combinedVelocity)))
                         #choose edge that faces away from combined velocity
                         if normalAB.Dot(combinedVelocity) > 0:
                             #get closest vertex of current edge to other edge for additional info

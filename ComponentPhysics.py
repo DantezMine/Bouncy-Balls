@@ -89,24 +89,6 @@ class Physics(Component.Component):
         if self.constraintRotation:
             self.netTorque = 0
         return self.netTorque/float(self.momentOfInertia)
-        
-        physicsB = collisionInfo.objectB.GetComponent("Physics")
-        if physicsB is None or physicsB.constraintPosition: #objectB will not move
-            deltaV = collisionInfo.collisionNormal * (-(self.restitution+1) * self.velocity.Dot(collisionInfo.collisionNormal))
-            self.velocity += deltaV
-            return
-        if self.constraintPosition: #self will not move
-            deltaV = collisionInfo.collisionNormal * (-(physicsB.restitution+1) * physicsB.velocity.Dot(collisionInfo.collisionNormal))
-            physicsB.velocity += deltaV
-            return
-        
-        topLeft  = (self.restitution+physicsB.restitution)/2 + 1
-        topRight =  physicsB.velocity.Dot(collisionInfo.collisionNormal) - self.velocity.Dot(collisionInfo.collisionNormal)
-        bottom   = (1.0/self.mass) + (1/physicsB.mass)
-        deltaP   =  collisionInfo.collisionNormal * (topLeft * topRight / bottom)
-        deltaV   =  deltaP / self.mass
-        self.velocity += deltaV
-        physicsB.velocity -= deltaV
     
     #Fully dynamic collision response as per Chris Hecker: http://www.chrishecker.com/images/e/e7/Gdmphys3.pdf with own modificiations
     def CollisionResponseDynamic(self,collisionInfo, collisionCounts, collisionIndex):        
@@ -178,12 +160,12 @@ class Physics(Component.Component):
         deltaWB = rBP_.Dot(normal*-deltaP)/physicsB.momentOfInertia * rotateB
         
         
-        # print("Collision Info: %s"%(collisionInfo))
-        # print("Object A ID: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(self.parent.GetID(),self.velocity,deltaVA,self.angularSpeed,deltaWA))
-        # print("moveA: %s, rotateA: %s"%(moveA,rotateA))
-        # print("Object B ID: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(physicsB.parent.GetID(),physicsB.velocity,deltaVB,physicsB.angularSpeed,deltaWB))
-        # print("moveB: %s, rotateB: %s"%(moveB,rotateB))
-        # print("")
+        print("Collision Info: %s"%(collisionInfo))
+        print("Object A ID: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(self.parent.GetID(),self.velocity,deltaVA,self.angularSpeed,deltaWA))
+        print("moveA: %s, rotateA: %s"%(moveA,rotateA))
+        print("Object B ID: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(physicsB.parent.GetID(),physicsB.velocity,deltaVB,physicsB.angularSpeed,deltaWB))
+        print("moveB: %s, rotateB: %s"%(moveB,rotateB))
+        print("")
         GlobalVars.update = False
         
         self.deltaV += deltaVA

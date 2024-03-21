@@ -16,7 +16,7 @@ def SetupScene1(world):
     rect1 = GameObject.GameObject(scene)
     rect1.AddComponent(MovingCollision.MovingCollision())
     rect1.GetComponent("Transform").position = Vec2(360,150)
-    #rect1.GetComponent("Transform").rotation = 0.035
+    # rect1.GetComponent("Transform").rotation = 0.035
     rect1.AddComponent(ComponentPhysics.Physics())
     
     rect2 = GameObject.GameObject(scene)
@@ -56,7 +56,7 @@ def SetupScene4(world):
     world.AddScene("scene",scene)
     ball1 = GameObject.GameObject(scene)
     ball1.AddComponent(ballscript.Ball())
-    ball1.GetComponent("Transform").position = Vec2(200,200)
+    ball1.GetComponent("Transform").position = Vec2(180,200)
     ball1.GetComponent("Ball").startVelocity = Vec2(0,100)
     ball2 = GameObject.GameObject(scene)
     ball2.AddComponent(ballscript.Ball())
