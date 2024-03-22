@@ -138,51 +138,94 @@ class ColliderRect(Collider):
         return
     
     def CheckCollisionEdge(self,collider,verts,collVerts):
-        #if furthest vertices aren't in range (within a safety margin), don't bother checking
-        # if (self.parent.GetComponent("Transform").position - collider.parent.GetComponent("Transform").position).SqMag() > self.sqRadius + collider.sqRadius + self._safetyMargin:
-        #     return False
         collisionResponseTag = False if self.tags.__contains__("NoCollisionResponse") or collider.tags.__contains__("NoCollisionResponse") else True
+        minEdgeEdgeDistance = 1000000
+        A_, B_, C_, D_ = None,None,None,None
         #check each edge against each other
         for i in range(len(verts)):
             A, B = verts[i], verts[(i+1)%len(verts)]
             AB = B-A
             normalAB = AB.Perp().Normalize()
-            
             for k in range(len(collVerts)):
                 C, D = collVerts[k], collVerts[(k+1)%len(collVerts)]
                 CD = D-C
                 normalCD = CD.Perp().Normalize()
                 
-                #keep going if edge normals are mostly opposed, should only ever be one possible per current edge
-                if normalAB.Dot(normalCD) < -1 + self._edgeAlignmentMargin:
-                    #get closest vertex of other edge to current own edge
-                    Vc, onLine, collisionDistance = Vec2(0,0), False, 0.0
-                    Vc, onLine, collisionDistance = self.ClosesetPointToSegment(Vc,onLine,collisionDistance,A,B,[C,D])
-                    
-                    #check if closest point to edge is inside the rectangle
-                    inside = True
-                    for i in range(len(verts)):
-                        _AB = verts[(i+1)%4] - verts[i]
-                        AVc = Vc - verts[i]
-                        normal = Vec2(-_AB.y,_AB.x)
-                        if AVc.Dot(normal) >= 0:
-                            inside = False
-                            break
-                    
-                                        
-                    #edge probably inside if true
-                    if inside and (Vc-A).Dot(normalAB) < 0 and onLine:
-                        relativeVelocity = self.GetRelativeVelocity(collider,self.parent.GetComponent("Transform").position, collider.parent.GetComponent("Transform").position)
-                        print("ObjectA: %s, normal %s, combVel: %s, dot: %s" %(self.parent.GetID(), normalAB, relativeVelocity, normalAB.Dot(relativeVelocity)))
-                        #choose edge that faces away from relative velocity
-                        if normalAB.Dot(relativeVelocity) < 0:
-                            #get closest vertex of current edge to other edge for additional info
-                            Pc, onLine_, d_ = Vec2(0,0), False, 0.0
-                            Pc, onLine_, d_ = self.ClosesetPointToSegment(Pc,onLine_,d_,C,D,[A,B])
-                            edgeVec = (Pc + (Pc - A - B)).Normalize() * -1
-                            self.collisions.append(CollisionInfo(Pc,collisionDistance,normalAB,normalCD, edgeVec, self.parent, collider.parent,"edge", collisionResponseTag))
-                            return True
+                #keep going if edge normals are mostly opposed, only one per edge
+                if not (normalAB.Dot(normalCD) < -1 + self._edgeAlignmentMargin):
+                    continue
+                #get closest vertex of other edge to current own edge
+                closestVertex, onLine, collisionDistance = Vec2(0,0), False, 0.0
+                closestVertex, onLine, collisionDistance = self.ClosesetPointToSegment(closestVertex,onLine,collisionDistance,A,B,C,D)
+                
+                #check if closest point projects onto the actual segment
+                if not onLine:
+                    continue
+                #check if the closest point to edge is inside the rectangle
+                if not self.IsPointInsideRect(closestVertex,verts):
+                    continue
+                
+                if collisionDistance < minEdgeEdgeDistance:
+                    minEdgeEdgeDistance = collisionDistance
+                    A_,B_,C_,D_ = A,B,C,D
+        
+        if A_ is not None:
+            #recalculate normals
+            AB = B-A
+            CD = D-C
+            normalAB = AB.Perp().Normalize()
+            normalCD = CD.Perp().Normalize()
+            
+            #get closest vertex of current edge to other edge for additional info
+            closestVertAB, onLine_, d_ = Vec2(0,0), False, 0.0
+            closestVertAB, onLine_, d_ = self.ClosesetPointToSegment(closestVertAB,onLine_,d_,C_,D_,A_,B_)
+            edgeVec = (closestVertAB + (closestVertAB - A_ - B_)).Normalize() * -1
+            
+            self.collisions.append(CollisionInfo(collisionPoint=closestVertAB,collisionDistance=minEdgeEdgeDistance,collisionNormal=normalAB,otherNormal=normalCD,edgeVec=edgeVec,objectA=self.parent,objectB=collider.parent,collisionType="edge",collisionResponseTag=collisionResponseTag))
+            return True
         return False
+            
+                
+    def CheckCollisionVertEdge(self,collider,verts,collVerts):
+        collisionResponseTag = False if self.tags.__contains__("NoCollisionResponse") or collider.tags.__contains__("NoCollisionResponse") else True
+        for p in collVerts:
+            #check if point is inside rectangle
+            if not self.IsPointInsideRect(p,verts):
+                continue
+            
+            closestNormal, normalDistance = Vec2(0,0), 0.0
+            closestNormal, normalDistance = self.ClosestEdgeToPoint(p,verts)
+            self.collisions.append(CollisionInfo(collisionPoint=p, collisionDistance=normalDistance, collisionNormal=closestNormal, otherNormal=None, edgeVec=None, objectA=self.parent, objectB=collider.parent, collisionType="vertEdge", collisionResponseTag=collisionResponseTag))
+            return
+    
+    def IsPointInsideRect(self,point,verts):
+        for i in range(len(verts)):
+            AB = verts[(i+1)%4] - verts[i]
+            AP = point - verts[i]
+            normal = Vec2(-AB.y,AB.x)
+            if AP.Dot(normal) >= 0:
+                return False
+        return True
+            
+    def SqDistanceEdgeEdge(self,A,B,C,D): #A,B is edge one and C,D is edge two
+        pass
+    
+    def ClosestEdgeToPoint(self,distance,p,verts):
+        pass
+    
+    def ClosesetPointToSegment(self,Vc,onLine,d,A,B,C,D):
+        SqDC, SqDD = 0, 0
+        SqDC, onLineC = self.SqDistancePointSegment(SqDC,onLine,A,B,C) #square distance from C to edge
+        SqDD, onLineD = self.SqDistancePointSegment(SqDD,onLine,A,B,D) #square distance from D to edge
+        if SqDC < SqDD:
+            Vc = C
+            d = math.sqrt(SqDC)
+            onLine = onLineC
+        else:
+            Vc = D
+            d = math.sqrt(SqDD)
+            onLine = onLineD
+        return (Vc, onLine, d)
     
     def GetRelativeVelocity(self,collider,pointA,pointB): #points on the body whose velocity we use
         parentPhysics = self.parent.GetComponent("Physics")
@@ -205,48 +248,6 @@ class ColliderRect(Collider):
         if relativeVelocity.SqMag() == 0:
             relativeVelocity = otherPhysics.velocity       
         return relativeVelocity
-            
-    def ClosesetPointToSegment(self,Vc,onLine,d,A,B,verts):
-        SqDC, SqDD = 0, 0
-        SqDC, onLine = self.SqDistancePointSegment(SqDC,onLine,A,B,verts[0]) #square distance from C to edge
-        SqDD, onLine = self.SqDistancePointSegment(SqDD,onLine,A,B,verts[1]) #square distance from D to edge
-        if SqDC < SqDD:
-            Vc = verts[0]
-            d = math.sqrt(SqDC)
-        else:
-            Vc = verts[1]
-            d = math.sqrt(SqDD)
-        return (Vc, onLine, d)
-
-                
-    def CheckCollisionVertEdge(self,collider,verts,collVerts):
-        #if furthest vertices aren't in range (within a safety margin), don't bother checking
-        # if (self.parent.GetComponent("Transform").position - collider.parent.GetComponent("Transform").position).SqMag() > self.sqRadius + collider.sqRadius + self._safetyMargin:
-        #     return
-        collisionResponseTag = False if self.tags.__contains__("NoCollisionResponse") or collider.tags.__contains__("NoCollisionResponse") else True
-        for p in collVerts:
-            inside = True
-            for i in range(len(verts)):
-                AB = verts[(i+1)%4] - verts[i]
-                AP = p - verts[i]
-                normal = Vec2(-AB.y,AB.x)
-                if AP.Dot(normal) >= 0:
-                    inside = False
-                    break
-            if inside:
-                relativeVelocity = self.GetRelativeVelocity(collider,p,p)
-                minDot = 0 #i think there should always be a normal going the other way and thus at least one or two dot products should be below zero
-                minNormal = None
-                #find face whose normal most opposes direction of relative velocity, i.e. normal that was most likely hit
-                for i in range(len(verts)):
-                    ab = verts[(i+1)%4]-verts[i]
-                    n = Vec2(-ab.y,ab.x)
-                    if relativeVelocity.Dot(n) < minDot:
-                        minDot = relativeVelocity.Dot(n)
-                        minNormal = n
-                        collisionDistance = ((p-verts[i]).ProjectedOn(ab)).Mag()
-                self.collisions.append(CollisionInfo(p, collisionDistance, minNormal.Normalized(), None, None, self.parent, collider.parent, "vertEdge", collisionResponseTag))
-                return
     
     def GetVertices(self):#CCW starting top left if not rotated
         transf = self.parent.GetComponent("Transform")

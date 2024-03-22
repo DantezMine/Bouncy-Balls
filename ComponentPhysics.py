@@ -9,13 +9,12 @@ class Physics(Component.Component):
         self.parent = None
         self.mass = 1.0 #kg
         self.momentOfInertia = 50 #
-        self.restitution = 0.1
+        self.restitution = 0.5
         
         self.velocity = Vec2(0,0) #m/s
         self.acceleration = Vec2(0,0) #m/s^2
         self.netForce = Vec2(0,0) #N
         self.deltaV = Vec2(0,0)
-        self.deltaPos = Vec2(0,0)
         
         self.angularSpeed = 0 #radians/s
         self.angularAcc = 0 #radians/s^s
@@ -45,10 +44,6 @@ class Physics(Component.Component):
         self.velocity += self.deltaV
         self.deltaV    = Vec2(0,0)
         
-        #move object by minimum interpenetrating collision distance along the normal of the collision
-        transform.position += self.deltaPos
-        self.deltaPos = Vec2(0,0)
-        
         #Velocity verlet p.696
         nextPos = transform.position + self.velocity * deltaTime + self.acceleration * (deltaTime * deltaTime * 0.5)
         nextVel = self.velocity + self.acceleration * (deltaTime * 0.5)
@@ -77,23 +72,6 @@ class Physics(Component.Component):
         self.angularAcc    = nextAngAcc
         self.netTorque     = 0
         
-    def ApplyForces(self):
-        if self.constraintPosition:
-            self.netForce = Vec2(0,0)
-        elif self.gravity:
-            self.netForce += self.gravForce * self.mass
-        return self.netForce/float(self.mass)
-    
-    def AddForce(self, force): #force is a Vec2
-        self.netForce += force
-    
-    def AddTorque(self,torque): #torque is a scalar
-        self.netTorque += torque
-        
-    def ApplyTorque(self):
-        if self.constraintRotation:
-            self.netTorque = 0
-        return self.netTorque/float(self.momentOfInertia)
     
     #Fully dynamic collision response as per Chris Hecker: http://www.chrishecker.com/images/e/e7/Gdmphys3.pdf with own modificiations
     def CollisionResponseDynamic(self,collisionInfo, collisionCounts, collisionIndex):        
@@ -113,20 +91,21 @@ class Physics(Component.Component):
             
         if collisionInfo.collisionType == "edge":
             #check whether COM falls over the edge and, if the other object can't move or rotate, don't allow for rotation, and align the faces
-            if collisionInfo.edgeVector.Dot(transfB.position-collisionInfo.collisionPoint) > 0:                
-                deltaPhi =  collisionInfo.collisionNormal.AngleBetween(collisionInfo.otherNormal*-1)
-                if rotateA and rotateB:
-                    self.deltaPhi     =  deltaPhi/2
-                    physicsB.deltaPhi = -deltaPhi/2
-                elif rotateA and not rotateB:
-                    self.deltaPhi     =  deltaPhi
-                elif not rotateA and rotateB:
-                    physicsB.deltaPhi = -deltaPhi
-                    
-                if not moveB and not rotateB: #object B is immovable and nonrotatable
-                    rotateA = 0
-                if not moveA and not rotateA: #self is immovable and nonrotatable
-                    rotateB = 0
+            if collisionInfo.edgeVector.Dot(transfB.position-collisionInfo.collisionPoint) > 0:
+                if not collisionInfo.collisionNormal == -collisionInfo.otherNormal:
+                    deltaPhi =  collisionInfo.collisionNormal.AngleBetween(collisionInfo.otherNormal*-1)
+                    if rotateA and rotateB:
+                        self.deltaPhi     =  deltaPhi/2
+                        physicsB.deltaPhi = -deltaPhi/2
+                    elif rotateA and not rotateB:
+                        self.deltaPhi     =  deltaPhi
+                    elif not rotateA and rotateB:
+                        physicsB.deltaPhi = -deltaPhi
+                        
+                    if not moveB and not rotateB: #object B is immovable and nonrotatable
+                        rotateA = 0
+                    if not moveA and not rotateA: #self is immovable and nonrotatable
+                        rotateB = 0
          
             
         normal = collisionInfo.collisionNormal
@@ -150,9 +129,7 @@ class Physics(Component.Component):
         
         #divide total change in momentum by amount of collisions with the same object
         deltaP /= collisionCounts[collisionIndex]
-        
-        deltaPos = normal * collisionInfo.collisionDistance / collisionCounts[collisionIndex]
-        
+                
         cosNormalA = 1#math.cos(normal.AngleBetween(self.gravForce))
         cosNormalB = 1#math.cos(normal.AngleBetween(physicsB.gravForce))
         deltaAccA, deltaAccB = Vec2(0,0), Vec2(0,0) 
@@ -178,19 +155,10 @@ class Physics(Component.Component):
         self.deltaV += deltaVA
         self.deltaW += deltaWA
         self.AddForce(deltaAccA)
-        if moveA and moveB:
-            self.deltaPos -= normal * collisionInfo.collisionDistance/2.0
-        elif moveA and not moveB:
-            self.deltaPos -= normal * collisionInfo.collisionDistance
         
         physicsB.deltaV += deltaVB
         physicsB.deltaW += deltaWB
         physicsB.AddForce(deltaAccB)
-        if moveA and moveB:
-            physicsB.deltaPos += normal * collisionInfo.collisionDistance/2.0
-        elif moveB and not moveA:
-            physicsB.deltaPos += normal * collisionInfo.collisionDistance
-        print("Collision Distance", collisionInfo.collisionDistance)
     
     #count how many collisions in the list are with the same object for each collision
     def DetermineSimilarCollisions(self, collisions, allCollisions):
@@ -202,3 +170,21 @@ class Physics(Component.Component):
                 if allCollisions[k].objectA.GetID() == objectBID and allCollisions[k].objectB.GetID() == ID:
                     collisionCounts[i] += 1.0
         return collisionCounts
+
+    def ApplyForces(self):
+        if self.constraintPosition:
+            self.netForce = Vec2(0,0)
+        elif self.gravity:
+            self.netForce += self.gravForce * self.mass
+        return self.netForce/float(self.mass)
+    
+    def AddForce(self, force): #force is a Vec2
+        self.netForce += force
+    
+    def AddTorque(self,torque): #torque is a scalar
+        self.netTorque += torque
+        
+    def ApplyTorque(self):
+        if self.constraintRotation:
+            self.netTorque = 0
+        return self.netTorque/float(self.momentOfInertia)
