@@ -14,13 +14,13 @@ class Ball(Component.Component):
         self.mousePosStart = None
         self.slingD = 40
         self.startVelocity = Vec2(0,0)
+        self.gravity = True
 
     def Start(self):
         circColl = ComponentCollider.ColliderCircle()
         circColl.SetCollider(50)
         self.parent.AddComponent(circColl)
-        self.parent.AddComponent(ComponentPhysics.Physics())
-        self.parent.GetComponent("Physics").velocity = self.startVelocity
+        #self.parent.GetComponent("Physics").gravity = self.gravity
         
     def Update(self, deltaTime):
         self.parent.GetComponent("Collider").DisplayCollider()

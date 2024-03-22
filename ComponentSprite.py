@@ -22,7 +22,7 @@ class Sprite(Component.Component):
         pushMatrix()
         translate(parentTransform.position.x, parentTransform.position.y)
         rotate(parentTransform.rotation)
-        image(sprite,-sprite.width*parentTransform.scale.x/2,-sprite.height*parentTransform.scale.y/2,sprite.width*parentTransform.scale.x,sprite.height*parentTransform.scale.y)
+        image(sprite,-sprite.width*parentTransform.scale/2,-sprite.height*parentTransform.scale/2,sprite.width*parentTransform.scale,sprite.height*parentTransform.scale)
         popMatrix()
     
 class SpriteBallSlime(Sprite):
@@ -41,5 +41,5 @@ class SpriteBallSlime(Sprite):
         pushMatrix()
         translate(parentTransform.position.x, parentTransform.position.y)
         rotate(parentTransform.rotation)
-        image(sprite,-sprite.width*parentTransform.scale.x/2,-sprite.height*parentTransform.scale.y/2,sprite.width*parentTransform.scale.x,sprite.height*parentTransform.scale.y)
+        image(sprite,-sprite.width*parentTransform.scale/2,-sprite.height*parentTransform.scale/2,sprite.width*parentTransform.scale,sprite.height*parentTransform.scale)
         popMatrix()

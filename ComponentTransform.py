@@ -8,7 +8,7 @@ class ComponentTransform(Component.Component):
         
         self.position = Vec2(0,0)
         self.rotation = 0 #in radians
-        self.scale = Vec2(1,1)
+        self.scale = 1
         self.up = Vec2(0,-1)
         self.forward = Vec2(1,0)
     
