@@ -91,21 +91,21 @@ class Physics(Component.Component):
             
         if collisionInfo.collisionType == "edge":
             #check whether COM falls over the edge and, if the other object can't move or rotate, don't allow for rotation, and align the faces
-            if collisionInfo.edgeVector.Dot(transfB.position-collisionInfo.collisionPoint) > 0:
-                if not collisionInfo.collisionNormal == -collisionInfo.otherNormal:
-                    deltaPhi =  collisionInfo.collisionNormal.AngleBetween(collisionInfo.otherNormal*-1)
-                    if rotateA and rotateB:
-                        self.deltaPhi     =  deltaPhi/2
-                        physicsB.deltaPhi = -deltaPhi/2
-                    elif rotateA and not rotateB:
-                        self.deltaPhi     =  deltaPhi
-                    elif not rotateA and rotateB:
-                        physicsB.deltaPhi = -deltaPhi
+            projectionAlignment = (collisionInfo.objectB.GetComponent("Transform").position-collisionInfo.collisionPoint).Normalized().Dot(collisionInfo.collisionNormal)
+            if projectionAlignment > 0.98 and projectionAlignment <= 1:
+                deltaPhi =  collisionInfo.collisionNormal.AngleBetween(collisionInfo.otherNormal*-1)
+                if rotateA and rotateB:
+                    self.deltaPhi     =  deltaPhi/2
+                    physicsB.deltaPhi = -deltaPhi/2
+                elif rotateA and not rotateB:
+                    self.deltaPhi     =  deltaPhi
+                elif not rotateA and rotateB:
+                    physicsB.deltaPhi = -deltaPhi
                         
-                    if not moveB and not rotateB: #object B is immovable and nonrotatable
-                        rotateA = 0
-                    if not moveA and not rotateA: #self is immovable and nonrotatable
-                        rotateB = 0
+                if not moveB and not rotateB: #object B is immovable and nonrotatable
+                    rotateA = 0
+                if not moveA and not rotateA: #self is immovable and nonrotatable
+                    rotateB = 0
          
             
         normal = collisionInfo.collisionNormal
@@ -129,7 +129,7 @@ class Physics(Component.Component):
         
         #divide total change in momentum by amount of collisions with the same object
         deltaP /= collisionCounts[collisionIndex]
-                
+
         cosNormalA = 1#math.cos(normal.AngleBetween(self.gravForce))
         cosNormalB = 1#math.cos(normal.AngleBetween(physicsB.gravForce))
         deltaAccA, deltaAccB = Vec2(0,0), Vec2(0,0) 
@@ -145,9 +145,9 @@ class Physics(Component.Component):
         
         
         print("Collision Info: %s"%(collisionInfo))
-        print("Object A ID: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(self.parent.GetID(),self.velocity,deltaVA,self.angularSpeed,deltaWA))
+        print("Object A ID: %s, Position: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(self.parent.GetID(),self.parent.GetComponent("Transform").position,self.velocity,deltaVA,self.angularSpeed,deltaWA))
         print("moveA: %s, rotateA: %s"%(moveA,rotateA))
-        print("Object B ID: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(physicsB.parent.GetID(),physicsB.velocity,deltaVB,physicsB.angularSpeed,deltaWB))
+        print("Object B ID: %s, Position: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(physicsB.parent.GetID(),physicsB.parent.GetComponent("Transform").position,physicsB.velocity,deltaVB,physicsB.angularSpeed,deltaWB))
         print("moveB: %s, rotateB: %s"%(moveB,rotateB))
         print("")
         GlobalVars.update = False

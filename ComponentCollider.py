@@ -3,24 +3,21 @@ import Component
 import math
 
 class CollisionInfo:
-    def __init__(self, collisionPoint, collisionDistance, collisionNormal, otherNormal, edgeVec, objectA, objectB, collisionType, collisionResponseTag): #collisionType: "vertEdge","edge"
+    def __init__(self, collisionPoint, collisionDistance, collisionNormal, otherNormal, objectA, objectB, collisionType, collisionResponseTag): #collisionType: "vertEdge","edge"
         '''
         collisionType: "vertEdge","edge"
-        collisionPoint if "edge": point furthest along the collision edge
-        edgeVector points from "edge" collisionPoint to the other point of the edge
         '''
         self.collisionPoint = collisionPoint #Point where touch
         self.collisionDistance = collisionDistance
         self.collisionNormal = collisionNormal #One Normal from touch
         self.otherNormal = otherNormal #opposing to collisionNormal
-        self.edgeVector = edgeVec #only edge-edge
         self.objectA = objectA #self.parent
         self.objectB = objectB #collider.parent
         self.collisionType = collisionType #best "vertEdge"
         self.collisionResponseTag = collisionResponseTag #tells the physics engine whether the collision requires a response. if either collider has a NoCollisionResponse in its list of tags, no collision response will happen
         
     def __str__(self):
-        return ("Object A: %s, Object B: %s, Collision Type: %s, Collision Point: %s, Collision Distance: %s, Collision Normal: %s, Other Normal: %s, Edge Vector: %s, Collision Response: %s"%(self.objectA.GetID(),self.objectB.GetID(),self.collisionType,self.collisionPoint,self.collisionDistance,self.collisionNormal,self.otherNormal,self.edgeVector, self.collisionResponseTag))
+        return ("Object A: %s, Object B: %s, Collision Type: %s, Collision Point: %s, Collision Distance: %s, Collision Normal: %s, Other Normal: %s, Collision Response: %s"%(self.objectA.GetID(),self.objectB.GetID(),self.collisionType,self.collisionPoint,self.collisionDistance,self.collisionNormal,self.otherNormal,self.collisionResponseTag))
 
 class Collider(Component.Component):
     def __init__(self):
@@ -50,23 +47,6 @@ class Collider(Component.Component):
     def _UpdateOnCollision(self):
         for collider in self.collisions:
             self.parent.UpdateOnCollision(collider)
-
-    def SqDistancePointSegment(self,sqD,onLine,A,B,P):
-        AB = B-A
-        AP = P-A
-        v = AP.ProjectedOn(AB)
-        #point is beyond A
-        if AB.Dot(v) < 0:
-            sqD = AP.SqMag()
-            onLine = False
-        #point is beyond B
-        elif AB.Dot(v) > 0 and AB.SqMag() < v.SqMag():
-            sqD = (P-B).SqMag()
-            onLine = False
-        else:
-            sqD = (P-A-v).SqMag()
-            onLine = True
-        return (sqD, onLine)
     
 class ColliderCircle(Collider):
     def SetCollider(self, radius = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = 1):
@@ -157,10 +137,10 @@ class ColliderRect(Collider):
                 #get closest vertex of other edge to current own edge
                 closestVertex, onLine, collisionDistance = Vec2(0,0), False, 0.0
                 closestVertex, onLine, collisionDistance = self.ClosesetPointToSegment(closestVertex,onLine,collisionDistance,A,B,C,D)
-                
                 #check if closest point projects onto the actual segment
                 if not onLine:
                     continue
+                
                 #check if the closest point to edge is inside the rectangle
                 if not self.IsPointInsideRect(closestVertex,verts):
                     continue
@@ -171,17 +151,20 @@ class ColliderRect(Collider):
         
         if A_ is not None:
             #recalculate normals
-            AB = B-A
-            CD = D-C
-            normalAB = AB.Perp().Normalize()
-            normalCD = CD.Perp().Normalize()
+            AB = B_-A_
+            CD = D_-C_
+            normalAB = AB.Perp().Normalized()
+            normalCD = CD.Perp().Normalized()
             
-            #get closest vertex of current edge to other edge for additional info
-            closestVertAB, onLine_, d_ = Vec2(0,0), False, 0.0
-            closestVertAB, onLine_, d_ = self.ClosesetPointToSegment(closestVertAB,onLine_,d_,C_,D_,A_,B_)
-            edgeVec = (closestVertAB + (closestVertAB - A_ - B_)).Normalize() * -1
-            
-            self.collisions.append(CollisionInfo(collisionPoint=closestVertAB,collisionDistance=minEdgeEdgeDistance,collisionNormal=normalAB,otherNormal=normalCD,edgeVec=edgeVec,objectA=self.parent,objectB=collider.parent,collisionType="edge",collisionResponseTag=collisionResponseTag))
+            #project other rectangle's COM onto edge
+            projectionCOM = (collider.parent.GetComponent("Transform").position-A_).ProjectedOn(AB)
+            if projectionCOM.Dot(AB) < 0:
+                collisionPoint = A_
+            elif projectionCOM.Dot(AB) > 0 and projectionCOM.SqMag() > AB.SqMag():
+                collisionPoint = B_
+            else:
+                collisionPoint = A_ + projectionCOM
+            self.collisions.append(CollisionInfo(collisionPoint=collisionPoint,collisionDistance=minEdgeEdgeDistance,collisionNormal=normalAB,otherNormal=normalCD,objectA=self.parent,objectB=collider.parent,collisionType="edge",collisionResponseTag=collisionResponseTag))
             return True
         return False
             
@@ -194,8 +177,8 @@ class ColliderRect(Collider):
                 continue
             
             closestNormal, normalDistance = Vec2(0,0), 0.0
-            closestNormal, normalDistance = self.ClosestEdgeToPoint(p,verts)
-            self.collisions.append(CollisionInfo(collisionPoint=p, collisionDistance=normalDistance, collisionNormal=closestNormal, otherNormal=None, edgeVec=None, objectA=self.parent, objectB=collider.parent, collisionType="vertEdge", collisionResponseTag=collisionResponseTag))
+            closestNormal, normalDistance = self.ClosestEdgeToPoint(closestNormal,normalDistance,p,verts)
+            self.collisions.append(CollisionInfo(collisionPoint=p, collisionDistance=normalDistance, collisionNormal=closestNormal, otherNormal=None, objectA=self.parent, objectB=collider.parent, collisionType="vertEdge", collisionResponseTag=collisionResponseTag))
             return
     
     def IsPointInsideRect(self,point,verts):
@@ -207,11 +190,23 @@ class ColliderRect(Collider):
                 return False
         return True
             
-    def SqDistanceEdgeEdge(self,A,B,C,D): #A,B is edge one and C,D is edge two
-        pass
-    
-    def ClosestEdgeToPoint(self,distance,p,verts):
-        pass
+    def ClosestEdgeToPoint(self,normal,distance, p,verts):
+        minSqDistance = 1000000
+        indx = 0
+        for i in range(len(verts)):
+            A, B = verts[i], verts[(i+1)%len(verts)]
+            AB = B-A
+            AP = p-A
+            v = AP.ProjectedOn(AB)
+            dist = (v+A-p).SqMag()
+            if dist < minSqDistance:
+                minSqDistance = dist
+                indx = i
+        
+        A, B = verts[indx], verts[(indx+1)%len(verts)]
+        AB = (B-A).Normalized()
+        distance = math.sqrt(minSqDistance)
+        return AB,distance
     
     def ClosesetPointToSegment(self,Vc,onLine,d,A,B,C,D):
         SqDC, SqDD = 0, 0
@@ -226,6 +221,23 @@ class ColliderRect(Collider):
             d = math.sqrt(SqDD)
             onLine = onLineD
         return (Vc, onLine, d)
+
+    def SqDistancePointSegment(self,sqD,onLine,A,B,P):
+        AB = B-A
+        AP = P-A
+        v = AP.ProjectedOn(AB)
+        #point is beyond A
+        if AB.Dot(v) < 0:
+            sqD = AP.SqMag()
+            onLine = False
+        #point is beyond B
+        elif AB.Dot(v) > 0 and AB.SqMag() < v.SqMag():
+            sqD = (P-B).SqMag()
+            onLine = False
+        else:
+            sqD = (P-A-v).SqMag()
+            onLine = True
+        return (sqD, onLine)
     
     def GetRelativeVelocity(self,collider,pointA,pointB): #points on the body whose velocity we use
         parentPhysics = self.parent.GetComponent("Physics")
