@@ -104,14 +104,39 @@ class ColliderRect(Collider):
             if collider.parent.GetID() == self.parent.GetID():
                 continue
             if collider.colliderType == "Rect":
-                verts = self.GetVertices()
                 collVerts = collider.GetVertices()
+                verts = self.GetVertices()
                 
                 #edges have priority over vertex collisions
                 if self.CheckCollisionEdge(collider,verts,collVerts):
                     continue
                 self.CheckCollisionVertEdge(collider,verts,collVerts)
         return
+    
+    def CheckCollisionCircle(self, colliders):
+        verts = self.GetVertices()
+        for collider in colliders:
+            if collider.colliderType == "Circle":
+                collTransform = collider.parent.GetComponent("Transform")
+                collCenter = collTransform.position
+                radSq = collider.radius**2
+                for i in range(len(verts)):
+                    A, B = verts[i], verts[(i+1)%len(verts)]
+                    
+                    SqDP, onLine = self.SqDistancePointSegment(SqDP,onLine,A,B,collCenter)
+                    if SqDP <= radSq:
+                        if onLine:
+                            AB = B-A
+                            AP = collCenter-A
+                            pC = A + AP.ProjectedOn(AB)
+                            collNormal = (collCenter - pC).Normalize()
+                            self.collisions.append(CollisionInfo(pC, collNormal, -collNormal, None, self.parent, collider.parent, "edge"))
+                        else:
+                            if (collCenter-A).SqMag() <= radSq:
+                                collNormal = (collCenter-A).Normalize()
+                                self.collisions.append(CollisionInfo(pC, collNormal, None, None, self.parent. collider.parent, "vertEdge"))
+                            else:
+                                collNormal = collCenter-B
     
     def CheckCollisionEdge(self,collider,verts,collVerts):
         #if furthest vertices aren't in range (within a safety margin), don't bother checking
