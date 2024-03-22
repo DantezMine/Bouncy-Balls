@@ -73,7 +73,9 @@ def SetupScene5(world):
     world.AddScene("scene",scene)
     ball = GameObject.GameObject(scene)
     ball.AddComponent(ballscript.Ball())
-    ball.GetComponent("Transform").position = Vec2(200,200)
+    ball.AddComponent(ComponentPhysics.Physics())
+    ball.GetComponent("Physics").gravity = True
+    ball.GetComponent("Transform").position = Vec2(280,200)
     
     rect = GameObject.GameObject(scene)
     rect.AddComponent(MovingCollision.MovingCollision())
