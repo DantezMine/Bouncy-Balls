@@ -124,43 +124,46 @@ class ColliderRect(Collider):
         self._UpdateOnCollision()
         
     def CheckCollision(self, colliders):
+        verts = self.GetVertices()
         for collider in colliders:
             if collider.parent.GetID() == self.parent.GetID():
                 continue
             if collider.colliderType == "Rect":
                 collVerts = collider.GetVertices()
-                verts = self.GetVertices()
                 
                 #edges have priority over vertex collisions
                 if self.CheckCollisionEdge(collider,verts,collVerts):
                     continue
                 self.CheckCollisionVertEdge(collider,verts,collVerts)
+            elif collider.colliderType == "Circle":
+                self.CheckCollisionCircle(collider, verts)
         return
     
-    def CheckCollisionCircle(self, colliders):
-        verts = self.GetVertices()
-        for collider in colliders:
-            if collider.colliderType == "Circle":
-                collTransform = collider.parent.GetComponent("Transform")
-                collCenter = collTransform.position
-                radSq = collider.radius**2
-                for i in range(len(verts)):
-                    A, B = verts[i], verts[(i+1)%len(verts)]
-                    
-                    SqDP, onLine = self.SqDistancePointSegment(SqDP,onLine,A,B,collCenter)
-                    if SqDP <= radSq:
-                        if onLine:
-                            AB = B-A
-                            AP = collCenter-A
-                            pC = A + AP.ProjectedOn(AB)
-                            collNormal = (collCenter - pC).Normalize()
-                            self.collisions.append(CollisionInfo(pC, collNormal, -collNormal, None, self.parent, collider.parent, "edge"))
-                        else:
-                            if (collCenter-A).SqMag() <= radSq:
-                                collNormal = (collCenter-A).Normalize()
-                                self.collisions.append(CollisionInfo(pC, collNormal, None, None, self.parent. collider.parent, "vertEdge"))
-                            else:
-                                collNormal = collCenter-B
+    def CheckCollisionCircle(self, collider, verts):
+        collisionResponseTag = False if self.tags.__contains__("NoCollisionResponse") or collider.tags.__contains__("NoCollisionResponse") else True
+        collTransform = collider.parent.GetComponent("Transform")
+        collCenter = collTransform.position
+        radSq = collider.radius**2
+        for i in range(len(verts)):
+            A, B = verts[i], verts[(i+1)%len(verts)]
+            SqDP, onLine = None, None
+            
+            SqDP, onLine = self.SqDistancePointSegment(SqDP,onLine,A,B,collCenter)
+            if SqDP <= radSq:
+                if onLine:
+                    AB = B-A
+                    AP = collCenter-A
+                    pC = A + AP.ProjectedOn(AB)
+                    collNormal = (collCenter - pC).Normalize()
+                    self.collisions.append(CollisionInfo(pC, 0, collNormal, -collNormal, AB, self.parent, collider.parent, "edge", collisionResponseTag))
+                else:
+                    if (collCenter-A).SqMag() <= radSq:
+                        collNormal = (collCenter-A).Normalize()
+                        self.collisions.append(CollisionInfo(A, 0, collNormal, None, None, self.parent, collider.parent, "vertEdge", collisionResponseTag))
+                    else:
+                        collNormal = (collCenter-B).Normalize()
+                        self.collisions.append(CollisionInfo(B, 0, collNormal, None, None, self.parent, collider.parent, "vertEdge", collisionResponseTag))
+        return
     
     def CheckCollisionEdge(self,collider,verts,collVerts):
         collisionResponseTag = False if self.tags.__contains__("NoCollisionResponse") or collider.tags.__contains__("NoCollisionResponse") else True
