@@ -88,35 +88,19 @@ class Physics(Component.Component):
             rotateB = 0
         if self.constraintRotation: #self is nonrotatable
             rotateA = 0
-            
-        if collisionInfo.collisionType == "edge":
-            #check whether COM falls over the edge and, if the other object can't move or rotate, don't allow for rotation, and align the faces
-            projectionAlignment = (collisionInfo.objectB.GetComponent("Transform").position-collisionInfo.collisionPoint).Normalized().Dot(collisionInfo.collisionNormal)
-            if projectionAlignment > 0.98 and projectionAlignment <= 1:
-                deltaPhi =  collisionInfo.collisionNormal.AngleBetween(collisionInfo.otherNormal*-1)
-                if rotateA and rotateB:
-                    self.deltaPhi     =  deltaPhi/2
-                    physicsB.deltaPhi = -deltaPhi/2
-                elif rotateA and not rotateB:
-                    self.deltaPhi     =  deltaPhi
-                elif not rotateA and rotateB:
-                    physicsB.deltaPhi = -deltaPhi
-                        
-                if not moveB and not rotateB: #object B is immovable and nonrotatable
-                    rotateA = 0
-                if not moveA and not rotateA: #self is immovable and nonrotatable
-                    rotateB = 0
-         
-            
+        
+        collisionPointA = collisionInfo.collisionPoint
+        collisionPointB = collisionInfo.otherCollisionPoint
+        
         normal = collisionInfo.collisionNormal
-        rAP_   =  (collisionInfo.collisionPoint - transfA.position).Perp()
-        rBP_   =  (collisionInfo.collisionPoint - transfB.position).Perp()
+        rAP_   =  (collisionPointA - transfA.position).Perp()
+        rBP_   =  (collisionPointB - transfB.position).Perp()
         vAP    =   self.velocity + rAP_ * self.angularSpeed
         vBP    =   physicsB.velocity + rBP_ * physicsB.angularSpeed
         vAB    =   vAP - vBP
         top    = -(1 + (self.restitution+physicsB.restitution)/2.0) * vAB.Dot(normal)
         
-        #if an object is immovable, its mass approaches infinity, thus 1/mass goes to zero          
+        #if an object is immovable, its mass approaches infinity, thus 1/mass goes to zero
         bottomLeftLeft = 1.0/self.mass if moveA else 0.0
         bottomLeftRight = 1.0/physicsB.mass if moveB else 0.0
         bottomLeft = normal.Dot(normal*(bottomLeftLeft+bottomLeftRight))
@@ -126,17 +110,19 @@ class Physics(Component.Component):
         bottomRight = (rBP_.Dot(normal)**2)/physicsB.momentOfInertia if rotateB else 0.0
         
         deltaP = top / (bottomLeft + bottomMid + bottomRight)
-        
         #divide total change in momentum by amount of collisions with the same object
         deltaP /= collisionCounts[collisionIndex]
-
-        cosNormalA = 1#math.cos(normal.AngleBetween(self.gravForce))
-        cosNormalB = 1#math.cos(normal.AngleBetween(physicsB.gravForce))
-        deltaAccA, deltaAccB = Vec2(0,0), Vec2(0,0) 
+            
+        #angle between negative normal and gravity
+        alpha = (-normal).AngleBetween(self.gravForce)
+        if alpha > math.pi/2.0:
+            alpha -= math.pi/2.0
+        forceNormal = normal * -self.gravForce.Mag() * math.cos(alpha)
+        forceNormalA, forceNormalB = Vec2(0,0), Vec2(0,0)
         if self.gravity:
-            deltaAccA = -self.gravForce * cosNormalA * self.mass / collisionCounts[collisionIndex]
+            forceNormalA = forceNormal * self.mass / collisionCounts[collisionIndex]
         if physicsB.gravity:
-            deltaAccB = -physicsB.gravForce * cosNormalB * physicsB.mass / collisionCounts[collisionIndex]
+            forceNormalB = -forceNormal * physicsB.mass / collisionCounts[collisionIndex]
                 
         deltaVA = normal * (deltaP/self.mass) * moveA
         deltaVB = normal * (-deltaP/physicsB.mass) * moveB
@@ -152,13 +138,17 @@ class Physics(Component.Component):
         print("")
         GlobalVars.update = False
         
+        print("forceNormal", forceNormal, "alpha", math.degrees(alpha))
+        
         self.deltaV += deltaVA
         self.deltaW += deltaWA
-        self.AddForce(deltaAccA)
+        print("A: ", forceNormalA, collisionPointA)
+        self.AddForce(forceNormalA, collisionPointA)
         
         physicsB.deltaV += deltaVB
         physicsB.deltaW += deltaWB
-        physicsB.AddForce(deltaAccB)
+        print("B: ", forceNormalB, collisionPointB)
+        physicsB.AddForce(forceNormalB, collisionPointB)
     
     #count how many collisions in the list are with the same object for each collision
     def DetermineSimilarCollisions(self, collisions, allCollisions):
@@ -178,8 +168,19 @@ class Physics(Component.Component):
             self.netForce += self.gravForce * self.mass
         return self.netForce/float(self.mass)
     
-    def AddForce(self, force): #force is a Vec2
+    def AddForce(self, force, point = None): #force is a Vec2
         self.netForce += force
+        if point is None:
+            return
+        #calculate distance from force direction to COM
+        posCOM = self.parent.GetComponent("Transform").position
+        rAP = posCOM - point
+        phi = force.AngleBetween(rAP)
+        distance = rAP.Mag()*math.sin(phi)
+        #torque = distance x force
+        torque = force.Mag() * distance
+        self.AddTorque(torque)
+        line(point.x,point.y,point.x+force.x,point.y+force.y)
     
     def AddTorque(self,torque): #torque is a scalar
         self.netTorque += torque

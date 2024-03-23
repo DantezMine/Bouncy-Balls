@@ -3,11 +3,12 @@ import Component
 import math
 
 class CollisionInfo:
-    def __init__(self, collisionPoint, collisionDistance, collisionNormal, otherNormal, objectA, objectB, collisionType, collisionResponseTag): #collisionType: "vertEdge","edge"
+    def __init__(self, collisionPoint, otherCollisionPoint, collisionDistance, collisionNormal, otherNormal, objectA, objectB, collisionType, collisionResponseTag): #collisionType: "vertEdge","edge"
         '''
         collisionType: "vertEdge","edge"
         '''
         self.collisionPoint = collisionPoint #Point where touch
+        self.otherCollisionPoint = otherCollisionPoint #Point where touch if "edge"
         self.collisionDistance = collisionDistance
         self.collisionNormal = collisionNormal #One Normal from touch
         self.otherNormal = otherNormal #opposing to collisionNormal
@@ -17,7 +18,7 @@ class CollisionInfo:
         self.collisionResponseTag = collisionResponseTag #tells the physics engine whether the collision requires a response. if either collider has a NoCollisionResponse in its list of tags, no collision response will happen
         
     def __str__(self):
-        return ("Object A: %s, Object B: %s, Collision Type: %s, Collision Point: %s, Collision Distance: %s, Collision Normal: %s, Other Normal: %s, Collision Response: %s"%(self.objectA.GetID(),self.objectB.GetID(),self.collisionType,self.collisionPoint,self.collisionDistance,self.collisionNormal,self.otherNormal,self.collisionResponseTag))
+        return ("Object A: %s, Object B: %s, Collision Type: %s, Collision Point: %s, Other Collision Point: %s Collision Distance: %s, Collision Normal: %s, Other Normal: %s, Collision Response: %s"%(self.objectA.GetID(),self.objectB.GetID(),self.collisionType,self.collisionPoint,self.otherCollisionPoint,self.collisionDistance,self.collisionNormal,self.otherNormal,self.collisionResponseTag))
 
 class Collider(Component.Component):
     def __init__(self):
@@ -28,7 +29,7 @@ class Collider(Component.Component):
                 
         self.collisions = []
         self._safetyMargin = 10
-        self._edgeAlignmentMargin = 0.05
+        self._edgeAlignmentMargin = 0.01
     
     def SetCollider(self, colliderType,localPosition,localRotation,localScale): #tried to use super(), but shit doesn't work and I don't understand why
         self.colliderType = colliderType
@@ -156,15 +157,12 @@ class ColliderRect(Collider):
             normalAB = AB.Perp().Normalized()
             normalCD = CD.Perp().Normalized()
             
-            #project other rectangle's COM onto edge
-            projectionCOM = (collider.parent.GetComponent("Transform").position-A_).ProjectedOn(AB)
-            if projectionCOM.Dot(AB) < 0:
-                collisionPoint = A_
-            elif projectionCOM.Dot(AB) > 0 and projectionCOM.SqMag() > AB.SqMag():
-                collisionPoint = B_
-            else:
-                collisionPoint = A_ + projectionCOM
-            self.collisions.append(CollisionInfo(collisionPoint=collisionPoint,collisionDistance=minEdgeEdgeDistance,collisionNormal=normalAB,otherNormal=normalCD,objectA=self.parent,objectB=collider.parent,collisionType="edge",collisionResponseTag=collisionResponseTag))
+            #project COM on other edge segment
+            projectionCOMA = self.ClosestPointOnSegment(C_,D_,self.parent.GetComponent("Transform").position)
+            collisionPointA = projectionCOMA
+            projectionCOMB = self.ClosestPointOnSegment(A_,B_,collider.parent.GetComponent("Transform").position)
+            collisionPointB = projectionCOMB
+            self.collisions.append(CollisionInfo(collisionPoint=collisionPointA,otherCollisionPoint=collisionPointB,collisionDistance=minEdgeEdgeDistance,collisionNormal=normalAB,otherNormal=normalCD,objectA=self.parent,objectB=collider.parent,collisionType="edge",collisionResponseTag=collisionResponseTag))
             return True
         return False
             
@@ -178,7 +176,7 @@ class ColliderRect(Collider):
             
             closestNormal, normalDistance = Vec2(0,0), 0.0
             closestNormal, normalDistance = self.ClosestEdgeToPoint(closestNormal,normalDistance,p,verts)
-            self.collisions.append(CollisionInfo(collisionPoint=p, collisionDistance=normalDistance, collisionNormal=closestNormal, otherNormal=None, objectA=self.parent, objectB=collider.parent, collisionType="vertEdge", collisionResponseTag=collisionResponseTag))
+            self.collisions.append(CollisionInfo(collisionPoint=p, otherCollisionPoint=p, collisionDistance=normalDistance, collisionNormal=closestNormal, otherNormal=None, objectA=self.parent, objectB=collider.parent, collisionType="vertEdge", collisionResponseTag=collisionResponseTag))
             return
     
     def IsPointInsideRect(self,point,verts):
@@ -190,6 +188,16 @@ class ColliderRect(Collider):
                 return False
         return True
             
+    def ClosestPointOnSegment(self,A,B,point):
+        AB = B-A
+        projectionPoint = (point-A).ProjectedOn(AB)
+        if projectionPoint.Dot(AB) < 0:
+            return A
+        elif projectionPoint.Dot(AB) > 0 and projectionPoint.SqMag() > AB.SqMag():
+            return B
+        else:
+            return A + projectionPoint
+        
     def ClosestEdgeToPoint(self,normal,distance, p,verts):
         minSqDistance = 1000000
         indx = 0
@@ -204,9 +212,9 @@ class ColliderRect(Collider):
                 indx = i
         
         A, B = verts[indx], verts[(indx+1)%len(verts)]
-        AB = (B-A).Normalized()
+        normal = (B-A).Normalized().Perp()
         distance = math.sqrt(minSqDistance)
-        return AB,distance
+        return normal,distance
     
     def ClosesetPointToSegment(self,Vc,onLine,d,A,B,C,D):
         SqDC, SqDD = 0, 0
