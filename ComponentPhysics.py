@@ -11,6 +11,8 @@ class Physics(Component.Component):
         self.momentOfInertia = 50 #
         self.restitution = 0.5
         
+        self.deltaPos = Vec2(0,0)
+        self.prevPosition = Vec2(0,0)
         self.velocity = Vec2(0,0) #m/s
         self.acceleration = Vec2(0,0) #m/s^2
         self.netForce = Vec2(0,0) #N
@@ -26,23 +28,36 @@ class Physics(Component.Component):
         self.constraintRotation = False
         self.gravity = False
         self.gravForce = Vec2(0,300)
+    
+    def Start(self):
+        self.prevPosition = self.parent.GetComponent("Transform").position
         
     def Update(self,deltaTime, allCollisions, mode):
         if mode == 0:
+            self.TempNextState(deltaTime)
+        if mode == 1:
             collisions = self.parent.GetComponent("Collider").collisions
             collisionCounts = self.DetermineSimilarCollisions(collisions, allCollisions)
             for i in range(len(collisions)):
                 if collisions[i].collisionResponseTag:
                     self.CollisionResponseDynamic(collisions[i], collisionCounts, i)
-        elif mode == 1:
+        elif mode == 2:
             self.VelocityVerletIntegration(deltaTime)
+    
+    def TempNextState(self,deltaTime):
+        transform          = self.parent.GetComponent("Transform")
+        self.tempNextPos   = transform.position + self.velocity * deltaTime + self.acceleration * (deltaTime * deltaTime * 0.5)
+        self.tempNextAngle = transform.rotation + self.angularSpeed * deltaTime + self.angularAcc * (deltaTime * deltaTime * 0.5)
     
     def VelocityVerletIntegration(self,deltaTime):
         transform = self.parent.GetComponent("Transform")
+        self.prevPosition = transform.position
             
         #add deltaV from collision response
         self.velocity += self.deltaV
         self.deltaV    = Vec2(0,0)
+        # transform.position += self.deltaPos
+        # self.deltaPos = Vec2(0,0)
         
         #Velocity verlet p.696
         nextPos = transform.position + self.velocity * deltaTime + self.acceleration * (deltaTime * deltaTime * 0.5)
@@ -55,11 +70,9 @@ class Physics(Component.Component):
         self.acceleration  = nextAcc
         self.netForce      = Vec2(0,0)
         
-        #add deltaW and deltaPhi from collision response
-        transform.Rotate(self.deltaPhi)
+        #add deltaW from collision response
         self.angularSpeed += self.deltaW
         self.deltaW   = 0
-        self.deltaPhi = 0
         
         #Solving the angular equations of motion in two dimension p.700
         nextAngle    = transform.rotation + self.angularSpeed * deltaTime + self.angularAcc * (deltaTime * deltaTime * 0.5)
@@ -74,7 +87,7 @@ class Physics(Component.Component):
         
     
     #Fully dynamic collision response as per Chris Hecker: http://www.chrishecker.com/images/e/e7/Gdmphys3.pdf with own modificiations
-    def CollisionResponseDynamic(self,collisionInfo, collisionCounts, collisionIndex):        
+    def CollisionResponseDynamic(self,collisionInfo, collisionCounts, collisionIndex):
         physicsB = collisionInfo.objectB.GetComponent("Physics")
         transfA = self.parent.GetComponent("Transform")
         transfB = physicsB.parent.GetComponent("Transform")
@@ -117,8 +130,9 @@ class Physics(Component.Component):
         alpha = (-normal).AngleBetween(self.gravForce)
         if alpha > math.pi/2.0:
             alpha -= math.pi/2.0
-        forceNormal = normal * -self.gravForce.Mag() * math.cos(alpha)
+            
         forceNormalA, forceNormalB = Vec2(0,0), Vec2(0,0)
+        forceNormal = normal * -self.gravForce.Mag() * math.cos(alpha)
         if self.gravity:
             forceNormalA = forceNormal * self.mass / collisionCounts[collisionIndex]
         if physicsB.gravity:
@@ -128,6 +142,15 @@ class Physics(Component.Component):
         deltaVB = normal * (-deltaP/physicsB.mass) * moveB
         deltaWA = rAP_.Dot(normal*deltaP)/self.momentOfInertia * rotateA
         deltaWB = rBP_.Dot(normal*-deltaP)/physicsB.momentOfInertia * rotateB
+        
+        # deltaPosA,deltaPosB = Vec2(0,0),Vec2(0,0)
+        # collisionInfo.collisionOffset /= collisionCounts[collisionIndex]
+        # if moveA and moveB:
+        #     deltaPosA = collisionInfo.collisionOffset/2.0
+        #     deltaPosB = -collisionInfo.collisionOffset/2.0
+        # elif moveA:
+        #     deltaPosA = collisionInfo.collisionOffset
+        # elif moveB: deltaPosB = -collisionInfo.collisionOffset
         
         
         print("Collision Info: %s"%(collisionInfo))
@@ -139,15 +162,19 @@ class Physics(Component.Component):
         GlobalVars.update = False
         
         print("forceNormal", forceNormal, "alpha", math.degrees(alpha))
+        print("A: ", forceNormalA, collisionPointA)
+        print("B: ", forceNormalB, collisionPointB)
+        # print("Collision Offsets: %s %s"%(deltaPosA, deltaPosB))
+        print("")
         
         self.deltaV += deltaVA
         self.deltaW += deltaWA
-        print("A: ", forceNormalA, collisionPointA)
+        # self.deltaPos += deltaPosA
         self.AddForce(forceNormalA, collisionPointA)
         
         physicsB.deltaV += deltaVB
         physicsB.deltaW += deltaWB
-        print("B: ", forceNormalB, collisionPointB)
+        # physicsB.deltaPos += deltaPosB
         physicsB.AddForce(forceNormalB, collisionPointB)
     
     #count how many collisions in the list are with the same object for each collision
@@ -175,12 +202,14 @@ class Physics(Component.Component):
         #calculate distance from force direction to COM
         posCOM = self.parent.GetComponent("Transform").position
         rAP = posCOM - point
+        sign = 1 if rAP.Dot(force.Perp()) > 0 else -1
         phi = force.AngleBetween(rAP)
         distance = rAP.Mag()*math.sin(phi)
         #torque = distance x force
-        torque = force.Mag() * distance
+        torque = force.Mag() * distance * sign
         self.AddTorque(torque)
-        line(point.x,point.y,point.x+force.x,point.y+force.y)
+        print("Torque from force %s at point %s with angle %s: %s"%(force,point,phi,torque))
+        #line(point.x,point.y,point.x+force.x,point.y+force.y)
     
     def AddTorque(self,torque): #torque is a scalar
         self.netTorque += torque

@@ -1,10 +1,10 @@
 import Scene
 import GameObject
-import BehaviorTesting
+from lib import BehaviorTesting
 import ComponentCollider
 import ComponentPhysics
 import ComponentSprite
-import ballscript
+from lib import ballscript
 from Vector import Vec2
 
 from lib import MovingCollision
@@ -21,7 +21,7 @@ def SetupScene1(world):
     
     rect2 = GameObject.GameObject(scene)
     rect2.AddComponent(MovingCollision.MovingCollision())
-    rect2.GetComponent("Transform").position = Vec2(325,250)
+    rect2.GetComponent("Transform").position = Vec2(320,250)
     rect2.AddComponent(ComponentPhysics.Physics())
     rect2.GetComponent("Transform").rotation = 0.785
     rect2.GetComponent("Physics").constraintPosition = True

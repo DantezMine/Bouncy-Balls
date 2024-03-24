@@ -27,10 +27,10 @@ class World:
             return True
         return False
     
-    def UpdateActiveScene(self,deltaTime = None):
+    def UpdateActiveScene(self,deltaTime = None, updateFrequency = 1):
         if deltaTime is None:
             deltaTime = self.CalculateDeltaTime()
-        self.__activeScene.UpdateScene(deltaTime)
+        self.__activeScene.UpdateScene(deltaTime, updateFrequency)
     
     def StartActiveScene(self):
         self.__activeScene.StartScene()
