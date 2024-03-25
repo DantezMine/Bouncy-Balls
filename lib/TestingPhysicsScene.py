@@ -2,6 +2,7 @@ import Scene
 import GameObject
 import ComponentPhysics
 from Vector import Vec2
+import ComponentBall
 
 from lib import MovingCollision
 
