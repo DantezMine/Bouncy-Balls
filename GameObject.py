@@ -23,6 +23,9 @@ class GameObject:
         print("Component doesn't exist in object %d"%self.__id)
         return False
     
+    def RemoveFromScene(self):
+        self.__parentScene.RemoveGameObject(self)
+    
     def GetComponent(self,compName):
         if self.__components.__contains__(compName):
             return self.__components[compName]
