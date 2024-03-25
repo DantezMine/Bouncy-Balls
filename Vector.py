@@ -38,6 +38,10 @@ class Vec2:
     def Perp(self):
         return Vec2(-self.y,self.x)
     
+    def Cross2D(self,other): #returns a float, or the z component of the cross product
+        '''returns a float, the z component of the cross product'''
+        return self.x*other.y-self.y*other.x
+    
     def Normalize(self):
         mag = self.Mag()
         if mag == 0:

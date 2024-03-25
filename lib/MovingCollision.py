@@ -2,6 +2,7 @@ import ComponentSprite
 import ComponentCollider
 import ComponentPhysics
 import Component
+from lib import GlobalVars
 from Vector import Vec2
 
 class MovingCollision(Component.Component):

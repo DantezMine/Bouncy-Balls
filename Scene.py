@@ -35,17 +35,22 @@ class Scene:
                 outList.append(comp)
         return outList
     
-    def UpdateScene(self,deltaTime):
+    def UpdateScene(self,deltaTime, updateFrequency):
         for go in self.__gameObjects:
             go.Update(deltaTime)
-        collisions = []
+        for i in range(updateFrequency):
+            dt = float(deltaTime)/updateFrequency
+            collisions = []
+            for go in self.__gameObjects:
+                go.UpdatePhysics(dt,None,0)
+            for go in self.__gameObjects:
+                go.UpdateCollider(dt, self.GetComponents("Collider"))
+                collisions += go.GetComponent("Collider").collisions
+            for go in self.__gameObjects:
+                go.UpdatePhysics(dt,collisions,1)
+            for go in self.__gameObjects:
+                go.UpdatePhysics(dt,None,2)
         for go in self.__gameObjects:
-            go.UpdateCollider(deltaTime, self.GetComponents("Collider"))
-            collisions += go.GetComponent("Collider").collisions
-        for go in self.__gameObjects:
-            go.UpdatePhysics(deltaTime,collisions,0)
-        for go in self.__gameObjects:
-            go.UpdatePhysics(deltaTime,None,1)
             go.Show(deltaTime)
     
 
