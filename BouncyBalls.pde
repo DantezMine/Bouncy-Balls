@@ -4,7 +4,7 @@ from lib import GlobalVars
 
 world = World.World()
 GlobalVars.debug = False
- 
+
 def setup():
     size(600,600)
     TestingPhysicsScene.SetupScene1(world)
@@ -16,7 +16,7 @@ def draw():
         background(255)
         world.UpdateActiveScene(1/60.0, 10)
         GlobalVars.frameCount += 1
-    
+
     else:
         if GlobalVars.update or GlobalVars.step:
             GlobalVars.step = False
