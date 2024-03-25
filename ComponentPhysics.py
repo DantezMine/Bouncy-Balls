@@ -9,7 +9,7 @@ class Physics(Component.Component):
         self.parent = None
         self.mass = 1.0 #kg
         self.momentOfInertia = 50 #
-        self.restitution = 0.5
+        self.restitution = 0.2
         
         self.deltaPos = Vec2(0,0)
         self.prevPosition = Vec2(0,0)
