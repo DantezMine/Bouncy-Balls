@@ -52,7 +52,7 @@ class StructureWood(Structure):
         self.destructionMomentum = 20
         self.parent.AddComponent(ComponentCollider.ColliderRect(lenX = self.width, lenY = self.height))
         self.parent.AddComponent(ComponentPhysics.Physics()) 
-        self.parent.AddComponent(ComponentSprite.Sprite(b_proc=False, s_spritePath="data/WoodStructure.png"))
+        self.parent.AddComponent(ComponentSprite.Sprite(s_spritePath="data/WoodStructure.png",lenX = self.width, lenY = self.height))
 
 class StructureMetal(Structure):
 
@@ -60,4 +60,4 @@ class StructureMetal(Structure):
          self.destructionMomentum = 20
          self.parent.AddComponent(ComponentCollider.ColliderRect(lenX = self.width, lenY = self.height))
          self.parent.AddComponent(ComponentPhysics.Physics()) 
-         self.parent.AddComponent(ComponentSprite.Sprite(b_proc=False, s_spritePath="data/StructureMetal.png"))
+         self.parent.AddComponent(ComponentSprite.Sprite(s_spritePath="data/StructureMetal.png"))
