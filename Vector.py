@@ -4,6 +4,9 @@ class Vec2:
     def __init__(self,x,y):
         self.x = x
         self.y = y
+        
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
     
     def __repr__(self):
         return "<%.2f, %.2f>"%(self.x,self.y)
@@ -20,6 +23,9 @@ class Vec2:
     def __div__(self,scalar):
         return Vec2(self.x/scalar,self.y/scalar)
     
+    def __neg__(self):
+        return Vec2(-self.x,-self.y)
+    
     def Dot(self,other):
         return self.x*other.x+self.y*other.y
     
@@ -31,6 +37,10 @@ class Vec2:
     
     def Perp(self):
         return Vec2(-self.y,self.x)
+    
+    def Cross2D(self,other): #returns a float, or the z component of the cross product
+        '''returns a float, the z component of the cross product'''
+        return self.x*other.y-self.y*other.x
     
     def Normalize(self):
         mag = self.Mag()
@@ -45,6 +55,8 @@ class Vec2:
         return Vec2(self.x/mag,self.y/mag)
     
     def AngleBetween(self,other): #in radians between 0 and pi
+        if self.Dot(other)/(self.Mag()*other.Mag()) > 1:
+            return 0.0
         return math.acos(self.Dot(other)/(self.Mag()*other.Mag()))
     
     def ProjectedOn(self,other):
