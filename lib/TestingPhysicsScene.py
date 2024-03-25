@@ -6,6 +6,7 @@ import ComponentPhysics
 import ComponentSprite
 import ballscript
 from Vector import Vec2
+import ComponentBall
 
 from lib import MovingCollision
 
@@ -64,3 +65,24 @@ def SetupScene4(world):
     
     scene.AddGameObject(ball1)
     scene.AddGameObject(ball2)
+    
+def SetupScene5(world):
+    scene =Scene.Scene()
+    world.AddScene("scene", scene)
+    slingshot = GameObject.GameObject(scene)
+    slingshot.GetComponent("Transform").position = Vec2(200,400)
+    ball = GameObject.GameObject(scene)
+    ball.AddComponent(ComponentBall.BallBowling())
+    ball.GetComponent("Ball").sling = slingshot
+    scene.AddGameObject(ball)
+    
+def SetupScene6(world):
+    scene =Scene.Scene()
+    world.AddScene("scene", scene)
+    slingshot = GameObject.GameObject(scene)
+    slingshot.GetComponent("Transform").position = Vec2(200,400)
+    ball = GameObject.GameObject(scene)
+    ball.AddComponent(ComponentBall.BallBouncy())
+    ball.GetComponent("Ball").sling = slingshot
+    scene.AddGameObject(ball)
+    
