@@ -3,13 +3,12 @@ import Component
 import math
 
 class CollisionInfo:
-    def __init__(self, collisionPoint, otherCollisionPoint, collisionOffset, collisionNormal, otherNormal, objectA, objectB, collisionType, collisionResponseTag): #collisionType: "vertEdge","edge"
+    def __init__(self, collisionPoint, otherCollisionPoint, collisionNormal, otherNormal, objectA, objectB, collisionType, collisionResponseTag):
         '''
         collisionType: "vertEdge","edge"
         '''
         self.collisionPoint = collisionPoint #Point where touch
         self.otherCollisionPoint = otherCollisionPoint #Point where touch if "edge"
-        self.collisionOffset = collisionOffset
         self.collisionNormal = collisionNormal #One Normal from touch
         self.otherNormal = otherNormal #opposing to collisionNormal
         self.objectA = objectA #self.parent
@@ -18,7 +17,7 @@ class CollisionInfo:
         self.collisionResponseTag = collisionResponseTag #tells the physics engine whether the collision requires a response. if either collider has a NoCollisionResponse in its list of tags, no collision response will happen
         
     def __str__(self):
-        return ("Object A: %s, Object B: %s, Collision Type: %s, Collision Point: %s, Other Collision Point: %s Collision Offset: %s, Collision Normal: %s, Other Normal: %s, Collision Response: %s"%(self.objectA.GetID(),self.objectB.GetID(),self.collisionType,self.collisionPoint,self.otherCollisionPoint,self.collisionOffset,self.collisionNormal,self.otherNormal,self.collisionResponseTag))
+        return ("Object A: %s, Object B: %s, Collision Type: %s, Collision Point: %s, Other Collision Point: %s, Collision Normal: %s, Other Normal: %s, Collision Response: %s"%(self.objectA.GetID(),self.objectB.GetID(),self.collisionType,self.collisionPoint,self.otherCollisionPoint,self.collisionNormal,self.otherNormal,self.collisionResponseTag))
 
 class Collider(Component.Component):
     def __init__(self):
@@ -54,7 +53,7 @@ class ColliderCircle(Collider):
         self.colliderType = "Circle"
         self.localPosition = localPosition
         self.localRotation = localRotation
-        self.localScale = localScale        
+        self.localScale = localScale
         self.radius = radius
         self.sqRadius = radius**2
         
@@ -79,7 +78,7 @@ class ColliderCircle(Collider):
                 if (collider.radius + self.radius)**2 >= deltaLocalPosition.SqMag():
                     p2p = collCenter-center
                     collisionPoint = center+p2p.Normalize()*self.radius
-                    self.collisions.append(CollisionInfo(collisionPoint=collisionPoint, collisionOffset=Vec2(0,0), collisionNormal=(center - collisionPoint).Normalized(), otherNormal=None, objectA=self.parent, objectB=collider.parent, collisionType="vertEdge", collisionResponseTag=collisionResponseTag))
+                    self.collisions.append(CollisionInfo(collisionPoint=collisionPoint, collisionNormal=(center - collisionPoint).Normalized(), otherNormal=None, objectA=self.parent, objectB=collider.parent, collisionType="vertEdge", collisionResponseTag=collisionResponseTag))
         return
     
     def DisplayCollider(self):
@@ -136,22 +135,26 @@ class ColliderRect(Collider):
                 if onLine:
                     AB = B-A
                     AP = collCenter-A
-                    pC = A + AP.ProjectedOn(AB)
-                    collNormal = (collCenter - pC).Normalize()
-                    self.collisions.append(CollisionInfo(collisionPoint=pC, otherCollisioncPoint=pC, collisionOffset=None, collisionNormal=collNormal, otherNormal=-collNormal, objectA=self.parent, objectB=collider.parent, collisionType="edge", collisionResponseTag=collisionResponseTag))
+                    collisionPoint = A + AP.ProjectedOn(AB)
+                    collNormal = (collCenter - collisionPoint).Normalize()
+                    otherNormal = -collNormal
                 else:
                     if (collCenter-A).SqMag() <= radSq:
                         collNormal = (collCenter-A).Normalize()
-                        self.collisions.append(CollisionInfo(collisionPoint=A, otherCollisionPoint=A, collisionOffset=None, collisionNormal=collNormal, otherNormal=None, objectA=self.parent, objectB=collider.parent, collisionType="vertEdge", collisionResponseTag=collisionResponseTag))
+                        otherNormal = None
+                        collisionPoint = A
                     else:
                         collNormal = (collCenter-B).Normalize()
-                        self.collisions.append(CollisionInfo(collisionPoint=B, otherCollisionPoint=B, collisionOffset=None, collisionNormal=collNormal, otherNormal=None, objectA=self.parent, objectB=collider.parent, collisionType="vertEdge", collisionResponseTag=collisionResponseTag))
+                        otherNormal = None
+                        collisionPoint = B
+                self.collisions.append(CollisionInfo(collisionPoint=collisionPoint, otherCollisionPoint=collisionPoint, collisionNormal=collNormal, otherNormal=otherNormal, objectA=self.parent, objectB=collider.parent, collisionType="vertEdge", collisionResponseTag=collisionResponseTag))
+                return
         return
     
     def CheckCollisionEdge(self,collider,verts,collVerts):
         collisionResponseTag = False if self.tags.__contains__("NoCollisionResponse") or collider.tags.__contains__("NoCollisionResponse") else True
         minEdgeEdgeDistance = 1000000
-        A_, B_, C_, D_, closestVert = None,None,None,None,None
+        A_, B_, C_, D_ = None,None,None,None
         #check each edge against each other
         for i in range(len(verts)):
             A, B = verts[i], verts[(i+1)%len(verts)]
@@ -173,7 +176,7 @@ class ColliderRect(Collider):
                         if self.IsPointInsideRect(closestVertex,verts):                        
                             if collisionDistance < minEdgeEdgeDistance:
                                 minEdgeEdgeDistance = collisionDistance
-                                A_,B_,C_,D_,closestVert = A,B,C,D,closestVertex
+                                A_,B_,C_,D_ = A,B,C,D
         
         if A_ is not None:
             #recalculate normals
@@ -181,15 +184,13 @@ class ColliderRect(Collider):
             CD = D_-C_
             normalAB = AB.Perp().Normalized()
             normalCD = CD.Perp().Normalized()
-
-            collOffset = self.RectCollisionOffset(collider,A_,B_,closestVert)
             
             #project COM on other edge segment
             projectionCOMA = self.ClosestPointOnSegment(C_,D_,self.parent.GetComponent("Transform").position)
             collisionPointA = projectionCOMA
             projectionCOMB = self.ClosestPointOnSegment(A_,B_,collider.parent.GetComponent("Transform").position)
             collisionPointB = projectionCOMB
-            self.collisions.append(CollisionInfo(collisionPoint=collisionPointA,otherCollisionPoint=collisionPointB,collisionOffset=collOffset,collisionNormal=normalAB,otherNormal=normalCD,objectA=self.parent,objectB=collider.parent,collisionType="edge",collisionResponseTag=collisionResponseTag))
+            self.collisions.append(CollisionInfo(collisionPoint=collisionPointA,otherCollisionPoint=collisionPointB,collisionNormal=normalAB,otherNormal=normalCD,objectA=self.parent,objectB=collider.parent,collisionType="edge",collisionResponseTag=collisionResponseTag))
             return True
         return False
 
@@ -202,10 +203,8 @@ class ColliderRect(Collider):
             
             closestNormal, vertIndex = Vec2(0,0), 0
             closestNormal, vertIndex = self.ClosestEdgeToPoint(closestNormal,vertIndex,p,verts)
-            
-            collOffset = self.RectCollisionOffset(collider,verts[vertIndex],verts[(vertIndex+1)%len(verts)],p)
-            
-            self.collisions.append(CollisionInfo(collisionPoint=p, otherCollisionPoint=p, collisionOffset=collOffset, collisionNormal=closestNormal, otherNormal=None, objectA=self.parent, objectB=collider.parent, collisionType="vertEdge", collisionResponseTag=collisionResponseTag))
+                        
+            self.collisions.append(CollisionInfo(collisionPoint=p, otherCollisionPoint=p, collisionNormal=closestNormal, otherNormal=None, objectA=self.parent, objectB=collider.parent, collisionType="vertEdge", collisionResponseTag=collisionResponseTag))
             return
         
     def RectCollisionOffset(self,collider,A,B,P):

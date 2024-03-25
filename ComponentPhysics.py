@@ -11,7 +11,6 @@ class Physics(Component.Component):
         self.momentOfInertia = 50 #
         self.restitution = 0.2
         
-        self.deltaPos = Vec2(0,0)
         self.prevPosition = Vec2(0,0)
         self.velocity = Vec2(0,0) #m/s
         self.acceleration = Vec2(0,0) #m/s^2
@@ -56,8 +55,6 @@ class Physics(Component.Component):
         #add deltaV from collision response
         self.velocity += self.deltaV
         self.deltaV    = Vec2(0,0)
-        # transform.position += self.deltaPos
-        # self.deltaPos = Vec2(0,0)
         
         #Velocity verlet p.696
         nextPos = transform.position + self.velocity * deltaTime + self.acceleration * (deltaTime * deltaTime * 0.5)
@@ -143,29 +140,19 @@ class Physics(Component.Component):
         deltaWA = rAP_.Dot(normal*deltaP)/self.momentOfInertia * rotateA
         deltaWB = rBP_.Dot(normal*-deltaP)/physicsB.momentOfInertia * rotateB
         
-        # deltaPosA,deltaPosB = Vec2(0,0),Vec2(0,0)
-        # collisionInfo.collisionOffset /= collisionCounts[collisionIndex]
-        # if moveA and moveB:
-        #     deltaPosA = collisionInfo.collisionOffset/2.0
-        #     deltaPosB = -collisionInfo.collisionOffset/2.0
-        # elif moveA:
-        #     deltaPosA = collisionInfo.collisionOffset
-        # elif moveB: deltaPosB = -collisionInfo.collisionOffset
-        
-        
-        print("Collision Info: %s"%(collisionInfo))
-        print("Object A ID: %s, Position: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(self.parent.GetID(),self.parent.GetComponent("Transform").position,self.velocity,deltaVA,self.angularSpeed,deltaWA))
-        print("moveA: %s, rotateA: %s"%(moveA,rotateA))
-        print("Object B ID: %s, Position: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(physicsB.parent.GetID(),physicsB.parent.GetComponent("Transform").position,physicsB.velocity,deltaVB,physicsB.angularSpeed,deltaWB))
-        print("moveB: %s, rotateB: %s"%(moveB,rotateB))
-        print("")
-        GlobalVars.update = False
-        
-        print("forceNormal", forceNormal, "alpha", math.degrees(alpha))
-        print("A: ", forceNormalA, collisionPointA)
-        print("B: ", forceNormalB, collisionPointB)
-        # print("Collision Offsets: %s %s"%(deltaPosA, deltaPosB))
-        print("")
+        if GlobalVars.debug:
+            GlobalVars.update = False
+            print("Collision Info: %s"%(collisionInfo))
+            print("Object A ID: %s, Position: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(self.parent.GetID(),self.parent.GetComponent("Transform").position,self.velocity,deltaVA,self.angularSpeed,deltaWA))
+            print("moveA: %s, rotateA: %s"%(moveA,rotateA))
+            print("Object B ID: %s, Position: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(physicsB.parent.GetID(),physicsB.parent.GetComponent("Transform").position,physicsB.velocity,deltaVB,physicsB.angularSpeed,deltaWB))
+            print("moveB: %s, rotateB: %s"%(moveB,rotateB))
+            print("")
+            
+            print("forceNormal", forceNormal, "alpha", math.degrees(alpha))
+            print("A: ", forceNormalA, collisionPointA)
+            print("B: ", forceNormalB, collisionPointB)
+            print("")
         
         self.deltaV += deltaVA
         self.deltaW += deltaWA
@@ -205,11 +192,10 @@ class Physics(Component.Component):
         sign = 1 if rAP.Dot(force.Perp()) > 0 else -1
         phi = force.AngleBetween(rAP)
         distance = rAP.Mag()*math.sin(phi)
-        #torque = distance x force
         torque = force.Mag() * distance * sign
         self.AddTorque(torque)
-        print("Torque from force %s at point %s with angle %s: %s"%(force,point,phi,torque))
-        #line(point.x,point.y,point.x+force.x,point.y+force.y)
+        if GlobalVars.debug:
+            print("Torque from force %s at point %s with angle %s: %s"%(force,point,phi,torque))
     
     def AddTorque(self,torque): #torque is a scalar
         self.netTorque += torque

@@ -7,7 +7,7 @@ GlobalVars.debug = False
  
 def setup():
     size(600,600)
-    TestingPhysicsScene.SetupScene5(world)
+    TestingPhysicsScene.SetupScene1(world)
     world.StartActiveScene()
     GlobalVars.frameCount = 0
 
