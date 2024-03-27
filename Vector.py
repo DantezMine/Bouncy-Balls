@@ -8,6 +8,9 @@ class Vec2:
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
     
+    def __ne__(self,other):
+        return self.x != other.x or self.y != other.y
+    
     def __repr__(self):
         return "<%.2f, %.2f>"%(self.x,self.y)
     
@@ -71,3 +74,6 @@ class Vec2:
         w_p = math.sin((1-t)*theta)/math.sin(theta)
         w_q = math.sin(theta * t)/math.sin(theta)
         return p * w_p + q * w_q
+    
+    def Encode(self):
+        return (self.x,self.y)

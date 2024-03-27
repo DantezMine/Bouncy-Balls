@@ -1,6 +1,7 @@
+import json
 import ComponentTransform
 
-class GameObject:
+class GameObject(object):
     def __init__(self, parentScene):
         self.__id = parentScene.CreateID()
         self.__components = {key: value for key, value in []} #initialize an empty dictionary using dictionary comprehension
@@ -16,9 +17,9 @@ class GameObject:
         self.__components[component.name].parent = self
         return True
     
-    def RemoveComponent(self,component):
-        if self.__components.__contains__(component.name):
-            self.__components.pop(component.name)
+    def RemoveComponent(self,componentName):
+        if self.__components.__contains__(componentName):
+            self.__components.pop(componentName)
             return True
         print("Component doesn't exist in object %d"%self.__id)
         return False
@@ -67,3 +68,13 @@ class GameObject:
     def UpdateOnCollision(self,collider):
         for component in self.__components.values():
             component.OnCollision(collider)
+            
+    def ToJSONstr(self):
+        outString = json.dumps(obj=self,default=self.Encode,indent=4)
+        return outString
+    
+    def Encode(self,obj):
+        joinedDict = dict()
+        for component in obj.__components.values():
+            joinedDict[component.name] = component.Encode(component)
+        return joinedDict

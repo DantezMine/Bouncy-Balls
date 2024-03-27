@@ -1,4 +1,5 @@
 import time
+import json
 
 class World:
     def __init__(self):
@@ -47,3 +48,13 @@ class World:
         dt = time.time()-self.__prevTime if self.__prevTime is not None else 0
         self.__prevTime = time.time()
         return dt
+    
+    def ToJSONstr(self):
+        outString = json.dumps(obj=self,default=self.Encode,indent=4)
+        return outString
+    
+    def Encode(self,obj):
+        joinedDict = dict()
+        for scene in obj.__scenes.values():
+            joinedDict[scene.name] = scene.Encode(scene)
+        return joinedDict

@@ -20,7 +20,7 @@ class CollisionInfo:
         return ("Object A: %s, Object B: %s, Collision Type: %s, Collision Point: %s, Other Collision Point: %s, Collision Normal: %s, Other Normal: %s, Collision Response: %s"%(self.objectA.GetID(),self.objectB.GetID(),self.collisionType,self.collisionPoint,self.otherCollisionPoint,self.collisionNormal,self.otherNormal,self.collisionResponseTag))
 
 class Collider(Component.Component):
-    def __init__(self):
+    def __init__(self, localPosition=Vec2(0,0),localRotation=0,localScale=1):
         self.name = "Collider"
         self.parent = None
         
@@ -29,9 +29,6 @@ class Collider(Component.Component):
         self.collisions = []
         self._safetyMargin = 10
         self._edgeAlignmentMargin = 0.01
-    
-    def SetCollider(self, colliderType,localPosition,localRotation,localScale): #tried to use super(), but shit doesn't work and I don't understand why
-        self.colliderType = colliderType
         self.localPosition = localPosition
         self.localRotation = localRotation
         self.localScale = localScale
@@ -46,15 +43,23 @@ class Collider(Component.Component):
     
     def _UpdateOnCollision(self):
         for collider in self.collisions:
-            self.parent.UpdateOnCollision(collider)
+            self.parent.UpdateOnCollision(collider.objectB.GetComponent("Collider"))
+    
+    def Encode(self,obj):
+        outDict = super(Collider,self).Encode(obj)
+        if obj.localPosition != Vec2(0,0):
+            outDict["localPosition"] = obj.localPosition
+        if obj.localRotation != 0:
+            outDict["localRotation"] = obj.localRotation
+        if obj.localScale != 1:
+            outDict["localScale"] = obj.localScale
+        return outDict
     
 class ColliderCircle(Collider):
-    def SetCollider(self, radius = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = 1):
+    def __init__(self, radius=50, localPosition=Vec2(0, 0), localRotation=0, localScale=1):
+        super(ColliderCircle,self).__init__(localPosition, localRotation, localScale)
         self.colliderType = "Circle"
-        self.localPosition = localPosition
-        self.localRotation = localRotation
-        self.localScale = localScale
-        self.radius = radius
+        self.radius = 50
         self.sqRadius = radius**2
         
     def Update(self,deltaTime,colliders):
@@ -88,13 +93,16 @@ class ColliderCircle(Collider):
         stroke(20,220,20)
         strokeWeight(2)
         ellipse(center.x, center.y, self.radius*2*transform.scale, self.radius*2*transform.scale)
+        
+    def Encode(self,obj):
+        outDict = super(ColliderCircle,self).Encode(obj)
+        outDict["radius"] = obj.radius
+        return outDict
 
 class ColliderRect(Collider):
-    def SetCollider(self, lenX = 50, lenY = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = 1):
+    def __init__(self, lenX = 50, lenY = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = 1):
+        super(ColliderRect,self).__init__(localPosition, localRotation, localScale)
         self.colliderType = "Rect"
-        self.localPosition = localPosition
-        self.localRotation = localRotation
-        self.localScale = localScale
         self.lenX = lenX
         self.lenY = lenY
         self.sqRadius = Vec2(lenX/2,lenY/2).SqMag()
@@ -373,4 +381,9 @@ class ColliderRect(Collider):
             n = Vec2(-ab.y,ab.x).Normalize()
             mid = verts[i] + ab/2
             line(mid.x,mid.y,mid.x+n.x*20,mid.y+n.y*20)
-            
+
+    def Encode(self,obj):
+        outDict = super(ColliderRect,self).Encode(obj)
+        outDict["lenX"] = obj.lenX
+        outDict["lenY"] = obj.lenY
+        return outDict

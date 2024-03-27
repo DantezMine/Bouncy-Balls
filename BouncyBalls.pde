@@ -14,7 +14,7 @@ def setup():
 def draw():
     if not GlobalVars.debug:
         background(255)
-        world.UpdateActiveScene(1/60.0, 10)
+        world.UpdateActiveScene(updateFrequency=10)
         GlobalVars.frameCount += 1
 
     else:

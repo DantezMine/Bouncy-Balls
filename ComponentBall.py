@@ -5,21 +5,19 @@ import Component
 from Vector import Vec2
 
 class Ball(Component.Component):
-    def __init__(self):
+    def __init__(self, sling):
         self.name = "Ball"
         self.parent = None
         self.state = "Origin"
-        self.sling = None
+        self.sling = sling
         self.mousePosStart = None
         self.slingD = 40
     
-
     def Start(self):
-        circColl = ComponentCollider.ColliderCircle()
-        circColl.SetCollider(50)
+        self.radius = 50
+        circColl = ComponentCollider.ColliderCircle(radius=self.radius)
         self.parent.AddComponent(circColl)
         self.parent.AddComponent(ComponentPhysics.Physics())
-        
         
     def Update(self, deltaTime):
         self.parent.GetComponent("Collider").DisplayCollider()
@@ -46,30 +44,41 @@ class Ball(Component.Component):
       
     def OnClick(self):
         pass
-
-
-
-
+    
+    def Encode(self,obj):
+        outDict = super(Ball,self).Encode(obj)
+        outDict["radius"] = obj.radius
+        outDict["state"] = obj.state
+        outDict["sling"] = obj.sling.GetID()
+        outDict["slingD"] = obj.slingD
+    
 class BallBouncy(Ball):
+    '''type : "Bouncy"'''
+    def __init__(self, sling):
+        super().__init__(sling)
+        self.ballType = "Bouncy"
+    
     def Start(self):
-        circColl = ComponentCollider.ColliderCircle()
-        
         self.radius = 30
-        circColl.SetCollider(radius=self.radius)
+        circColl = ComponentCollider.ColliderCircle(radius=self.radius)
         self.parent.AddComponent(circColl)
         self.parent.AddComponent(ComponentPhysics.Physics())
         self.parent.GetComponent("Physics").restitution = 0.8
         self.parent.GetComponent("Physics").mass = 0.08
-        self.parent.AddComponent(ComponentSprite.Sprite(s_spritePath="data/TennisBall.PNG", diameter=self.radius*2))
+        self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/TennisBall.PNG", diameter=self.radius*2))
         
 
 class BallBowling(Ball):
+    '''type : "Heavy"'''
+    def __init__(self, sling):
+        super().__init__(sling)
+        self.ballType = "Heavy"
+    
     def Start(self):
-        circColl = ComponentCollider.ColliderCircle()
         self.radius = 60
-        circColl.SetCollider(radius=self.radius)
+        circColl = ComponentCollider.ColliderCircle(radius=self.radius)
         self.parent.AddComponent(circColl)
         self.parent.AddComponent(ComponentPhysics.Physics())
         self.parent.GetComponent("Physics").restitution = 0.1
         self.parent.GetComponent("Physics").mass = 0.15
-        self.parent.AddComponent(ComponentSprite.Sprite(s_spritePath="data/BowlingBall.PNG", diameter=self.radius*2))
+        self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/BowlingBall.PNG", diameter=self.radius*2))
