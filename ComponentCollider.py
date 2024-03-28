@@ -1,7 +1,14 @@
 import time
 from Vector import Vec2
 import Component
+from Component import Components
 import math
+import enum
+
+class ColliderType(enum.Enum):
+    Circle = enum.auto(),
+    Rect = enum.auto(),
+    
 
 class CollisionInfo:
     def __init__(self, collisionPoint, otherCollisionPoint, collisionNormal, otherNormal, objectA, objectB, collisionType, collisionResponseTag):
@@ -22,7 +29,7 @@ class CollisionInfo:
 
 class Collider(Component.Component):
     def __init__(self, localPosition=Vec2(0,0),localRotation=0,localScale=1):
-        self.name = "Collider"
+        self.name = Component.Components.Collider
         self.parent = None
         
         self.tags = []
@@ -44,7 +51,7 @@ class Collider(Component.Component):
     
     def _UpdateOnCollision(self):
         for collider in self.collisions:
-            self.parent.UpdateOnCollision(collider.objectB.GetComponent("Collider"))
+            self.parent.UpdateOnCollision(collider.objectB.GetComponent(Components.Collider))
     
     def Encode(self,obj):
         outDict = super(Collider,self).Encode(obj)
@@ -59,7 +66,7 @@ class Collider(Component.Component):
 class ColliderCircle(Collider):
     def __init__(self, radius=50, localPosition=Vec2(0, 0), localRotation=0, localScale=1):
         super(ColliderCircle,self).__init__(localPosition, localRotation, localScale)
-        self.colliderType = "Circle"
+        self.colliderType = ColliderType.Circle
         self.radius = 50
         self.sqRadius = radius**2
         
@@ -69,7 +76,7 @@ class ColliderCircle(Collider):
         self._UpdateOnCollision()
     
     def CheckCollision(self, colliders):
-        transform = self.parent.GetComponent("Transform")
+        transform = self.parent.GetComponent(Components.Transform)
         center = transform.position
         for collider in colliders:
             self.CheckCollisionCircle(collider,center)
@@ -77,8 +84,8 @@ class ColliderCircle(Collider):
     def CheckCollisionCircle(self,collider, center):
         collisionResponseTag = False if self.tags.__contains__("NoCollisionResponse") or collider.tags.__contains__("NoCollisionResponse") else True
         if not collider.parent.GetID() == self.parent.GetID():
-            if collider.colliderType == "Circle":
-                collTransform = collider.parent.GetComponent("Transform")
+            if collider.colliderType == ColliderType.Circle:
+                collTransform = collider.parent.GetComponent(Components.Transform)
                 collCenter = collTransform.position
                 deltaLocalPosition = center - collCenter
                 if (collider.radius + self.radius)**2 >= deltaLocalPosition.SqMag():
@@ -88,7 +95,7 @@ class ColliderCircle(Collider):
         return
     
     def DisplayCollider(self):
-        transform = self.parent.GetComponent("Transform")
+        transform = self.parent.GetComponent(Components.Transform)
         center = transform.position
         noFill()
         stroke(20,220,20)
@@ -103,7 +110,7 @@ class ColliderCircle(Collider):
 class ColliderRect(Collider):
     def __init__(self, lenX = 50, lenY = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = 1):
         super(ColliderRect,self).__init__(localPosition, localRotation, localScale)
-        self.colliderType = "Rect"
+        self.colliderType = ColliderType.Rect
         self.lenX = lenX
         self.lenY = lenY
         self.sqRadius = Vec2(lenX/2.0,lenY/2.0).SqMag()
@@ -123,24 +130,24 @@ class ColliderRect(Collider):
         for collider in colliders:
             if collider.parent.GetID() == self.parent.GetID():
                 continue
-            posA = self.parent.GetComponent("Transform").position
-            posB = collider.parent.GetComponent("Transform").position
+            posA = self.parent.GetComponent(Components.Transform).position
+            posB = collider.parent.GetComponent(Components.Transform).position
             if (posA-posB).SqMag() > self.sqRadius+collider.sqRadius:
                 continue
-            if collider.colliderType == "Rect":
+            if collider.colliderType == ColliderType.Rect:
                 collVerts = collider.tempVerts
                 collNorms = collider.tempNorms
                 #edges have priority over vertex collisions
                 if self.CheckCollisionEdge(collider,verts,normals,collVerts,collNorms):
                     continue
                 self.CheckCollisionVertEdge(collider,verts,collVerts)
-            elif collider.colliderType == "Circle":
+            elif collider.colliderType == ColliderType.Circle:
                 self.CheckCollisionCircle(collider, verts)
         return
     
     def CheckCollisionCircle(self, collider, verts):
         collisionResponseTag = False if self.tags.__contains__("NoCollisionResponse") or collider.tags.__contains__("NoCollisionResponse") else True
-        collTransform = collider.parent.GetComponent("Transform")
+        collTransform = collider.parent.GetComponent(Components.Transform)
         collCenter = collTransform.position
         radSq = collider.radius**2
         for i in range(len(verts)):
@@ -205,9 +212,9 @@ class ColliderRect(Collider):
             normalCD = CD.Perp().Normalized()
             
             #project COM on other edge segment
-            projectionCOMA = self.ClosestPointOnSegment(C_,D_,self.parent.GetComponent("Transform").position)
+            projectionCOMA = self.ClosestPointOnSegment(C_,D_,self.parent.GetComponent(Components.Transform).position)
             collisionPointA = projectionCOMA
-            projectionCOMB = self.ClosestPointOnSegment(A_,B_,collider.parent.GetComponent("Transform").position)
+            projectionCOMB = self.ClosestPointOnSegment(A_,B_,collider.parent.GetComponent(Components.Transform).position)
             collisionPointB = projectionCOMB
             self.collisions.append(CollisionInfo(collisionPoint=collisionPointA,otherCollisionPoint=collisionPointB,collisionNormal=normalAB,otherNormal=normalCD,objectA=self.parent,objectB=collider.parent,collisionType="edge",collisionResponseTag=collisionResponseTag))
             return True
@@ -227,7 +234,7 @@ class ColliderRect(Collider):
             return
         
     def RectCollisionOffset(self,collider,A,B,P):
-        relativeDir = (collider.parent.GetComponent("Transform").position - collider.parent.GetComponent("Physics").prevPosition) - (self.parent.GetComponent("Transform").position - self.parent.GetComponent("Physics").prevPosition)
+        relativeDir = (collider.parent.GetComponent(Components.Transform).position - collider.parent.GetComponent(Components.Physics).prevPosition) - (self.parent.GetComponent(Components.Transform).position - self.parent.GetComponent(Components.Physics).prevPosition)
         hitPoint, hitBool = None, None
         hitPoint, hitBool = self.RaySegmentIntersection(hitPoint, hitBool,A,B,P,relativeDir)
         collOffset = hitPoint - P if hitBool else Vec2(0,0)
@@ -335,17 +342,17 @@ class ColliderRect(Collider):
         return (sqD, onLine)
     
     def GetRelativeVelocity(self,collider,pointA,pointB): #points on the body whose velocity we use
-        parentPhysics = self.parent.GetComponent("Physics")
-        otherPhysics = collider.parent.GetComponent("Physics")
+        parentPhysics = self.parent.GetComponent(Components.Physics)
+        otherPhysics = collider.parent.GetComponent(Components.Physics)
         relativeVelocity = Vec2(0,0)
             
         #check if objects have a physics component whose velocity we need to consider
         if parentPhysics is not None:
-            rAP_   =  -(pointA - self.parent.GetComponent("Transform").position).Perp()
+            rAP_   =  -(pointA - self.parent.GetComponent(Components.Transform).position).Perp()
             vAP    =   parentPhysics.velocity + rAP_ * parentPhysics.angularSpeed
             relativeVelocity -= vAP
         if otherPhysics is not None:
-            rBP_   =  -(pointB - otherPhysics.parent.GetComponent("Transform").position).Perp()
+            rBP_   =  -(pointB - otherPhysics.parent.GetComponent(Components.Transform).position).Perp()
             vBP    =   otherPhysics.velocity + rBP_ * otherPhysics.angularSpeed
             relativeVelocity += vBP
         if parentPhysics is None and otherPhysics is None:
@@ -365,8 +372,8 @@ class ColliderRect(Collider):
             self.norms = self.GetNormals(self.verts)
     
     def GetVertices(self, temp=False):#CCW starting top left if not rotated
-        physics = self.parent.GetComponent("Physics")
-        transf = self.parent.GetComponent("Transform")
+        physics = self.parent.GetComponent(Components.Physics)
+        transf = self.parent.GetComponent(Components.Transform)
         scale = self.localScale*transf.scale
         if temp and physics is not None:
             center = physics.tempNextPos+self.localPosition

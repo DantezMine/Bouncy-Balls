@@ -1,5 +1,6 @@
 import json
 import time
+from Component import Components
 
 class Scene:
     ID = 0
@@ -54,8 +55,8 @@ class Scene:
                 go.UpdatePhysics(dt,None,0)
             t3 = time.time()
             for go in self.__gameObjects.values():
-                go.UpdateCollider(dt, self.GetComponents("Collider"))
-                collider = go.GetComponent("Collider")
+                go.UpdateCollider(dt, self.GetComponents(Components.Collider))
+                collider = go.GetComponent(Components.Collider)
                 if  collider is not None:
                     collisions += collider.collisions
             t4 = time.time()

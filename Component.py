@@ -1,4 +1,5 @@
 import json
+import enum
 
 class Component(object):
     def __init__(self):
@@ -23,3 +24,12 @@ class Component(object):
             "parentID" : obj.parent.GetID()
         }
         return outDict
+    
+class Components(enum.Enum):
+    Transform = enum.auto(),
+    Physics = enum.auto(),
+    Sprite = enum.auto(),
+    Collider = enum.auto(),
+    Ball = enum.auto(),
+    Structure = enum.auto(),
+    

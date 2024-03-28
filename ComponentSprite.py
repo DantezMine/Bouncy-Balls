@@ -1,8 +1,9 @@
 import Component
+from Component import Components
 
 class Sprite(Component.Component):
     def __init__(self, spritePath = None, lenX = 50, lenY = 50, diameter = None): #s_spritePath must be given
-        self.name = "Sprite"
+        self.name = Components.Sprite
         self.spritePath = spritePath
         self.parent = None
         self.lenX = diameter if diameter is not None else lenX
@@ -12,7 +13,7 @@ class Sprite(Component.Component):
         self.DisplayImg()
     
     def DisplayImg(self):
-        parentTransform = self.parent.GetComponent("Transform")
+        parentTransform = self.parent.GetComponent(Components.Transform)
         sprite = loadImage(self.spritePath)
         pushMatrix()
         translate(parentTransform.position.x, parentTransform.position.y)

@@ -2,13 +2,13 @@ import ComponentCollider
 import ComponentPhysics
 import ComponentSprite
 import Component
+from Component import Components
 from Vector import Vec2
 import time
 
-
 class Structure(Component.Component):
     def __init__(self, position = Vec2(0,0), lenX = 50, lenY = 50):
-        self.name = "Structure"
+        self.name = Components.Structure
         self.parent = None
         self.initPos = position
         self.lenX = lenX
@@ -17,7 +17,7 @@ class Structure(Component.Component):
         self.destroyed = False
 
     def Start(self):
-        self.parent.GetComponent("Transform").position = self.initPos
+        self.parent.GetComponent(Components.Transform).position = self.initPos
         self.parent.AddComponent(ComponentCollider.ColliderRect(lenX = self.lenX, lenY = self.lenY))
         self.parent.AddComponent(ComponentPhysics.Physics())
     
@@ -30,8 +30,8 @@ class Structure(Component.Component):
         self.DestructionCheck(collider)
 
     def DestructionCheck(self,collider):
-        physicsComponent = self.parent.GetComponent("Physics")
-        otherPhysicsComponent = collider.parent.GetComponent("Physics")
+        physicsComponent = self.parent.GetComponent(Components.Physics)
+        otherPhysicsComponent = collider.parent.GetComponent(Components.Physics)
         momentum = 0
         if physicsComponent == None:
             pass
@@ -45,7 +45,7 @@ class Structure(Component.Component):
             self.Destruct()
         
     def Destruct(self):
-        self.parent.RemoveComponent("Collider")
+        self.parent.RemoveComponent(Components.Collider)
         self.destroyed = True
         self.destructionTime = time.time()
     
@@ -68,7 +68,7 @@ class StructureWood(Structure):
     def Start(self):
         super(StructureWood,self).Start()
         self.destructionMomentum = 20
-        self.parent.GetComponent("Physics").mass = 30
+        self.parent.GetComponent(Components.Physics).mass = 30
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/WoodStructure.png",lenX = self.lenX, lenY = self.lenY))
 
 class StructureMetal(Structure):
@@ -80,5 +80,5 @@ class StructureMetal(Structure):
     def Start(self):
         self.destructionMomentum = 20
         super(StructureWood,self).Start()
-        self.parent.GetComponent("Physics").mass = 50
+        self.parent.GetComponent(Components.Physics).mass = 50
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/StructureMetal.png"))

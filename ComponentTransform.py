@@ -1,10 +1,11 @@
 import json
 import Component
+from Component import Components
 from Vector import Vec2
 
 class ComponentTransform(Component.Component):
     def __init__(self):
-        self.name = "Transform"
+        self.name = Components.Transform
         self.parent = None
         
         self.position = Vec2(0,0)

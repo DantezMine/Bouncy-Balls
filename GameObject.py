@@ -1,5 +1,6 @@
 import json
 import ComponentTransform
+from Component import Components
 
 class GameObject(object):
     def __init__(self, parentScene):
@@ -50,20 +51,20 @@ class GameObject(object):
     
     def Update(self,deltaTime):
         for key in self.__components.keys():
-            if key != "Sprite" and key != "Collider" and key != "Physics":
+            if key != Components.Sprite and key != Components.Collider and key != Components.Physics:
                 self.__components[key].Update(deltaTime)
     
     def UpdateCollider(self,deltaTime, colliders):
-        if self.__components.__contains__("Collider"):
-            self.__components["Collider"].Update(deltaTime, colliders)
+        if self.__components.__contains__(Components.Collider):
+            self.__components[Components.Collider].Update(deltaTime, colliders)
     
     def UpdatePhysics(self,deltaTime,allCollisions,mode):
-        if self.__components.__contains__("Physics"):
-            self.__components["Physics"].Update(deltaTime,allCollisions,mode)
+        if self.__components.__contains__(Components.Physics):
+            self.__components[Components.Physics].Update(deltaTime,allCollisions,mode)
             
     def Show(self,deltaTime):
-        if self.__components.__contains__("Sprite"):
-            self.__components["Sprite"].Update(deltaTime)
+        if self.__components.__contains__(Components.Sprite):
+            self.__components[Components.Sprite].Update(deltaTime)
             
     def UpdateOnCollision(self,collider):
         for component in self.__components.values():

@@ -2,11 +2,17 @@ import ComponentSprite
 import ComponentCollider
 import ComponentPhysics
 import Component
+from Component import Components
 from Vector import Vec2
+import enum
+
+class BallType(enum.Enum):
+    Bouncy = enum.auto(),
+    Heavy = enum.auto()
 
 class Ball(Component.Component):
     def __init__(self, sling):
-        self.name = "Ball"
+        self.name = Components.Ball
         self.parent = None
         self.state = "Origin"
         self.sling = sling
@@ -20,9 +26,9 @@ class Ball(Component.Component):
         self.parent.AddComponent(ComponentPhysics.Physics())
         
     def Update(self, deltaTime):
-        self.parent.GetComponent("Collider").DisplayCollider()
+        self.parent.GetComponent(Components.Collider).DisplayCollider()
         if self.state == "Origin":
-            self.parent.GetComponent("Transform").position = self.sling.GetComponent("Transform").position
+            self.parent.GetComponent(Components.Transform).position = self.sling.GetComponent(Components.Transform).position
         if mousePressed:
             if self.state == "Origin" and mouseButton == 37:
                 self.mousePosStart = Vec2(mouseX, mouseY)
@@ -30,7 +36,7 @@ class Ball(Component.Component):
             if self.state == "Dragged" and mouseButton == 37:
                 self.mousePos = Vec2(mouseX, mouseY)
                 delta = self.mousePosStart - self.mousePos
-                self.parent.GetComponent("Transform").position = self.sling.GetComponent("Transform").position - delta
+                self.parent.GetComponent(Components.Transform).position = self.sling.GetComponent(Components.Transform).position - delta
             if self.state == "Released" and mouseButton == 37:
                 self.OnClick()
         if not mousePressed:
@@ -38,9 +44,9 @@ class Ball(Component.Component):
                 self.state = "Released"
                 delta = self.mousePosStart - self.mousePos
                 force = delta * self.slingD
-                self.parent.GetComponent("Physics").AddForce(force)
+                self.parent.GetComponent(Components.Physics).AddForce(force)
         if self.state == "Released":
-             self.parent.GetComponent("Physics").AddForce(Vec2(0, 60))
+             self.parent.GetComponent(Components.Physics).AddForce(Vec2(0, 60))
       
     def OnClick(self):
         pass
@@ -56,15 +62,15 @@ class BallBouncy(Ball):
     '''type : "Bouncy"'''
     def __init__(self, sling):
         super().__init__(sling)
-        self.ballType = "Bouncy"
+        self.ballType = BallType.Bouncy
     
     def Start(self):
         self.radius = 30
         circColl = ComponentCollider.ColliderCircle(radius=self.radius)
         self.parent.AddComponent(circColl)
         self.parent.AddComponent(ComponentPhysics.Physics())
-        self.parent.GetComponent("Physics").restitution = 0.8
-        self.parent.GetComponent("Physics").mass = 0.08
+        self.parent.GetComponent(Components.Physics).restitution = 0.8
+        self.parent.GetComponent(Components.Physics).mass = 0.08
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/TennisBall.PNG", diameter=self.radius*2))
         
 
@@ -72,13 +78,13 @@ class BallBowling(Ball):
     '''type : "Heavy"'''
     def __init__(self, sling):
         super().__init__(sling)
-        self.ballType = "Heavy"
+        self.ballType = BallType.Heavy
     
     def Start(self):
         self.radius = 60
         circColl = ComponentCollider.ColliderCircle(radius=self.radius)
         self.parent.AddComponent(circColl)
         self.parent.AddComponent(ComponentPhysics.Physics())
-        self.parent.GetComponent("Physics").restitution = 0.1
-        self.parent.GetComponent("Physics").mass = 0.15
+        self.parent.GetComponent(Components.Physics).restitution = 0.1
+        self.parent.GetComponent(Components.Physics).mass = 0.15
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/BowlingBall.PNG", diameter=self.radius*2))
