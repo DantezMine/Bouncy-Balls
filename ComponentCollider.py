@@ -1,3 +1,4 @@
+import time
 from Vector import Vec2
 import Component
 import math
@@ -105,7 +106,11 @@ class ColliderRect(Collider):
         self.colliderType = "Rect"
         self.lenX = lenX
         self.lenY = lenY
-        self.sqRadius = Vec2(lenX/2,lenY/2).SqMag()
+        self.sqRadius = Vec2(lenX/2.0,lenY/2.0).SqMag()
+        
+    def Start(self):
+        self.Recalculate(temp=True)
+        self.Recalculate(temp=False)
     
     def Update(self,deltaTime,colliders):
         self.collisions = []
@@ -113,16 +118,20 @@ class ColliderRect(Collider):
         self._UpdateOnCollision()
         
     def CheckCollision(self, colliders):
-        verts = self.GetVertices()
+        verts = self.tempVerts
+        normals = self.tempNorms
         for collider in colliders:
             if collider.parent.GetID() == self.parent.GetID():
                 continue
+            posA = self.parent.GetComponent("Transform").position
+            posB = collider.parent.GetComponent("Transform").position
+            if (posA-posB).SqMag() > self.sqRadius+collider.sqRadius:
+                continue
             if collider.colliderType == "Rect":
-                verts = self.GetVertices(temp=True)
-                collVerts = collider.GetVertices(temp=True)
-                
+                collVerts = collider.tempVerts
+                collNorms = collider.tempNorms
                 #edges have priority over vertex collisions
-                if self.CheckCollisionEdge(collider,verts,collVerts):
+                if self.CheckCollisionEdge(collider,verts,normals,collVerts,collNorms):
                     continue
                 self.CheckCollisionVertEdge(collider,verts,collVerts)
             elif collider.colliderType == "Circle":
@@ -159,19 +168,21 @@ class ColliderRect(Collider):
                 return
         return
     
-    def CheckCollisionEdge(self,collider,verts,collVerts):
+    def CheckCollisionEdge(self,collider,verts,normals,collVerts,collNorms):
         collisionResponseTag = False if self.tags.__contains__("NoCollisionResponse") or collider.tags.__contains__("NoCollisionResponse") else True
-        minEdgeEdgeDistance = 1000000
+        SqMinEdgeEdgeDistance = 1000000
         A_, B_, C_, D_ = None,None,None,None
         #check each edge against each other
         for i in range(len(verts)):
             A, B = verts[i], verts[(i+1)%len(verts)]
             AB = B-A
-            normalAB = AB.Perp().Normalize()
+            #normalAB = AB.Perp().Normalize()
+            normalAB = normals[i]
             for k in range(len(collVerts)):
                 C, D = collVerts[k], collVerts[(k+1)%len(collVerts)]
                 CD = D-C
-                normalCD = CD.Perp().Normalize()
+                # normalCD = CD.Perp().Normalize()
+                normalCD = collNorms[k]
                 
                 #keep going if edge normals are mostly opposed, only one per edge
                 if (normalAB.Dot(normalCD) < -1 + self._edgeAlignmentMargin):
@@ -182,8 +193,8 @@ class ColliderRect(Collider):
                     if onLine:
                         #check if the closest point to edge is inside the rectangle
                         if self.IsPointInsideRect(closestVertex,verts):                        
-                            if collisionDistance < minEdgeEdgeDistance:
-                                minEdgeEdgeDistance = collisionDistance
+                            if collisionDistance < SqMinEdgeEdgeDistance:
+                                SqMinEdgeEdgeDistance = collisionDistance
                                 A_,B_,C_,D_ = A,B,C,D
         
         if A_ is not None:
@@ -298,11 +309,11 @@ class ColliderRect(Collider):
         SqDD, onLineD = self.SqDistancePointSegment(SqDD,onLine,A,B,D) #square distance from D to edge
         if SqDC < SqDD:
             Vc = C
-            d = math.sqrt(SqDC)
+            d = SqDC
             onLine = onLineC
         else:
             Vc = D
-            d = math.sqrt(SqDD)
+            d = SqDD
             onLine = onLineD
         return (Vc, onLine, d)
 
@@ -345,6 +356,14 @@ class ColliderRect(Collider):
             relativeVelocity = otherPhysics.velocity       
         return relativeVelocity
     
+    def Recalculate(self, temp):
+        if temp:
+            self.tempVerts = self.GetVertices(temp=True)
+            self.tempNorms = self.GetNormals(self.tempVerts)
+        else:
+            self.verts = self.GetVertices(temp=False)
+            self.norms = self.GetNormals(self.verts)
+    
     def GetVertices(self, temp=False):#CCW starting top left if not rotated
         physics = self.parent.GetComponent("Physics")
         transf = self.parent.GetComponent("Transform")
@@ -364,6 +383,13 @@ class ColliderRect(Collider):
             C = center + Vec2( self.lenX/2, self.lenY/2).Rotate(angle)*scale
             D = center + Vec2( self.lenX/2,-self.lenY/2).Rotate(angle)*scale
         return [A,B,C,D]
+    
+    def GetNormals(self,verts):
+        normals = list()
+        for i in range(4):
+            AB = verts[(i+1)%4]-verts[i]
+            normals.append(AB.Perp().Normalize())
+        return normals
     
     def DisplayCollider(self):
         verts = self.GetVertices()

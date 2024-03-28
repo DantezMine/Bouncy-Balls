@@ -33,8 +33,11 @@ class Physics(Component.Component):
         self.prevPosition = self.parent.GetComponent("Transform").position
         
     def Update(self,deltaTime, allCollisions, mode):
+        coll = self.parent.GetComponent("Collider")
         if mode == 0:
             self.TempNextState(deltaTime)
+            if coll is not None:
+                coll.Recalculate(temp=True)
         if mode == 1:
             collider = self.parent.GetComponent("Collider")
             if collider is not None:
@@ -45,6 +48,8 @@ class Physics(Component.Component):
                         self.CollisionResponseDynamic(collisions[i], collisionCounts, i)
         elif mode == 2:
             self.VelocityVerletIntegration(deltaTime)
+            if coll is not None:
+                coll.Recalculate(temp=False)
     
     def TempNextState(self,deltaTime):
         transform          = self.parent.GetComponent("Transform")
