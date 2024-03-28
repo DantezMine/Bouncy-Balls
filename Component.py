@@ -20,7 +20,6 @@ class Component(object):
     
     def Encode(self,obj):
         outDict = {
-            "name" : obj.name,
             "parentID" : obj.parent.GetID()
         }
         return outDict

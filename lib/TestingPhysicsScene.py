@@ -16,10 +16,10 @@ def SetupScene1(world):
     struct2.AddComponent(ComponentStructure.StructureWood(Vec2(200,300),100,200))
     scene.AddGameObject(struct2)
     
-    for i in range(10):
-        struct = GameObject.GameObject(scene)
-        struct.AddComponent(ComponentStructure.StructureWood(Vec2(60*i,300),50,100))
-        scene.AddGameObject(struct)
+    # for i in range(10):
+    #     struct = GameObject.GameObject(scene)
+    #     struct.AddComponent(ComponentStructure.StructureWood(Vec2(60*i,300),50,100))
+    #     scene.AddGameObject(struct)
     
     
     

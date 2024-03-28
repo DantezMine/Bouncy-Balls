@@ -1,5 +1,9 @@
+import math
 import Component
 from Component import Components
+from Vector import Vec2
+import pygame
+from lib import GlobalVars
 
 class Sprite(Component.Component):
     def __init__(self, spritePath = None, lenX = 50, lenY = 50, diameter = None): #s_spritePath must be given
@@ -14,18 +18,21 @@ class Sprite(Component.Component):
     
     def DisplayImg(self):
         parentTransform = self.parent.GetComponent(Components.Transform)
-        sprite = loadImage(self.spritePath)
-        pushMatrix()
-        translate(parentTransform.position.x, parentTransform.position.y)
-        rotate(parentTransform.rotation)
-        image(sprite,-self.lenX*parentTransform.scale/2.0,-self.lenY*parentTransform.scale/2.0,self.lenX*parentTransform.scale,self.lenY*parentTransform.scale)
-        popMatrix()
+        sprite = pygame.image.load("Bouncy-Balls/"+self.spritePath)
+        
+        topLeft = parentTransform.position-Vec2(self.lenX,self.lenY)*(parentTransform.scale/2.0)
+        rect = (topLeft.x*(math.cos(parentTransform.rotation)-math.sin(parentTransform.rotation)),topLeft.y*(math.sin(parentTransform.rotation)+math.cos(parentTransform.rotation)))
+        image = pygame.transform.scale(sprite,(self.lenX*parentTransform.scale,self.lenY*parentTransform.scale))
+        image = pygame.transform.rotate(image,parentTransform.rotation)
+        
+        
+        GlobalVars.screen.blit(image,rect)
+        # translate(parentTransform.position.x, parentTransform.position.y)
+        # rotate(parentTransform.rotation)
+        # image(sprite,-self.lenX*parentTransform.scale/2.0,-self.lenY*parentTransform.scale/2.0,self.lenX*parentTransform.scale,self.lenY*parentTransform.scale)
         
     def Encode(self,obj):
-        outDict = {
-            "name" : obj.name,
-            "parentID" : obj.parent.GetID()
-        }
+        outDict = super(Sprite,self).Encode(obj)
         outDict["spritePath"] = obj.spritePath
         outDict["lenX"] = obj.lenX
         outDict["lenY"] = obj.lenY

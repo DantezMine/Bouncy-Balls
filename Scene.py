@@ -1,5 +1,4 @@
 import json
-import time
 from Component import Components
 
 class Scene:
@@ -46,27 +45,20 @@ class Scene:
     def UpdateScene(self,deltaTime, updateFrequency):
         for go in self.__gameObjects.values():
             go.Update(deltaTime)
-        t1 = time.time()
         for i in range(updateFrequency):
             dt = float(deltaTime)/updateFrequency
             collisions = []
-            t2 = time.time()
             for go in self.__gameObjects.values():
                 go.UpdatePhysics(dt,None,0)
-            t3 = time.time()
             for go in self.__gameObjects.values():
                 go.UpdateCollider(dt, self.GetComponents(Components.Collider))
                 collider = go.GetComponent(Components.Collider)
                 if  collider is not None:
                     collisions += collider.collisions
-            t4 = time.time()
             for go in self.__gameObjects.values():
                 go.UpdatePhysics(dt,collisions,1)
-            t5 = time.time()
             for go in self.__gameObjects.values():
                 go.UpdatePhysics(dt,None,2)
-            t6 = time.time()
-            print("Update temp physics: %s, Update Colliders: %s, Update Collision response: %s, Update Physics: %s"%(t3-t2,t4-t3,t5-t4,t6-t5))
         for go in self.__gameObjects.values():
             go.Show(deltaTime)
     

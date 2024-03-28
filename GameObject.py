@@ -16,6 +16,7 @@ class GameObject(object):
             return False
         self.__components[component.name] = component
         self.__components[component.name].parent = self
+        component.Start()
         return True
     
     def RemoveComponent(self,componentName):
@@ -46,11 +47,14 @@ class GameObject(object):
         return self.__parentScene
     
     def Start(self):
-        for key in self.__components.keys():
-            self.__components[key].Start()
+        pass
+        # keysCopy = list(self.__components.keys()).copy()
+        # for key in keysCopy:
+        #     self.__components[key].Start()
     
     def Update(self,deltaTime):
-        for key in self.__components.keys():
+        keysCopy = self.__components.keys()
+        for key in keysCopy:
             if key != Components.Sprite and key != Components.Collider and key != Components.Physics:
                 self.__components[key].Update(deltaTime)
     
@@ -67,8 +71,10 @@ class GameObject(object):
             self.__components[Components.Sprite].Update(deltaTime)
             
     def UpdateOnCollision(self,collider):
-        for component in self.__components.values():
-            component.OnCollision(collider)
+        keys = list(self.__components.keys())[:]
+        for key in keys:
+            if self.__components.__contains__(key):
+                self.__components[key].OnCollision(collider)
             
     def ToJSONstr(self):
         outString = json.dumps(obj=self,default=self.Encode,indent=4)
@@ -77,5 +83,5 @@ class GameObject(object):
     def Encode(self,obj):
         joinedDict = dict()
         for component in obj.__components.values():
-            joinedDict[component.name] = component.Encode(component)
+            joinedDict[str(component.name)] = component.Encode(component)
         return joinedDict

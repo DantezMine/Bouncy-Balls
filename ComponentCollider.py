@@ -116,7 +116,6 @@ class ColliderRect(Collider):
         self.sqRadius = Vec2(lenX/2.0,lenY/2.0).SqMag()
         
     def Start(self):
-        self.Recalculate(temp=True)
         self.Recalculate(temp=False)
     
     def Update(self,deltaTime,colliders):
@@ -399,6 +398,7 @@ class ColliderRect(Collider):
         return normals
     
     def DisplayCollider(self):
+        return
         verts = self.GetVertices()
         noFill()
         stroke(20,220,20)

@@ -23,7 +23,7 @@ class Vec2:
     def __mul__(self,scalar):
         return Vec2(self.x * scalar,self.y*scalar)
     
-    def __div__(self,scalar):
+    def __div__(self,scalar : float):
         return Vec2(self.x/scalar,self.y/scalar)
     
     def __neg__(self):

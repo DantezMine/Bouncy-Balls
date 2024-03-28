@@ -56,6 +56,9 @@ class Physics(Component.Component):
         transform          = self.parent.GetComponent(Components.Transform)
         self.tempNextPos   = transform.position + self.velocity * deltaTime + self.acceleration * (deltaTime * deltaTime * 0.5)
         self.tempNextAngle = transform.rotation + self.angularSpeed * deltaTime + self.angularAcc * (deltaTime * deltaTime * 0.5)
+        coll = self.parent.GetComponent(Components.Collider)
+        if coll is not None:
+            coll.Recalculate(temp=True)
     
     def VelocityVerletIntegration(self,deltaTime):
         transform = self.parent.GetComponent(Components.Transform)
@@ -89,7 +92,11 @@ class Physics(Component.Component):
         transform.rotation = nextAngle
         self.angularSpeed  = nextAngSpeed
         self.angularAcc    = nextAngAcc
-        self.netTorque     = 0    
+        self.netTorque     = 0
+        
+        coll = self.parent.GetComponent(Components.Collider)
+        if coll is not None:
+            coll.Recalculate(temp=False)
     
     #Fully dynamic collision response as per Chris Hecker: http://www.chrishecker.com/images/e/e7/Gdmphys3.pdf with own modificiations
     def CollisionResponseDynamic(self,collisionInfo, collisionCounts, collisionIndex):
@@ -139,9 +146,9 @@ class Physics(Component.Component):
         forceNormalA, forceNormalB = Vec2(0,0), Vec2(0,0)
         forceNormal = normal * -self.gravForce.Mag() * math.cos(alpha)
         if self.gravity:
-            forceNormalA = forceNormal * self.mass / collisionCounts[collisionIndex]
+            forceNormalA = forceNormal * (self.mass / collisionCounts[collisionIndex])
         if physicsB.gravity:
-            forceNormalB = -forceNormal * physicsB.mass / collisionCounts[collisionIndex]
+            forceNormalB = -forceNormal * (physicsB.mass / collisionCounts[collisionIndex])
                 
         deltaVA = normal * (deltaP/self.mass) * moveA
         deltaVB = normal * (-deltaP/physicsB.mass) * moveB
@@ -188,7 +195,7 @@ class Physics(Component.Component):
             self.netForce = Vec2(0,0)
         elif self.gravity:
             self.netForce += self.gravForce * self.mass
-        return self.netForce/float(self.mass)
+        return self.netForce*(1.0/float(self.mass))
     
     def AddForce(self, force, point = None): #force is a Vec2
         self.netForce += force
