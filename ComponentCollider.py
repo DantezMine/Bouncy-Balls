@@ -6,8 +6,11 @@ import enum
 import pygame
 
 class ColliderType(enum.Enum):
-    Circle = enum.auto(),
-    Rect = enum.auto(),
+    Circle = enum.auto()
+    Rect = enum.auto()
+    
+    def Encode(self):
+        return self.name
 
 class CollisionInfo:
     def __init__(self, collisionPoint, otherCollisionPoint, collisionNormal, otherNormal, objectA, objectB, collisionType, collisionResponseTag):
@@ -30,7 +33,7 @@ class Collider(Component.Component):
     def __init__(self, localPosition=Vec2(0,0),localRotation=0,localScale=1):
         self.name = Component.Components.Collider
         self.parent = None
-        
+        self.colliderType = None
         self.tags = []
                 
         self.collisions = []
@@ -60,6 +63,8 @@ class Collider(Component.Component):
             outDict["localRotation"] = obj.localRotation
         if obj.localScale != 1:
             outDict["localScale"] = obj.localScale
+        if obj.colliderType is not None:
+            outDict["colliderType"] = obj.colliderType.Encode()
         return outDict
     
 class ColliderCircle(Collider):
@@ -120,18 +125,20 @@ class ColliderRect(Collider):
         self._UpdateOnCollision()
         
     def CheckCollision(self, colliders):
-        verts = self.tempVerts
-        normals = self.tempNorms
+        verts = self.verts
+        normals = self.norms
         for collider in colliders:
             if collider.parent.GetID() == self.parent.GetID():
                 continue
+            #check if the objects are inside each others circumcircles
             posA = self.parent.GetComponent(Components.Transform).position
             posB = collider.parent.GetComponent(Components.Transform).position
             if (posA-posB).SqMag() > self.sqRadius+collider.sqRadius:
                 continue
+            
             if collider.colliderType == ColliderType.Rect:
-                collVerts = collider.tempVerts
-                collNorms = collider.tempNorms
+                collVerts = collider.verts
+                collNorms = collider.norms
                 #edges have priority over vertex collisions
                 if self.CheckCollisionEdge(collider,verts,normals,collVerts,collNorms):
                     continue
@@ -177,13 +184,9 @@ class ColliderRect(Collider):
         #check each edge against each other
         for i in range(len(verts)):
             A, B = verts[i], verts[(i+1)%len(verts)]
-            AB = B-A
-            #normalAB = AB.Perp().Normalize()
             normalAB = normals[i]
             for k in range(len(collVerts)):
                 C, D = collVerts[k], collVerts[(k+1)%len(collVerts)]
-                CD = D-C
-                # normalCD = CD.Perp().Normalize()
                 normalCD = collNorms[k]
                 
                 #keep going if edge normals are mostly opposed, only one per edge
@@ -227,13 +230,6 @@ class ColliderRect(Collider):
                         
             self.collisions.append(CollisionInfo(collisionPoint=p, otherCollisionPoint=p, collisionNormal=closestNormal, otherNormal=None, objectA=self.parent, objectB=collider.parent, collisionType="vertEdge", collisionResponseTag=collisionResponseTag))
             return
-        
-    def RectCollisionOffset(self,collider,A,B,P):
-        relativeDir = (collider.parent.GetComponent(Components.Transform).position - collider.parent.GetComponent(Components.Physics).prevPosition) - (self.parent.GetComponent(Components.Transform).position - self.parent.GetComponent(Components.Physics).prevPosition)
-        hitPoint, hitBool = None, None
-        hitPoint, hitBool = self.RaySegmentIntersection(hitPoint, hitBool,A,B,P,relativeDir)
-        collOffset = hitPoint - P if hitBool else Vec2(0,0)
-        return collOffset
         
     def RaySegmentIntersection(self,hitPoint,hitBool,A,B,P,dir):
         PA = A-P
@@ -354,12 +350,8 @@ class ColliderRect(Collider):
         return relativeVelocity
     
     def Recalculate(self, temp):
-        if temp:
-            self.tempVerts = self.GetVertices(temp=True)
-            self.tempNorms = self.GetNormals(self.tempVerts)
-        else:
-            self.verts = self.GetVertices(temp=False)
-            self.norms = self.GetNormals(self.verts)
+        self.verts = self.GetVertices(temp)
+        self.norms = self.GetNormals(self.verts)
     
     def GetVertices(self, temp=False):#CCW starting top left if not rotated
         physics = self.parent.GetComponent(Components.Physics)
@@ -392,7 +384,7 @@ class ColliderRect(Collider):
         verts = self.GetVertices()
         vertices = []
         for v in verts:
-            vertices.append((v.x+20,v.y))
+            vertices.append((v.x,v.y))
         pygame.draw.polygon(GlobalVars.screen,(20,220,20),vertices,1)
 
     def Encode(self,obj):

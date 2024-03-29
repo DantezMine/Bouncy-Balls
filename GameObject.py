@@ -7,6 +7,7 @@ class GameObject(object):
         self.__id = parentScene.CreateID()
         self.__components = {key: value for key, value in []} #initialize an empty dictionary using dictionary comprehension
         self.__parentScene = parentScene
+        self.__isBackground = False
         
         self.AddComponent(ComponentTransform.ComponentTransform())
         
@@ -17,11 +18,15 @@ class GameObject(object):
         self.__components[component.name] = component
         self.__components[component.name].parent = self
         component.Start()
+        if component.name == Components.Background:
+            self.__isBackground = True
         return True
     
     def RemoveComponent(self,componentName):
         if self.__components.__contains__(componentName):
             self.__components.pop(componentName)
+            if componentName == Components.Background:
+                self.__isBackground = False
             return True
         print("Component doesn't exist in object %d"%self.__id)
         return False
@@ -39,7 +44,13 @@ class GameObject(object):
         if self.__components.__contains__(compName):
             return self.__components[compName]
         return None
-        
+    
+    def HasComponent(self,compName):
+        return self.__components.__contains__(compName)
+    
+    def IsBackground(self):
+        return self.__isBackground    
+    
     def GetID(self):
         return self.__id
     

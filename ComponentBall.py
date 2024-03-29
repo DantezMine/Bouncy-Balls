@@ -8,8 +8,11 @@ import enum
 import pygame
 
 class BallType(enum.Enum):
-    Bouncy = enum.auto(),
+    Bouncy = enum.auto()
     Heavy = enum.auto()
+    
+    def Encode(self):
+        return self.name
 
 class Ball(Component.Component):
     def __init__(self, sling):
@@ -68,6 +71,7 @@ class Ball(Component.Component):
         outDict["state"] = obj.state
         outDict["sling"] = obj.sling.GetID()
         outDict["slingD"] = obj.slingD
+        outDict["ballType"] = obj.ballType.Encode()
     
 class BallBouncy(Ball):
     '''type : "Bouncy"'''

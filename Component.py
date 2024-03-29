@@ -20,15 +20,21 @@ class Component(object):
     
     def Encode(self,obj):
         outDict = {
+            "name" : obj.name.Encode(),
             "parentID" : obj.parent.GetID()
         }
         return outDict
     
 class Components(enum.Enum):
-    Transform = enum.auto(),
-    Physics = enum.auto(),
-    Sprite = enum.auto(),
-    Collider = enum.auto(),
-    Ball = enum.auto(),
-    Structure = enum.auto(),
+    Transform = enum.auto()
+    Physics = enum.auto()
+    Sprite = enum.auto()
+    Collider = enum.auto()
+    Ball = enum.auto()
+    Structure = enum.auto()
+    Ground = enum.auto()
+    Background = enum.auto()
+    
+    def Encode(self):
+        return self.name
     

@@ -3,18 +3,35 @@ import GameObject
 from Vector import Vec2
 import ComponentStructure
 import ComponentBall
+import ComponentGround
+import ComponentBackground
+from lib import GlobalVars
 
 def SetupScene1(world):
     scene = Scene.Scene("scene")
     world.AddScene(scene.name,scene)
     
+    width, height = GlobalVars.screen.get_width(), GlobalVars.screen.get_height()
+    
+    background = GameObject.GameObject(scene)
+    background.AddComponent(ComponentBackground.BackgroundNature(Vec2(width/2,height/2),width,height))
+    scene.AddGameObject(background)
+    
     struct1 = GameObject.GameObject(scene)
-    struct1.AddComponent(ComponentStructure.StructureWood(Vec2(300,300),25,100))
+    struct1.AddComponent(ComponentStructure.StructureWood(Vec2(270,300),25,100))
     scene.AddGameObject(struct1)
     
     struct2 = GameObject.GameObject(scene)
-    struct2.AddComponent(ComponentStructure.StructureWood(Vec2(200,300),100,200))
+    struct2.AddComponent(ComponentStructure.StructureWood(Vec2(230,300),25,100))
     scene.AddGameObject(struct2)
+    
+    struct3 = GameObject.GameObject(scene)
+    struct3.AddComponent(ComponentStructure.StructureWood(Vec2(250,200),25,100,-1.57075))
+    scene.AddGameObject(struct3)
+    
+    ground1 = GameObject.GameObject(scene)
+    ground1.AddComponent(ComponentGround.GroundDirt(Vec2(300,550),600,150,0))
+    scene.AddGameObject(ground1)
     
     # for i in range(10):
         # struct = GameObject.GameObject(scene)

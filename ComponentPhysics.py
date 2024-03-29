@@ -2,6 +2,7 @@ import json
 from Vector import Vec2
 import math
 import Component
+import ComponentCollider
 from Component import Components
 from lib import GlobalVars
 
@@ -99,7 +100,7 @@ class Physics(Component.Component):
             coll.Recalculate(temp=False)
     
     #Fully dynamic collision response as per Chris Hecker: http://www.chrishecker.com/images/e/e7/Gdmphys3.pdf with own modificiations
-    def CollisionResponseDynamic(self,collisionInfo, collisionCounts, collisionIndex):
+    def CollisionResponseDynamic(self,collisionInfo : ComponentCollider.CollisionInfo, collisionCounts, collisionIndex):
         physicsB = collisionInfo.objectB.GetComponent(Components.Physics)
         transfA = self.parent.GetComponent(Components.Transform)
         transfB = physicsB.parent.GetComponent(Components.Transform)
@@ -107,7 +108,7 @@ class Physics(Component.Component):
         moveA, moveB, rotateA, rotateB = 1,1,1,1
         if physicsB is None or physicsB.constraintPosition: #objectB is immovable
             moveB = 0
-        if self.constraintPosition or not moveA: #self is immovable
+        if self.constraintPosition: #self is immovable
             moveA = 0
         if physicsB is None or physicsB.constraintRotation: #objectB is nonrotatable
             rotateB = 0
@@ -169,15 +170,16 @@ class Physics(Component.Component):
             print("B: ", forceNormalB, collisionPointB)
             print("")
         
-        self.deltaV += deltaVA
-        self.deltaW += deltaWA
-        # self.deltaPos += deltaPosA
-        self.AddForce(forceNormalA, collisionPointA)
-        
-        physicsB.deltaV += deltaVB
-        physicsB.deltaW += deltaWB
-        # physicsB.deltaPos += deltaPosB
-        physicsB.AddForce(forceNormalB, collisionPointB)
+        if moveA:
+            self.deltaV += deltaVA
+            self.deltaW += deltaWA
+            # self.deltaPos += deltaPosA
+            self.AddForce(forceNormalA, collisionPointA)
+        if moveB:
+            physicsB.deltaV += deltaVB
+            physicsB.deltaW += deltaWB
+            # physicsB.deltaPos += deltaPosB
+            physicsB.AddForce(forceNormalB, collisionPointB)
     
     #count how many collisions in the list are with the same object for each collision
     def DetermineSimilarCollisions(self, collisions, allCollisions):
