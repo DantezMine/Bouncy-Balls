@@ -5,6 +5,7 @@ import Component
 from Component import Components
 from Vector import Vec2
 import enum
+import pygame
 
 class BallType(enum.Enum):
     Bouncy = enum.auto(),
@@ -26,18 +27,28 @@ class Ball(Component.Component):
         self.parent.AddComponent(ComponentPhysics.Physics())
         
     def Update(self, deltaTime):
+        mousePressed = False
+        mouseLeft = False
+        mousePos = Vec2(0,0)
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mousePressed = True
+                mousePos = Vec2(event.pos[0],event.pos[1])
+                if event.button == pygame.BUTTON_LEFT:
+                    mouseLeft = True
+        
         self.parent.GetComponent(Components.Collider).DisplayCollider()
         if self.state == "Origin":
             self.parent.GetComponent(Components.Transform).position = self.sling.GetComponent(Components.Transform).position
         if mousePressed:
-            if self.state == "Origin" and mouseButton == 37:
-                self.mousePosStart = Vec2(mouseX, mouseY)
+            if self.state == "Origin" and mouseLeft:
+                self.mousePosStart = mousePos
                 self.state = "Dragged"
-            if self.state == "Dragged" and mouseButton == 37:
-                self.mousePos = Vec2(mouseX, mouseY)
+            if self.state == "Dragged" and mouseLeft:
+                self.mousePos = mousePos
                 delta = self.mousePosStart - self.mousePos
                 self.parent.GetComponent(Components.Transform).position = self.sling.GetComponent(Components.Transform).position - delta
-            if self.state == "Released" and mouseButton == 37:
+            if self.state == "Released" and mouseLeft:
                 self.OnClick()
         if not mousePressed:
              if self.state == "Dragged":

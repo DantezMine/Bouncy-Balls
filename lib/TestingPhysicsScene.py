@@ -1,7 +1,7 @@
 import Scene
 import GameObject
-import ComponentStructure
 from Vector import Vec2
+import ComponentStructure
 import ComponentBall
 
 def SetupScene1(world):
@@ -17,9 +17,9 @@ def SetupScene1(world):
     scene.AddGameObject(struct2)
     
     # for i in range(10):
-    #     struct = GameObject.GameObject(scene)
-    #     struct.AddComponent(ComponentStructure.StructureWood(Vec2(60*i,300),50,100))
-    #     scene.AddGameObject(struct)
+        # struct = GameObject.GameObject(scene)
+        # struct.AddComponent(ComponentStructure.StructureWood(Vec2(60*i,300),50,100))
+        # scene.AddGameObject(struct)
     
     
     

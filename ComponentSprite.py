@@ -20,16 +20,11 @@ class Sprite(Component.Component):
         parentTransform = self.parent.GetComponent(Components.Transform)
         sprite = pygame.image.load("Bouncy-Balls/"+self.spritePath)
         
-        topLeft = parentTransform.position-Vec2(self.lenX,self.lenY)*(parentTransform.scale/2.0)
-        rect = (topLeft.x*(math.cos(parentTransform.rotation)-math.sin(parentTransform.rotation)),topLeft.y*(math.sin(parentTransform.rotation)+math.cos(parentTransform.rotation)))
-        image = pygame.transform.scale(sprite,(self.lenX*parentTransform.scale,self.lenY*parentTransform.scale))
-        image = pygame.transform.rotate(image,parentTransform.rotation)
-        
+        topLeft = (parentTransform.position-Vec2(self.lenX,self.lenY)*(parentTransform.scale/2.0)).Rotate(parentTransform.rotation)
+        rect = (topLeft.x,topLeft.y)
+        image = pygame.transform.rotate(pygame.transform.scale(sprite,(self.lenX*parentTransform.scale,self.lenY*parentTransform.scale)),parentTransform.rotation)
         
         GlobalVars.screen.blit(image,rect)
-        # translate(parentTransform.position.x, parentTransform.position.y)
-        # rotate(parentTransform.rotation)
-        # image(sprite,-self.lenX*parentTransform.scale/2.0,-self.lenY*parentTransform.scale/2.0,self.lenX*parentTransform.scale,self.lenY*parentTransform.scale)
         
     def Encode(self,obj):
         outDict = super(Sprite,self).Encode(obj)

@@ -1,14 +1,13 @@
-import time
 from Vector import Vec2
-import Component
 from Component import Components
-import math
+from lib import GlobalVars
+import Component
 import enum
+import pygame
 
 class ColliderType(enum.Enum):
     Circle = enum.auto(),
     Rect = enum.auto(),
-    
 
 class CollisionInfo:
     def __init__(self, collisionPoint, otherCollisionPoint, collisionNormal, otherNormal, objectA, objectB, collisionType, collisionResponseTag):
@@ -97,10 +96,7 @@ class ColliderCircle(Collider):
     def DisplayCollider(self):
         transform = self.parent.GetComponent(Components.Transform)
         center = transform.position
-        noFill()
-        stroke(20,220,20)
-        strokeWeight(2)
-        ellipse(center.x, center.y, self.radius*2*transform.scale, self.radius*2*transform.scale)
+        pygame.draw.circle(GlobalVars.screen,(20,220,20),(center.x,center.y),self.radius*transform.scale)
         
     def Encode(self,obj):
         outDict = super(ColliderCircle,self).Encode(obj)
@@ -240,9 +236,6 @@ class ColliderRect(Collider):
         return collOffset
         
     def RaySegmentIntersection(self,hitPoint,hitBool,A,B,P,dir):
-        ellipse(A.x,A.y,7,7)
-        ellipse(B.x,B.y,7,7)
-        ellipse(P.x,P.y,7,7)
         PA = A-P
         AB = B-A
         #lines are parallel up or down
@@ -270,8 +263,6 @@ class ColliderRect(Collider):
         else:
             hitPoint = P + dir * s
             hitBool = True
-        if hitPoint is not None:
-            ellipse(hitPoint.x,hitPoint.y,7,7)
         return hitPoint,hitBool
                 
     def IsPointInsideRect(self,point,verts):
@@ -398,22 +389,11 @@ class ColliderRect(Collider):
         return normals
     
     def DisplayCollider(self):
-        return
         verts = self.GetVertices()
-        noFill()
-        stroke(20,220,20)
-        strokeWeight(2)
-        beginShape()
+        vertices = []
         for v in verts:
-            vertex(v.x,v.y)
-        endShape(CLOSE)
-        strokeWeight(1)
-        #display normals
-        for i in range(4):
-            ab = verts[(i+1)%4]-verts[i]
-            n = Vec2(-ab.y,ab.x).Normalize()
-            mid = verts[i] + ab/2
-            line(mid.x,mid.y,mid.x+n.x*20,mid.y+n.y*20)
+            vertices.append((v.x+20,v.y))
+        pygame.draw.polygon(GlobalVars.screen,(20,220,20),vertices,1)
 
     def Encode(self,obj):
         outDict = super(ColliderRect,self).Encode(obj)
