@@ -51,9 +51,10 @@ class Scene:
             for go in self.__gameObjects.values():
                 go.UpdatePhysics(dt,None,0)
             for go in self.__gameObjects.values():
-                go.UpdateCollider(dt, self.GetComponents(Components.Collider))
                 collider = go.GetComponent(Components.Collider)
                 if  collider is not None:
+                    #print(go.GetID(), collider.verts)
+                    go.UpdateCollider(dt, self.GetComponents(Components.Collider))
                     collisions += collider.collisions
             for go in self.__gameObjects.values():
                 go.UpdatePhysics(dt,collisions,1)

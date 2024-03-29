@@ -26,11 +26,11 @@ def SetupScene1(world):
     scene.AddGameObject(struct2)
     
     struct3 = GameObject.GameObject(scene)
-    struct3.AddComponent(ComponentStructure.StructureWood(Vec2(250,200),25,100,-1.57075))
+    struct3.AddComponent(ComponentStructure.StructureWood(Vec2(270,200),25,100,1.57075))
     scene.AddGameObject(struct3)
     
     ground1 = GameObject.GameObject(scene)
-    ground1.AddComponent(ComponentGround.GroundDirt(Vec2(300,550),600,150,0))
+    ground1.AddComponent(ComponentGround.GroundDirt(Vec2(300,525),600,150))
     scene.AddGameObject(ground1)
     
     # for i in range(10):

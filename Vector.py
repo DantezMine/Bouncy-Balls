@@ -58,8 +58,11 @@ class Vec2:
         return Vec2(self.x/mag,self.y/mag)
     
     def AngleBetween(self,other): #in radians between 0 and pi
-        if self.Dot(other)/(self.Mag()*other.Mag()) > 1:
+        cosVal = self.Dot(other)/(self.Mag()*other.Mag())
+        if cosVal > 1:
             return 0.0
+        if cosVal < -1:
+            return math.pi
         return math.acos(self.Dot(other)/(self.Mag()*other.Mag()))
     
     def ProjectedOn(self,other):

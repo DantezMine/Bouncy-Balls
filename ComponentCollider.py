@@ -123,6 +123,7 @@ class ColliderRect(Collider):
         self.collisions = []
         self.CheckCollision(colliders)
         self._UpdateOnCollision()
+        self.DisplayCollider()
         
     def CheckCollision(self, colliders):
         verts = self.verts

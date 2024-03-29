@@ -35,13 +35,11 @@ class Physics(Component.Component):
         self.prevPosition = self.parent.GetComponent(Components.Transform).position
         
     def Update(self,deltaTime, allCollisions, mode):
-        coll = self.parent.GetComponent(Components.Collider)
+        collider = self.parent.GetComponent(Components.Collider)
         if mode == 0:
             self.TempNextState(deltaTime)
-            if coll is not None:
-                coll.Recalculate(temp=True)
+        #collect collisions and count duplicates (same objects colliding)
         if mode == 1:
-            collider = self.parent.GetComponent(Components.Collider)
             if collider is not None:
                 collisions = collider.collisions
                 collisionCounts = self.DetermineSimilarCollisions(collisions, allCollisions)
@@ -50,8 +48,6 @@ class Physics(Component.Component):
                         self.CollisionResponseDynamic(collisions[i], collisionCounts, i)
         elif mode == 2:
             self.VelocityVerletIntegration(deltaTime)
-            if coll is not None:
-                coll.Recalculate(temp=False)
     
     def TempNextState(self,deltaTime):
         transform          = self.parent.GetComponent(Components.Transform)

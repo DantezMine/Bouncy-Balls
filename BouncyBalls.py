@@ -35,7 +35,7 @@ while GlobalVars.running:
     
     if not GlobalVars.debug:
         GlobalVars.screen.fill((255,255,255))
-        world.UpdateActiveScene(deltaTime=1.0/60.0,updateFrequency=20)
+        world.UpdateActiveScene(deltaTime=1.0/60.0,updateFrequency=10)
         GlobalVars.frameCount += 1
 
     else:
