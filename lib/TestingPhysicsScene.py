@@ -42,6 +42,10 @@ def SetupScene1(world):
     ground1.AddComponent(ComponentGround.GroundDirt(Vec2(0,-2.5),6.0,1.0))
     scene.AddGameObject(ground1)
     
+    cannon = GameObject.GameObject(scene)
+    cannon.AddComponent(ComponentCannon(Vec2(200,300)))
+    scene.AddGameObject(cannon)
+    
     # for i in range(10):
         # struct = GameObject.GameObject(scene)
         # struct.AddComponent(ComponentStructure.StructureWood(Vec2(60*i,300),50,100))
