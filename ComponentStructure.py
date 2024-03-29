@@ -5,19 +5,30 @@ import Component
 from Component import Components
 from Vector import Vec2
 import time
+import enum
+
+class StructureType(enum.Enum):
+    Wood = enum.auto()
+    Metal = enum.auto()
+    
+    def Encode(self):
+        return self.name
 
 class Structure(Component.Component):
-    def __init__(self, position = Vec2(0,0), lenX = 50, lenY = 50):
+    def __init__(self, position = Vec2(0,0), lenX = 50, lenY = 50, rotation = 0):
         self.name = Components.Structure
         self.parent = None
         self.initPos = position
+        self.initRot = rotation
         self.lenX = lenX
         self.lenY = lenY
         self.destructionMomentum = 100
         self.destroyed = False
 
     def Start(self):
-        self.parent.GetComponent(Components.Transform).position = self.initPos
+        transform = self.parent.GetComponent(Components.Transform)
+        transform.position = self.initPos
+        transform.rotation = self.initRot
         self.parent.AddComponent(ComponentCollider.ColliderRect(lenX = self.lenX, lenY = self.lenY))
         self.parent.AddComponent(ComponentPhysics.Physics())
     
@@ -30,6 +41,7 @@ class Structure(Component.Component):
         self.DestructionCheck(collider)
 
     def DestructionCheck(self,collider):
+        return
         physicsComponent = self.parent.GetComponent(Components.Physics)
         otherPhysicsComponent = collider.parent.GetComponent(Components.Physics)
         momentum = 0
@@ -51,7 +63,7 @@ class Structure(Component.Component):
     
     def Encode(self,obj):
         outDict = super(Structure,self).Encode(obj)
-        outDict["structureType"] = obj.structureType
+        outDict["structureType"] = obj.structureType.Encode()
         outDict["lenX"] = obj.lenX
         outDict["lenY"] = obj.lenY
         outDict["destructionMomentum"] = obj.destructionMomentum
@@ -61,24 +73,24 @@ class Structure(Component.Component):
 
 class StructureWood(Structure):
     '''type : "Wood"'''
-    def __init__(self, position, lenX=50, lenY=50):
-        super(StructureWood, self).__init__(position, lenX, lenY)
-        self.structureType = "Wood"
+    def __init__(self, position, lenX=50, lenY=50, rotation = 0):
+        super(StructureWood, self).__init__(position, lenX, lenY, rotation)
+        self.structureType = StructureType.Wood
 
     def Start(self):
         super(StructureWood,self).Start()
-        self.destructionMomentum = 20
+        self.destructionMomentum = 2500
         self.parent.GetComponent(Components.Physics).mass = 30
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/WoodStructure.png",lenX = self.lenX, lenY = self.lenY))
 
 class StructureMetal(Structure):
     '''type : "Metal"'''
-    def __init__(self, position, lenX=50, lenY=50):
-        super(StructureWood, self).__init__(position, lenX, lenY)
-        self.structureType = "Metal"
+    def __init__(self, position, lenX=50, lenY=50, rotation = 0):
+        super(StructureWood, self).__init__(position, lenX, lenY, rotation)
+        self.structureType = StructureType.Metal
 
     def Start(self):
-        self.destructionMomentum = 20
+        self.destructionMomentum = 3500
         super(StructureWood,self).Start()
         self.parent.GetComponent(Components.Physics).mass = 50
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/StructureMetal.png"))

@@ -60,7 +60,11 @@ class Scene:
             for go in self.__gameObjects.values():
                 go.UpdatePhysics(dt,None,2)
         for go in self.__gameObjects.values():
-            go.Show(deltaTime)
+            if go.IsBackground():
+                go.Show(deltaTime)
+        for go in self.__gameObjects.values():
+            if not go.IsBackground():
+                go.Show(deltaTime)
     
 
     def StartScene(self):

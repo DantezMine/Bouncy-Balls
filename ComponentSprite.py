@@ -20,10 +20,9 @@ class Sprite(Component.Component):
         parentTransform = self.parent.GetComponent(Components.Transform)
         sprite = pygame.image.load("Bouncy-Balls/"+self.spritePath)
         
-        topLeft = (parentTransform.position-Vec2(self.lenX,self.lenY)*(parentTransform.scale/2.0)).Rotate(parentTransform.rotation)
-        rect = (topLeft.x,topLeft.y)
-        image = pygame.transform.rotate(pygame.transform.scale(sprite,(self.lenX*parentTransform.scale,self.lenY*parentTransform.scale)),parentTransform.rotation)
-        
+        topLeft = parentTransform.position-(Vec2(self.lenX,self.lenY)*(parentTransform.scale/2.0)).Rotate(parentTransform.rotation)
+        rect = (topLeft.x,topLeft.y,1,1)
+        image = pygame.transform.rotate(pygame.transform.scale(sprite,(self.lenX*parentTransform.scale,self.lenY*parentTransform.scale)),parentTransform.rotation*180.0/math.pi)        
         GlobalVars.screen.blit(image,rect)
         
     def Encode(self,obj):

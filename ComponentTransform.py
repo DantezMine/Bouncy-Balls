@@ -28,6 +28,7 @@ class ComponentTransform(Component.Component):
     
     def Encode(self,obj):
         return {
+            "name" : obj.name.Encode(),
             "parentID" : obj.parent.GetID(),
             "position" : obj.position.Encode(),
             "rotation" : obj.rotation,
