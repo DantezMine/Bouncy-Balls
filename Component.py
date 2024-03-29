@@ -1,4 +1,7 @@
-class Component:
+import json
+import enum
+
+class Component(object):
     def __init__(self):
         self.name = None #needs to be set in each component class individually
         self.parent = None
@@ -11,3 +14,21 @@ class Component:
     
     def OnCollision(self,collider):
         pass
+    
+    def ToJSONstr(self):
+        return json.dumps(obj=self,default=self.Encode,indent=4)
+    
+    def Encode(self,obj):
+        outDict = {
+            "parentID" : obj.parent.GetID()
+        }
+        return outDict
+    
+class Components(enum.Enum):
+    Transform = enum.auto(),
+    Physics = enum.auto(),
+    Sprite = enum.auto(),
+    Collider = enum.auto(),
+    Ball = enum.auto(),
+    Structure = enum.auto(),
+    

@@ -1,32 +1,30 @@
 import Scene
 import GameObject
-import ComponentPhysics
 from Vector import Vec2
+import ComponentStructure
 import ComponentBall
 
-from lib import MovingCollision
-
 def SetupScene1(world):
-    scene = Scene.Scene()
-    world.AddScene("scene",scene)
-
-    rect1 = GameObject.GameObject(scene)
-    rect1.AddComponent(MovingCollision.MovingCollision())
-    rect1.GetComponent("Transform").position = Vec2(310,150)
-    rect1.AddComponent(ComponentPhysics.Physics())
+    scene = Scene.Scene("scene")
+    world.AddScene(scene.name,scene)
     
-    rect2 = GameObject.GameObject(scene)
-    rect2.AddComponent(MovingCollision.MovingCollision())
-    rect2.GetComponent("Transform").position = Vec2(320,250)
-    rect2.AddComponent(ComponentPhysics.Physics())
-    rect2.GetComponent("Transform").rotation = 0.785
-    rect2.GetComponent("Physics").constraintPosition = True
-    rect2.GetComponent("Physics").constraintRotation = True
-        
-    scene.AddGameObject(rect1)
-    scene.AddGameObject(rect2)
+    struct1 = GameObject.GameObject(scene)
+    struct1.AddComponent(ComponentStructure.StructureWood(Vec2(300,300),25,100))
+    scene.AddGameObject(struct1)
+    
+    struct2 = GameObject.GameObject(scene)
+    struct2.AddComponent(ComponentStructure.StructureWood(Vec2(200,300),100,200))
+    scene.AddGameObject(struct2)
+    
+    # for i in range(10):
+        # struct = GameObject.GameObject(scene)
+        # struct.AddComponent(ComponentStructure.StructureWood(Vec2(60*i,300),50,100))
+        # scene.AddGameObject(struct)
+    
+    
     
     #example for what adding a structure should look like. minimal clutter, only add one component
     # block1 = GameObject.GameObject(scene)
     # block1.AddComponent(Structure("Wood",posX=300,posY=350,lenX=20,lenY=100))
     # scene.AddGameObject(block1)
+    

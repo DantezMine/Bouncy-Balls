@@ -1,9 +1,11 @@
+import json
 import Component
+from Component import Components
 from Vector import Vec2
 
 class ComponentTransform(Component.Component):
     def __init__(self):
-        self.name = "Transform"
+        self.name = Components.Transform
         self.parent = None
         
         self.position = Vec2(0,0)
@@ -21,3 +23,15 @@ class ComponentTransform(Component.Component):
         da = self.forward.AngleBetween(targetPos-self.position) #angle between forward and target
         self.Rotate(da)
         
+    def ToJSON(self):
+        return json.dumps(obj=self,default=self.Encode,indent=4)
+    
+    def Encode(self,obj):
+        return {
+            "parentID" : obj.parent.GetID(),
+            "position" : obj.position.Encode(),
+            "rotation" : obj.rotation,
+            "scale" : obj.scale,
+            "up" : obj.up.Encode(),
+            "forward" : obj.forward.Encode()
+        }

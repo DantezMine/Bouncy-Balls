@@ -1,55 +1,67 @@
+import json
 from Vector import Vec2
 import math
 import Component
+from Component import Components
 from lib import GlobalVars
 
 class Physics(Component.Component):
     def __init__(self):
-        self.name = "Physics"
+        self.name = Components.Physics
         self.parent = None
         self.mass = 1.0 #kg
         self.momentOfInertia = 50 #
         self.restitution = 0.2
         
         self.prevPosition = Vec2(0,0)
-        self.velocity = Vec2(0,0) #m/s
-        self.acceleration = Vec2(0,0) #m/s^2
-        self.netForce = Vec2(0,0) #N
+        self.velocity = Vec2(0,0)
+        self.acceleration = Vec2(0,0)
+        self.netForce = Vec2(0,0)
         self.deltaV = Vec2(0,0)
         
         self.angularSpeed = 0 #radians/s
         self.angularAcc = 0 #radians/s^s
-        self.netTorque = 0 #Nm
+        self.netTorque = 0
         self.deltaW = 0
         self.deltaPhi = 0
         
-        self.constraintPosition = False #doesn't consider rotation
+        self.constraintPosition = False
         self.constraintRotation = False
-        self.gravity = False
-        self.gravForce = Vec2(0,300)
+        self.gravity = True
+        self.gravForce = Vec2(0,980)
     
     def Start(self):
-        self.prevPosition = self.parent.GetComponent("Transform").position
+        self.prevPosition = self.parent.GetComponent(Components.Transform).position
         
     def Update(self,deltaTime, allCollisions, mode):
+        coll = self.parent.GetComponent(Components.Collider)
         if mode == 0:
             self.TempNextState(deltaTime)
+            if coll is not None:
+                coll.Recalculate(temp=True)
         if mode == 1:
-            collisions = self.parent.GetComponent("Collider").collisions
-            collisionCounts = self.DetermineSimilarCollisions(collisions, allCollisions)
-            for i in range(len(collisions)):
-                if collisions[i].collisionResponseTag:
-                    self.CollisionResponseDynamic(collisions[i], collisionCounts, i)
+            collider = self.parent.GetComponent(Components.Collider)
+            if collider is not None:
+                collisions = collider.collisions
+                collisionCounts = self.DetermineSimilarCollisions(collisions, allCollisions)
+                for i in range(len(collisions)):
+                    if collisions[i].collisionResponseTag:
+                        self.CollisionResponseDynamic(collisions[i], collisionCounts, i)
         elif mode == 2:
             self.VelocityVerletIntegration(deltaTime)
+            if coll is not None:
+                coll.Recalculate(temp=False)
     
     def TempNextState(self,deltaTime):
-        transform          = self.parent.GetComponent("Transform")
+        transform          = self.parent.GetComponent(Components.Transform)
         self.tempNextPos   = transform.position + self.velocity * deltaTime + self.acceleration * (deltaTime * deltaTime * 0.5)
         self.tempNextAngle = transform.rotation + self.angularSpeed * deltaTime + self.angularAcc * (deltaTime * deltaTime * 0.5)
+        coll = self.parent.GetComponent(Components.Collider)
+        if coll is not None:
+            coll.Recalculate(temp=True)
     
     def VelocityVerletIntegration(self,deltaTime):
-        transform = self.parent.GetComponent("Transform")
+        transform = self.parent.GetComponent(Components.Transform)
         self.prevPosition = transform.position
             
         #add deltaV from collision response
@@ -82,12 +94,15 @@ class Physics(Component.Component):
         self.angularAcc    = nextAngAcc
         self.netTorque     = 0
         
+        coll = self.parent.GetComponent(Components.Collider)
+        if coll is not None:
+            coll.Recalculate(temp=False)
     
     #Fully dynamic collision response as per Chris Hecker: http://www.chrishecker.com/images/e/e7/Gdmphys3.pdf with own modificiations
     def CollisionResponseDynamic(self,collisionInfo, collisionCounts, collisionIndex):
-        physicsB = collisionInfo.objectB.GetComponent("Physics")
-        transfA = self.parent.GetComponent("Transform")
-        transfB = physicsB.parent.GetComponent("Transform")
+        physicsB = collisionInfo.objectB.GetComponent(Components.Physics)
+        transfA = self.parent.GetComponent(Components.Transform)
+        transfB = physicsB.parent.GetComponent(Components.Transform)
         
         moveA, moveB, rotateA, rotateB = 1,1,1,1
         if physicsB is None or physicsB.constraintPosition: #objectB is immovable
@@ -131,9 +146,9 @@ class Physics(Component.Component):
         forceNormalA, forceNormalB = Vec2(0,0), Vec2(0,0)
         forceNormal = normal * -self.gravForce.Mag() * math.cos(alpha)
         if self.gravity:
-            forceNormalA = forceNormal * self.mass / collisionCounts[collisionIndex]
+            forceNormalA = forceNormal * (self.mass / collisionCounts[collisionIndex])
         if physicsB.gravity:
-            forceNormalB = -forceNormal * physicsB.mass / collisionCounts[collisionIndex]
+            forceNormalB = -forceNormal * (physicsB.mass / collisionCounts[collisionIndex])
                 
         deltaVA = normal * (deltaP/self.mass) * moveA
         deltaVB = normal * (-deltaP/physicsB.mass) * moveB
@@ -143,9 +158,9 @@ class Physics(Component.Component):
         if GlobalVars.debug:
             GlobalVars.update = False
             print("Collision Info: %s"%(collisionInfo))
-            print("Object A ID: %s, Position: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(self.parent.GetID(),self.parent.GetComponent("Transform").position,self.velocity,deltaVA,self.angularSpeed,deltaWA))
+            print("Object A ID: %s, Position: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(self.parent.GetID(),self.parent.GetComponent(Components.Transform).position,self.velocity,deltaVA,self.angularSpeed,deltaWA))
             print("moveA: %s, rotateA: %s"%(moveA,rotateA))
-            print("Object B ID: %s, Position: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(physicsB.parent.GetID(),physicsB.parent.GetComponent("Transform").position,physicsB.velocity,deltaVB,physicsB.angularSpeed,deltaWB))
+            print("Object B ID: %s, Position: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(physicsB.parent.GetID(),physicsB.parent.GetComponent(Components.Transform).position,physicsB.velocity,deltaVB,physicsB.angularSpeed,deltaWB))
             print("moveB: %s, rotateB: %s"%(moveB,rotateB))
             print("")
             
@@ -180,14 +195,14 @@ class Physics(Component.Component):
             self.netForce = Vec2(0,0)
         elif self.gravity:
             self.netForce += self.gravForce * self.mass
-        return self.netForce/float(self.mass)
+        return self.netForce*(1.0/float(self.mass))
     
     def AddForce(self, force, point = None): #force is a Vec2
         self.netForce += force
         if point is None:
             return
         #calculate distance from force direction to COM
-        posCOM = self.parent.GetComponent("Transform").position
+        posCOM = self.parent.GetComponent(Components.Transform).position
         rAP = posCOM - point
         sign = 1 if rAP.Dot(force.Perp()) > 0 else -1
         phi = force.AngleBetween(rAP)
@@ -204,3 +219,28 @@ class Physics(Component.Component):
         if self.constraintRotation:
             self.netTorque = 0
         return self.netTorque/float(self.momentOfInertia)
+    
+    def Encode(self,obj):
+        outDict = super(Physics,self).Encode(obj)
+        outDict["mass"] = obj.mass
+        outDict["inertia"] = obj.momentOfInertia
+        outDict["restitution"] = obj.restitution
+        if obj.prevPosition != Vec2(0,0):
+            outDict["prevPosition"] = obj.prevPosition.Encode()
+        if obj.velocity != Vec2(0,0):
+            outDict["velocity"] = obj.velocity.Encode()
+        if obj.acceleration != Vec2(0,0):
+            outDict["acceleration"] = obj.acceleration.Encode()
+        if obj.angularSpeed != 0:
+            outDict["angularSpeed"] = obj.angularSpeed
+        if obj.angularAcc != 0:
+            outDict["angularAcc"] = obj.angularAcc
+        if obj.constraintPosition != False:
+            outDict["constraintPosition"] = obj.constraintPosition
+        if obj.constraintRotation != False:
+            outDict["constraintRotation"] = obj.constraintRotation
+        if obj.gravity != False:
+            outDict["gravity"] = obj.gravity
+        if obj.gravForce != Vec2(0,300):
+            outDict["gravForce"] = obj.gravForce.Encode()
+        return outDict
