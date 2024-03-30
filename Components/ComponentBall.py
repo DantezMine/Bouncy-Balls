@@ -4,6 +4,7 @@ from Components import ComponentPhysics
 from Components import Component
 from Components.Component import Components
 from Vector import Vec2
+from lib import GlobalVars
 import enum
 import pygame
 
@@ -33,7 +34,7 @@ class Ball(Component.Component):
         mousePressed = False
         mouseLeft = False
         mousePos = Vec2(0,0)
-        for event in pygame.event.get():
+        for event in GlobalVars.event:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mousePressed = True
                 mousePos = Vec2(event.pos[0],event.pos[1])
