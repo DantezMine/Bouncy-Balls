@@ -11,9 +11,10 @@ class Cannon(Component.Component):
         self.name = Components.Cannon
         self.parent = None
         self.initPos = position
-        self.baseOffset = Vec2(0, 50)
         self.rotation = 0
-
+        self.mousePressed = False
+        self.mouseLeft = False
+        
     def Start(self):
         self.transform = self.parent.GetComponent(Components.Transform)
         self.transform.position = self.initPos
@@ -21,18 +22,19 @@ class Cannon(Component.Component):
         # self.parent.AddComponent(Base(self.initPos + self.baseOffset))
     
     def Update(self, deltaTime):
-        mousePressed = False
-        mouseLeft = False
-        mousePos = Vec2(0,0)
+        mousePos = pygame.mouse.get_pos()
+        mousePos = Vec2(mousePos[0],mousePos[1])
         for event in GlobalVars.events:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                mousePressed = True
-                mousePos = Vec2(event.pos[0],event.pos[1])
+                self.mousePressed = True
                 if event.button == 1:
-                    mouseLeft = True
+                    self.mouseLeft = True
+            elif event.type == pygame.MOUSEBUTTONUP:
+                self.mousePressed = False
+                self.mouseLeft = False
                     
-        if mousePressed:
-            if mouseLeft:
+        if self.mousePressed:
+            if self.mouseLeft:
                 delta = mousePos - self.initPos
                 self.rotation = math.atan(float(delta.y)/delta.x)
                 print(delta, self.rotation)
@@ -42,7 +44,7 @@ class Base(Component.Component):
     def __init__(self, position=Vec2(0, 0)):
         self.name = Components.Cannon
         self.parent = None
-        self.initPos = position
+        self.initPos = position + Vec2(0, 50)
         
     def Start(self):
         transform = self.parent.GetComponent(Components.Transform)
