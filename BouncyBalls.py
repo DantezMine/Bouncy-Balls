@@ -24,7 +24,8 @@ world.StartActiveScene()
 
 '''pygame loop'''
 while GlobalVars.running:
-    for event in pygame.event.get():
+    GlobalVars.events = pygame.event.get()
+    for event in GlobalVars.events:
         if event.type == pygame.QUIT:
             GlobalVars.running = False
         if event.type == pygame.KEYDOWN:

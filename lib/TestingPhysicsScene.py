@@ -43,7 +43,7 @@ def SetupScene1(world):
     scene.AddGameObject(ground1)
     
     cannon = GameObject.GameObject(scene)
-    cannon.AddComponent(ComponentCannon(Vec2(200,300)))
+    cannon.AddComponent(ComponentCannon.Cannon(Vec2(200,300)))
     scene.AddGameObject(cannon)
     
     # for i in range(10):
