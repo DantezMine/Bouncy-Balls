@@ -35,6 +35,7 @@ class Components(enum.Enum):
     Ground = enum.auto()
     Background = enum.auto()
     Camera = enum.auto()
+    GoalField = enum.auto()
     
     def Encode(self):
         return self.name

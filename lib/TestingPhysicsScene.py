@@ -7,6 +7,8 @@ from Components import ComponentCamera
 from Components import ComponentGround
 from Components import ComponentBackground
 from lib import GlobalVars
+from Components import ComponentGoalField
+from Components.Component import Components
 
 def SetupScene1(world):
     scene = Scene.Scene("scene")
@@ -41,6 +43,16 @@ def SetupScene1(world):
     ground1 = GameObject.GameObject(scene)
     ground1.AddComponent(ComponentGround.GroundDirt(Vec2(0,-2.5),6.0,1.0))
     scene.AddGameObject(ground1)
+    
+    goalField = GameObject.GameObject(scene)
+    goalField.AddComponent(ComponentGoalField.GoalField(Vec2(2,0),1,0.5))
+    scene.AddGameObject(goalField)
+    
+    ball = GameObject.GameObject(scene)
+    ball.AddComponent(ComponentBall.BallBouncy(None))
+    scene.AddGameObject(ball)    
+    ball.GetComponent(Components.Transform).position = Vec2(2,2)
+    ball.GetComponent(Components.Ball).state = "Released"
     
     # for i in range(10):
         # struct = GameObject.GameObject(scene)

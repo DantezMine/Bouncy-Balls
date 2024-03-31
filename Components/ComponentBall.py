@@ -59,8 +59,7 @@ class Ball(Component.Component):
                 delta = self.mousePosStart - self.mousePos
                 force = delta * self.slingD
                 self.parent.GetComponent(Components.Physics).AddForce(force)
-        if self.state == "Released":
-             self.parent.GetComponent(Components.Physics).AddForce(Vec2(0, 60))
+       
       
     def OnClick(self):
         pass
@@ -87,6 +86,7 @@ class BallBouncy(Ball):
         self.parent.GetComponent(Components.Physics).restitution = 0.8
         self.parent.GetComponent(Components.Physics).mass = 0.08
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/TennisBall.PNG", diameter=self.radius*2))
+        self.parent.GetComponent(Components.Collider).tags = ["Ball"]
         
 
 class BallBowling(Ball):
