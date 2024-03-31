@@ -81,7 +81,7 @@ class BallBouncy(Ball):
     
     def Start(self):
         self.radius = 30
-        circColl = ComponentCollider.ColliderCircle(radius=self.radius)
+        circColl = ComponentCollider.ColliderCircle(radius=self.radius,tags=["Ball"])
         self.parent.AddComponent(circColl)
         self.parent.AddComponent(ComponentPhysics.Physics())
         self.parent.GetComponent(Components.Physics).restitution = 0.8
@@ -98,7 +98,7 @@ class BallBowling(Ball):
     
     def Start(self):
         self.radius = 60
-        circColl = ComponentCollider.ColliderCircle(radius=self.radius)
+        circColl = ComponentCollider.ColliderCircle(radius=self.radius,tags=["Ball"])
         self.parent.AddComponent(circColl)
         self.parent.AddComponent(ComponentPhysics.Physics())
         self.parent.GetComponent(Components.Physics).restitution = 0.1
