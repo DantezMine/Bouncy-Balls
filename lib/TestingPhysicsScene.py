@@ -28,10 +28,13 @@ def SetupScene1(world):
     struct1.AddComponent(ComponentStructure.StructureWood(Vec2(0.5,-1.5),0.25,1.0))
     scene.AddGameObject(struct1)
     
-    # struct2 = GameObject.GameObject(scene)
-    # struct2.AddComponent(ComponentStructure.StructureWood(Vec2(-0.5,-1.5),0.25,1.0))
-    # scene.AddGameObject(struct2)
+    struct3 = GameObject.GameObject(scene)
+    struct3.AddComponent(ComponentStructure.StructureWood(Vec2(0,1),0.25,1.0,1.57075))
+    scene.AddGameObject(struct3)
     
+    struct4 = GameObject.GameObject(scene)
+    struct4.AddComponent(ComponentStructure.StructureWood(Vec2(-1,1),0.25,1.0,0.3))
+    #scene.AddGameObject(struct4)
     struct3 = GameObject.GameObject(scene)
     struct3.AddComponent(ComponentStructure.StructureWood(Vec2(0,1),0.25,1.0,1.57075))
     scene.AddGameObject(struct3)
