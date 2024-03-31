@@ -9,6 +9,8 @@ from Components import ComponentBackground
 from Components import ComponentCannon
 
 from lib import GlobalVars
+from Components import ComponentGoalField
+from Components.Component import Components
 
 def SetupScene1(world):
     scene = Scene.Scene("scene")
@@ -54,6 +56,14 @@ def SetupScene1(world):
     cannonBase = GameObject.GameObject(scene)
     cannonBase.AddComponent(ComponentCannon.Base(Vec2(-1,-1)))
     scene.AddGameObject(cannonBase)
+    
+    goalField = GameObject.GameObject(scene)
+    goalField.AddComponent(ComponentGoalField.GoalField(Vec2(2,0),1,0.5))
+    scene.AddGameObject(goalField)
+    
+    ball = GameObject.GameObject(scene)
+    ball.AddComponent(ComponentBall.BallBouncy(None))
+    scene.AddGameObject(ball)
     
     # for i in range(10):
         # struct = GameObject.GameObject(scene)
