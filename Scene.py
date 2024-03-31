@@ -1,5 +1,5 @@
 import json
-from Component import Components
+from Components.Component import Components
 
 class Scene:
     ID = 0
@@ -10,6 +10,8 @@ class Scene:
     def AddGameObject(self,gameObject):
         if self.__gameObjects.__contains__(gameObject):
             return False
+        if gameObject.HasComponent(Components.Camera):
+            self.camera = gameObject.GetComponent(Components.Camera)
         self.__gameObjects[gameObject.GetID()] = gameObject
         return True
     
@@ -61,17 +63,13 @@ class Scene:
             for go in self.__gameObjects.values():
                 go.UpdatePhysics(dt,None,2)
         for go in self.__gameObjects.values():
-            if go.IsBackground():
-                go.Show(deltaTime)
-        for go in self.__gameObjects.values():
-            if not go.IsBackground():
-                go.Show(deltaTime)
+            go.Show(deltaTime)
     
 
     def StartScene(self):
         for go in self.__gameObjects.values():
             go.Start()
-        print(self.ToJSONstr())
+        #print(self.ToJSONstr())
             
     def ToJSONstr(self):
         outString = json.dumps(obj=self,default=self.Encode,indent=4)

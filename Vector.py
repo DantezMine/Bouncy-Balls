@@ -2,8 +2,8 @@ import math
 
 class Vec2:
     def __init__(self,x,y):
-        self.x = x
-        self.y = y
+        self.x = float(x)
+        self.y = float(y)
         
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y

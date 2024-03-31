@@ -1,9 +1,9 @@
 import json
 from Vector import Vec2
 import math
-import Component
-import ComponentCollider
-from Component import Components
+from Components import Component
+from Components import ComponentCollider
+from Components.Component import Components
 from lib import GlobalVars
 
 class Physics(Component.Component):
@@ -29,7 +29,7 @@ class Physics(Component.Component):
         self.constraintPosition = False
         self.constraintRotation = False
         self.gravity = True
-        self.gravForce = Vec2(0,980)
+        self.gravForce = Vec2(0,-9.8)
     
     def Start(self):
         self.prevPosition = self.parent.GetComponent(Components.Transform).position
@@ -138,7 +138,7 @@ class Physics(Component.Component):
         #angle between negative normal and gravity
         alpha = (-normal).AngleBetween(self.gravForce)
         if alpha > math.pi/2.0:
-            alpha -= math.pi/2.0
+            alpha -= math.pi/2.0 
             
         forceNormalA, forceNormalB = Vec2(0,0), Vec2(0,0)
         forceNormal = normal * -self.gravForce.Mag() * math.cos(alpha)
@@ -169,12 +169,10 @@ class Physics(Component.Component):
         if moveA:
             self.deltaV += deltaVA
             self.deltaW += deltaWA
-            # self.deltaPos += deltaPosA
             self.AddForce(forceNormalA, collisionPointA)
         if moveB:
             physicsB.deltaV += deltaVB
             physicsB.deltaW += deltaWB
-            # physicsB.deltaPos += deltaPosB
             physicsB.AddForce(forceNormalB, collisionPointB)
     
     #count how many collisions in the list are with the same object for each collision

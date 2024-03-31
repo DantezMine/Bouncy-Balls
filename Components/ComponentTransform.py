@@ -1,7 +1,8 @@
 import json
-import Component
-from Component import Components
+from Components import Component
+from Components.Component import Components
 from Vector import Vec2
+from lib import GlobalVars
 
 class ComponentTransform(Component.Component):
     def __init__(self):
@@ -23,9 +24,13 @@ class ComponentTransform(Component.Component):
         da = self.forward.AngleBetween(targetPos-self.position) #angle between forward and target
         self.Rotate(da)
         
-    def ToJSON(self):
-        return json.dumps(obj=self,default=self.Encode,indent=4)
-    
+    def WorldToScreenPos(self,pos,camera):
+        width = GlobalVars.screen.get_width()
+        height = GlobalVars.screen.get_height()
+        xScreen =        (pos.x*camera.scale + 1)*width /2.0
+        yScreen = height-(pos.y*camera.scale + 1)*height/2.0
+        return Vec2(xScreen,yScreen)
+        
     def Encode(self,obj):
         return {
             "name" : obj.name.Encode(),

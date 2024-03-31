@@ -1,9 +1,9 @@
-from Component import Components
+from Components.Component import Components
 from Vector import Vec2
-import Component
-import ComponentCollider
-import ComponentPhysics
-import ComponentSprite
+from Components import Component
+from Components import ComponentCollider
+from Components import ComponentPhysics
+from Components import ComponentSprite
 import enum
 
 class GroundType(enum.Enum):

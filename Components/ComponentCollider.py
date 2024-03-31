@@ -1,7 +1,7 @@
 from Vector import Vec2
-from Component import Components
+from Components.Component import Components
+from Components import Component
 from lib import GlobalVars
-import Component
 import enum
 import pygame
 
@@ -347,7 +347,7 @@ class ColliderRect(Collider):
         
         #if the velocities cancel out perfectly, the velocity of the other object (with vertex inside this one) is chosen
         if relativeVelocity.SqMag() == 0:
-            relativeVelocity = otherPhysics.velocity       
+            relativeVelocity = otherPhysics.velocity
         return relativeVelocity
     
     def Recalculate(self, temp):

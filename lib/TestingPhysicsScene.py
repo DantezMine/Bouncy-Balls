@@ -1,10 +1,11 @@
 import Scene
 import GameObject
 from Vector import Vec2
-import ComponentStructure
-import ComponentBall
-import ComponentGround
-import ComponentBackground
+from Components import ComponentStructure
+from Components import ComponentBall
+from Components import ComponentCamera
+from Components import ComponentGround
+from Components import ComponentBackground
 from lib import GlobalVars
 
 def SetupScene1(world):
@@ -14,23 +15,31 @@ def SetupScene1(world):
     width, height = GlobalVars.screen.get_width(), GlobalVars.screen.get_height()
     
     background = GameObject.GameObject(scene)
-    background.AddComponent(ComponentBackground.BackgroundNature(Vec2(width/2,height/2),width,height))
+    background.AddComponent(ComponentBackground.BackgroundNature(Vec2(0,0),width,height))
     scene.AddGameObject(background)
     
+    camera = GameObject.GameObject(scene)
+    camera.AddComponent(ComponentCamera.Camera(Vec2(0,0),1.0/3.0))
+    scene.AddGameObject(camera)
+    
     struct1 = GameObject.GameObject(scene)
-    struct1.AddComponent(ComponentStructure.StructureWood(Vec2(270,300),25,100))
+    struct1.AddComponent(ComponentStructure.StructureWood(Vec2(0.5,-1.5),0.25,1.0))
     scene.AddGameObject(struct1)
     
+    struct4 = GameObject.GameObject(scene)
+    struct4.AddComponent(ComponentStructure.StructureWood(Vec2(-1,1),0.25,1.0,0.3))
+    scene.AddGameObject(struct4)
+    
     struct2 = GameObject.GameObject(scene)
-    struct2.AddComponent(ComponentStructure.StructureWood(Vec2(230,300),25,100))
+    struct2.AddComponent(ComponentStructure.StructureWood(Vec2(-0.5,-1.5),0.25,1.0))
     scene.AddGameObject(struct2)
     
     struct3 = GameObject.GameObject(scene)
-    struct3.AddComponent(ComponentStructure.StructureWood(Vec2(270,200),25,100,1.57075))
+    struct3.AddComponent(ComponentStructure.StructureWood(Vec2(0,-0.75),0.25,1.0,1.57075))
     scene.AddGameObject(struct3)
     
     ground1 = GameObject.GameObject(scene)
-    ground1.AddComponent(ComponentGround.GroundDirt(Vec2(300,525),600,150))
+    ground1.AddComponent(ComponentGround.GroundDirt(Vec2(0,-2.5),6.0,1.0))
     scene.AddGameObject(ground1)
     
     # for i in range(10):

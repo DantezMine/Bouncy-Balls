@@ -8,7 +8,10 @@ GlobalVars.debug = False
 
 '''pygame setup'''
 pygame.init()
-GlobalVars.screen = pygame.display.set_mode((600,600))
+GlobalVars.background = pygame.Surface((600,600))
+GlobalVars.foreground = pygame.Surface((600,600))
+GlobalVars.UILayer = pygame.Surface((600,600))
+GlobalVars.screen     = pygame.display.set_mode((600,600))
 GlobalVars.clock = pygame.time.Clock()
 GlobalVars.running = True
 
@@ -34,17 +37,26 @@ while GlobalVars.running:
             GlobalVars.keyReleased = True
     
     if not GlobalVars.debug:
+        GlobalVars.background.fill((255,255,255,0))
+        GlobalVars.foreground.fill((255,255,255,0))
         GlobalVars.screen.fill((255,255,255))
         world.UpdateActiveScene(deltaTime=1.0/60.0,updateFrequency=10)
+        GlobalVars.screen.blit(GlobalVars.background,(0,0))
+        GlobalVars.screen.blit(GlobalVars.foreground,(0,0))
         GlobalVars.frameCount += 1
 
     else:
         if GlobalVars.update or GlobalVars.step:
+            GlobalVars.background.fill((255,255,255,0))
+            GlobalVars.foreground.fill((255,255,255,0))
+            GlobalVars.screen.fill((255,255,255))
+            world.UpdateActiveScene(deltaTime=1/60.0, updateFrequency=10)
+            GlobalVars.screen.blit(GlobalVars.background,(0,0))
+            GlobalVars.screen.blit(GlobalVars.foreground,(0,0))
+            
             GlobalVars.step = False
             GlobalVars.frameCount += 1
             print("Frame #%s"%GlobalVars.frameCount)
-            GlobalVars.screen.fill((255,255,255))
-            world.UpdateActiveScene(deltaTime=1/60.0, updateFrequency=10)
 
     GlobalVars.clock.tick(60)
     pygame.display.flip()

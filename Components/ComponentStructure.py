@@ -1,8 +1,8 @@
-import ComponentCollider
-import ComponentPhysics
-import ComponentSprite
-import Component
-from Component import Components
+from Components import ComponentCollider
+from Components import ComponentPhysics
+from Components import ComponentSprite
+from Components import Component
+from Components.Component import Components
 from Vector import Vec2
 import time
 import enum

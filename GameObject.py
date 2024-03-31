@@ -1,6 +1,6 @@
 import json
-import ComponentTransform
-from Component import Components
+from Components import ComponentTransform
+from Components.Component import Components
 
 class GameObject(object):
     def __init__(self, parentScene):
