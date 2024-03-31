@@ -36,6 +36,9 @@ class Structure(Component.Component):
         if self.destroyed:
             if time.time() - self.destructionTime >= 5000:
                 self.parent.RemoveFromScene()
+                
+    def CalculateMomentOfInertia(self,mass):
+        return 1/12.0 * mass * (self.lenX**2 + self.lenY**2)
 
     def OnCollision(self, collider):
         self.DestructionCheck(collider)
@@ -80,7 +83,9 @@ class StructureWood(Structure):
     def Start(self):
         super(StructureWood,self).Start()
         self.destructionMomentum = 2500
-        self.parent.GetComponent(Components.Physics).mass = 30
+        mass = 30
+        self.parent.GetComponent(Components.Physics).mass = mass
+        self.parent.GetComponent(Components.Physics).momentOfInertia = self.CalculateMomentOfInertia(mass)
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/WoodStructure.png",lenX = self.lenX, lenY = self.lenY))
 
 class StructureMetal(Structure):
@@ -92,5 +97,7 @@ class StructureMetal(Structure):
     def Start(self):
         self.destructionMomentum = 3500
         super(StructureWood,self).Start()
-        self.parent.GetComponent(Components.Physics).mass = 50
+        mass = 50
+        self.parent.GetComponent(Components.Physics).mass = mass
+        self.parent.GetComponent(Components.Physics).momentOfInertia = self.CalculateMomentOfInertia(mass)
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/StructureMetal.png"))

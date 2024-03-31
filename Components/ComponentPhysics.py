@@ -1,4 +1,4 @@
-import json
+import pygame
 from Vector import Vec2
 import math
 from Components import Component
@@ -11,8 +11,14 @@ class Physics(Component.Component):
         self.name = Components.Physics
         self.parent = None
         self.mass = 1.0 #kg
-        self.momentOfInertia = 50 #
-        self.restitution = 0.2
+        self.momentOfInertia = 5 #
+        self.restitution = 0.1
+        self.velDamping = 0.99
+        self.rotDamping = 0.99
+        self.forceMargin = 0.5
+        self.torqueMargin = 0.1
+        self.velMargin = 0.001
+        self.rotMargin = 0.01
         
         self.prevPosition = Vec2(0,0)
         self.velocity = Vec2(0,0)
@@ -29,7 +35,7 @@ class Physics(Component.Component):
         self.constraintPosition = False
         self.constraintRotation = False
         self.gravity = True
-        self.gravForce = Vec2(0,-9.8)
+        self.gravAcc = Vec2(0,-9.8)
     
     def Start(self):
         self.prevPosition = self.parent.GetComponent(Components.Transform).position
@@ -66,13 +72,17 @@ class Physics(Component.Component):
         self.deltaV    = Vec2(0,0)
         
         #Velocity verlet p.696
-        nextPos = transform.position + self.velocity * deltaTime + self.acceleration * (deltaTime * deltaTime * 0.5)
+        deltaS = self.velocity * deltaTime + self.acceleration * (deltaTime * deltaTime * 0.5)
+        if deltaS.SqMag() > 0.0001:
+            nextPos = transform.position + deltaS
+        else:
+            nextPos = transform.position
         nextVel = self.velocity + self.acceleration * (deltaTime * 0.5)
         nextAcc = self.ApplyForces()
-        nextVel = nextVel + nextAcc * (deltaTime * 0.5)
+        nextVel = (nextVel + nextAcc * (deltaTime * 0.5)) * self.velDamping
         
         transform.position = nextPos
-        self.velocity      = nextVel
+        self.velocity      = nextVel if nextVel.SqMag() > self.velMargin else Vec2(0,0)
         self.acceleration  = nextAcc
         self.netForce      = Vec2(0,0)
         
@@ -84,10 +94,10 @@ class Physics(Component.Component):
         nextAngle    = transform.rotation + self.angularSpeed * deltaTime + self.angularAcc * (deltaTime * deltaTime * 0.5)
         nextAngSpeed = self.angularSpeed + self.angularAcc * (deltaTime * 0.5)
         nextAngAcc   = self.ApplyTorque()
-        nextAngSpeed = nextAngSpeed + nextAngAcc * (deltaTime * 0.5)
+        nextAngSpeed = (nextAngSpeed + nextAngAcc * (deltaTime * 0.5)) * self.rotDamping
         
         transform.rotation = nextAngle
-        self.angularSpeed  = nextAngSpeed
+        self.angularSpeed  = nextAngSpeed if nextVel.SqMag() > self.rotMargin else 0
         self.angularAcc    = nextAngAcc
         self.netTorque     = 0
         
@@ -136,23 +146,23 @@ class Physics(Component.Component):
         deltaP /= collisionCounts[collisionIndex]
             
         #angle between negative normal and gravity
-        alpha = (-normal).AngleBetween(self.gravForce)
+        alpha = (-normal).AngleBetween(self.gravAcc)
         if alpha > math.pi/2.0:
-            alpha -= math.pi/2.0 
+            alpha -= math.pi/2.0
             
         forceNormalA, forceNormalB = Vec2(0,0), Vec2(0,0)
-        forceNormal = normal * -self.gravForce.Mag() * math.cos(alpha)
+        accNormal = normal * -self.gravAcc.Mag() * math.cos(alpha)
         if self.gravity:
-            forceNormalA = forceNormal * (self.mass / collisionCounts[collisionIndex])
+            forceNormalA = accNormal * (self.mass / collisionCounts[collisionIndex])
         if physicsB.gravity:
-            forceNormalB = -forceNormal * (physicsB.mass / collisionCounts[collisionIndex])
+            forceNormalB = -accNormal * (physicsB.mass / collisionCounts[collisionIndex])
                 
         deltaVA = normal * (deltaP/self.mass) * moveA
         deltaVB = normal * (-deltaP/physicsB.mass) * moveB
         deltaWA = rAP_.Dot(normal*deltaP)/self.momentOfInertia * rotateA
         deltaWB = rBP_.Dot(normal*-deltaP)/physicsB.momentOfInertia * rotateB
         
-        if GlobalVars.debug:
+        if GlobalVars.debug and self.parent.GetID() == 5:
             GlobalVars.update = False
             print("Collision Info: %s"%(collisionInfo))
             print("Object A ID: %s, Position: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(self.parent.GetID(),self.parent.GetComponent(Components.Transform).position,self.velocity,deltaVA,self.angularSpeed,deltaWA))
@@ -161,7 +171,7 @@ class Physics(Component.Component):
             print("moveB: %s, rotateB: %s"%(moveB,rotateB))
             print("")
             
-            print("forceNormal", forceNormal, "alpha", math.degrees(alpha))
+            print("accNormal", accNormal, "alpha", math.degrees(alpha))
             print("A: ", forceNormalA, collisionPointA)
             print("B: ", forceNormalB, collisionPointB)
             print("")
@@ -190,8 +200,9 @@ class Physics(Component.Component):
         if self.constraintPosition:
             self.netForce = Vec2(0,0)
         elif self.gravity:
-            self.netForce += self.gravForce * self.mass
-        return self.netForce*(1.0/float(self.mass))
+            self.netForce += self.gravAcc * self.mass
+        netAcc = self.netForce*(1.0/float(self.mass))
+        return netAcc if netAcc.SqMag() > self.forceMargin else Vec2(0,0)
     
     def AddForce(self, force, point = None): #force is a Vec2
         self.netForce += force
@@ -205,8 +216,11 @@ class Physics(Component.Component):
         distance = rAP.Mag()*math.sin(phi)
         torque = force.Mag() * distance * sign
         self.AddTorque(torque)
-        if GlobalVars.debug:
-            print("Torque from force %s at point %s with angle %s: %s"%(force,point,phi,torque))
+        if GlobalVars.debug and self.parent.GetID() == 5:
+            startPoint = self.parent.GetComponent(Components.Transform).WorldToScreenPos(point, self.parent.GetParentScene().camera)
+            endPoint = self.parent.GetComponent(Components.Transform).WorldToScreenPos(point+force, self.parent.GetParentScene().camera)
+            pygame.draw.line(GlobalVars.UILayer,(220,20,20),(startPoint.x,startPoint.y),(endPoint.x,endPoint.y))
+            print("Torque from force %s at point %s with angle %s and distance %s: %s, effectively deltaW: %s\n"%(force,point,phi*180/math.pi,distance,torque,torque/(self.mass*1200)))
     
     def AddTorque(self,torque): #torque is a scalar
         self.netTorque += torque
@@ -214,7 +228,8 @@ class Physics(Component.Component):
     def ApplyTorque(self):
         if self.constraintRotation:
             self.netTorque = 0
-        return self.netTorque/float(self.momentOfInertia)
+        netAngAcc = self.netTorque/float(self.momentOfInertia)
+        return netAngAcc if abs(netAngAcc) > self.torqueMargin else 0
     
     def Encode(self,obj):
         outDict = super(Physics,self).Encode(obj)
@@ -237,6 +252,6 @@ class Physics(Component.Component):
             outDict["constraintRotation"] = obj.constraintRotation
         if obj.gravity != False:
             outDict["gravity"] = obj.gravity
-        if obj.gravForce != Vec2(0,300):
-            outDict["gravForce"] = obj.gravForce.Encode()
+        if obj.gravAcc != Vec2(0,300):
+            outDict["gravAcc"] = obj.gravAcc.Encode()
         return outDict

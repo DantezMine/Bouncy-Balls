@@ -123,7 +123,6 @@ class ColliderRect(Collider):
         self.collisions = []
         self.CheckCollision(colliders)
         self._UpdateOnCollision()
-        self.DisplayCollider()
         
     def CheckCollision(self, colliders):
         verts = self.verts
@@ -134,7 +133,7 @@ class ColliderRect(Collider):
             #check if the objects are inside each others circumcircles
             posA = self.parent.GetComponent(Components.Transform).position
             posB = collider.parent.GetComponent(Components.Transform).position
-            if (posA-posB).SqMag() > self.sqRadius+collider.sqRadius:
+            if (posA-posB).SqMag() > self.sqRadius+collider.sqRadius + 1:
                 continue
             
             if collider.colliderType == ColliderType.Rect:
@@ -198,7 +197,7 @@ class ColliderRect(Collider):
                     #check if closest point projects onto the actual segment
                     if onLine:
                         #check if the closest point to edge is inside the rectangle
-                        if self.IsPointInsideRect(closestVertex,verts):                        
+                        if self.IsPointInsideRect(closestVertex,verts):
                             if collisionDistance < SqMinEdgeEdgeDistance:
                                 SqMinEdgeEdgeDistance = collisionDistance
                                 A_,B_,C_,D_ = A,B,C,D
@@ -382,11 +381,12 @@ class ColliderRect(Collider):
         return normals
     
     def DisplayCollider(self):
-        verts = self.GetVertices()
+        verts = self.verts
         vertices = []
         for v in verts:
-            vertices.append((v.x,v.y))
-        pygame.draw.polygon(GlobalVars.screen,(20,220,20),vertices,1)
+            vertScreen = self.parent.GetComponent(Components.Transform).WorldToScreenPos(v,self.parent.GetParentScene().camera)
+            vertices.append((vertScreen.x,vertScreen.y))
+        pygame.draw.polygon(GlobalVars.UILayer,(220,20,20),vertices,1)
 
     def Encode(self,obj):
         outDict = super(ColliderRect,self).Encode(obj)

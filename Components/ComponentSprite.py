@@ -39,7 +39,7 @@ class Sprite(Component.Component):
         screenScale = Vec2(self.lenX*width,self.lenY*height) * (parentTransform.scale * sceneCam.scale / 2.0)
                 
         image = pygame.transform.scale(sprite,(screenScale.x,screenScale.y))
-        image = pygame.transform.rotate(image,-parentTransform.rotation*180.0/math.pi)
+        image = pygame.transform.rotate(image,parentTransform.rotation*180.0/math.pi)
         
         GlobalVars.foreground.blit(image,(xScreen,yScreen))
         
@@ -52,7 +52,6 @@ class Sprite(Component.Component):
     
 class SpriteBackground(Sprite):
     def DisplayImg(self):
-        print("background")
         width = GlobalVars.background.get_width()
         height = GlobalVars.background.get_height()
         sprite = pygame.image.load("Bouncy-Balls/"+self.spritePath)
