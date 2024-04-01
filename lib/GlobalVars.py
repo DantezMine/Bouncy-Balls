@@ -1,10 +1,13 @@
 import pygame
 
-update = True
-step = False
-keyReleased = True
-frameCount = 0
-debug = False
+update : bool = True
+step : bool = False
+keyReleased : bool = True
+frameCount : int = 0
+debug : bool= False
 screen : pygame.Surface = None
+background : pygame.Surface = None
+foreground : pygame.Surface = None
+UILayer : pygame.Surface = None
 clock = None
-running = None
+running : bool = None

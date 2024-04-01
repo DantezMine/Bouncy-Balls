@@ -1,6 +1,6 @@
-import ComponentSprite
-import Component
-from Component import Components
+from Components import ComponentSprite
+from Components import Component
+from Components.Component import Components
 from Vector import Vec2
 
 class Background(Component.Component):
@@ -23,4 +23,9 @@ class Background(Component.Component):
 class BackgroundNature(Background):
     def Start(self):
         super().Start()
-        self.parent.AddComponent(ComponentSprite.Sprite("data/BackgroundNature-Sky.png",self.lenX,self.lenY))
+        self.parent.AddComponent(ComponentSprite.SpriteBackground("data/BackgroundNature-Sky.png",self.lenX,self.lenY))
+
+class BackgroundSkyline(Background):
+    def Start(self):
+        super().Start()
+        self.parent.AddComponent(ComponentSprite.SpriteBackground("data/BackgroundSkyline-Sky.png",self.lenX,self.lenY))

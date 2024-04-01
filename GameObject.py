@@ -1,6 +1,6 @@
 import json
-import ComponentTransform
-from Component import Components
+from Components import ComponentTransform
+from Components.Component import Components
 
 class GameObject(object):
     def __init__(self, parentScene):
@@ -70,7 +70,7 @@ class GameObject(object):
                 self.__components[key].Update(deltaTime)
     
     def UpdateCollider(self,deltaTime, colliders):
-        if self.__components.__contains__(Components.Collider):
+        if self.HasComponent(Components.Collider):
             self.__components[Components.Collider].Update(deltaTime, colliders)
     
     def UpdatePhysics(self,deltaTime,allCollisions,mode):

@@ -1,9 +1,9 @@
-from Component import Components
+from Components.Component import Components
 from Vector import Vec2
-import Component
-import ComponentCollider
-import ComponentPhysics
-import ComponentSprite
+from Components import Component
+from Components import ComponentCollider
+from Components import ComponentPhysics
+from Components import ComponentSprite
 import enum
 
 class GroundType(enum.Enum):
@@ -32,7 +32,7 @@ class Ground(Component.Component):
         physics.constraintRotation = True
         self.parent.AddComponent(physics)
         
-        self.parent.AddComponent(ComponentCollider.ColliderRect(lenX = self.lenX, lenY = self.lenY))
+        self.parent.AddComponent(ComponentCollider.ColliderRect(lenX = self.lenX, lenY = self.lenY, tags=["Ground"]))
         
     def Encode(self, obj):
         outDict = super().Encode(obj)
@@ -50,5 +50,5 @@ class GroundDirt(Ground):
         super().Start()
         self.sprite = self.parent.AddComponent(ComponentSprite.Sprite("data/GroundDirt.png",self.lenX,self.lenY))
         
-    def Update(self, deltaTime):
-        self.parent.GetComponent(Components.Collider).DisplayCollider()
+    # def Update(self, deltaTime):
+    #     self.parent.GetComponent(Components.Collider).DisplayCollider()
