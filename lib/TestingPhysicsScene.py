@@ -51,11 +51,11 @@ def SetupScene1(world):
     
     cannon = GameObject.GameObject(scene)
     cannon.AddComponent(ComponentCannon.Cannon(Vec2(-1,-1)))
-    scene.AddGameObject(cannon)
+    #scene.AddGameObject(cannon)
     
     cannonBase = GameObject.GameObject(scene)
     cannonBase.AddComponent(ComponentCannon.Base(Vec2(-1,-1)))
-    scene.AddGameObject(cannonBase)
+    #scene.AddGameObject(cannonBase)
     
     goalField = GameObject.GameObject(scene)
     goalField.AddComponent(ComponentGoalField.GoalField(Vec2(2,0),1,0.5))
@@ -63,11 +63,11 @@ def SetupScene1(world):
     
     sling = GameObject.GameObject(scene)
     scene.AddGameObject(sling)
-    sling.GetComponent(Components.Transform).position = Vec2(-1.5,0)
+    sling.GetComponent(Components.Transform).position = Vec2(-0.5,0)
     
     ball = GameObject.GameObject(scene)
     ball.AddComponent(ComponentBall.BallBouncy(sling))
-    scene.AddGameObject(ball)
+    #scene.AddGameObject(ball)
     
     # for i in range(10):
         # struct = GameObject.GameObject(scene)

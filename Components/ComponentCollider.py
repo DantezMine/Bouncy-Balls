@@ -75,12 +75,11 @@ class ColliderCircle(Collider):
     def __init__(self, radius=50, localPosition=Vec2(0, 0), localRotation=0, localScale=1, tags=[]):
         super(ColliderCircle,self).__init__(localPosition, localRotation, localScale, tags)
         self.colliderType = ColliderType.Circle
-        self.radius = 50
+        self.radius = radius
         self.sqRadius = radius**2
     
     def CheckCollision(self, colliders):
-        transform = self.parent.GetComponent(Components.Transform)
-        center = transform.position
+        center = self.parent.GetComponent(Components.Physics).tempNextPos
         for collider in colliders:
             self.CheckCollisionCircle(collider,center)
     

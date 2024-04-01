@@ -37,8 +37,7 @@ class Cannon(Component.Component):
         if self.mousePressed:
             if self.mouseLeft:
                 delta = mousePosWorld - self.initPos
-                self.rotation = math.atan(float(-delta.y)/delta.x)
-                print(delta, self.rotation)
+                self.rotation = math.atan(float(delta.y)/delta.x)
                 self.transform.rotation = self.rotation
     
 class Base(Component.Component):

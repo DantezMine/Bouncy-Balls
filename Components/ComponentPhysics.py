@@ -8,7 +8,7 @@ from Components.Component import Components
 from lib import GlobalVars
 
 class PhysicsState:
-    def __init__(self, physics : ComponentPhysics.Physics):
+    def __init__(self, physics):
         self.prevPosition = physics.prevPosition
         self.velocity     = physics.velocity
         self.acceleration = physics.acceleration
@@ -24,12 +24,13 @@ class Physics(Component.Component):
         self.mass = 1.0 #kg
         self.momentOfInertia = 5 #
         self.restitution = 0.1
-        self.velDamping = 0.99
-        self.rotDamping = 0.99
-        self.forceMargin = 0.5
-        self.torqueMargin = 0.1
-        self.velMargin = 0.001
-        self.rotMargin = 0.01
+        self.velDamping = 0.999
+        self.rotDamping = 0.999
+        self.forceMargin = 0.01
+        self.torqueMargin = 0
+        self.velMargin = 0.0005
+        self.rotMargin = 0
+        self.posMargin = 0.0001
         
         self.prevPosition = Vec2(0,0)
         self.velocity = Vec2(0,0)
@@ -96,7 +97,7 @@ class Physics(Component.Component):
         
         #Velocity verlet p.696
         deltaS = self.velocity * deltaTime + self.acceleration * (deltaTime * deltaTime * 0.5)
-        if deltaS.SqMag() > 0.0001:
+        if deltaS.SqMag() > self.posMargin:
             nextPos = transform.position + deltaS
         else:
             nextPos = transform.position
@@ -173,7 +174,7 @@ class Physics(Component.Component):
         if alpha > math.pi/2.0:
             alpha -= math.pi/2.0
             
-        forceNormalA, forceNormalB = Vec2(0,0), Vec2(0,0)
+        nNormalA, forceNormalB = Vec2(0,0), Vec2(0,0)
         accNormal = normal * -self.gravAcc.Mag() * math.cos(alpha)
         if self.gravity:
             forceNormalA = accNormal * (self.mass / collisionCounts[collisionIndex])
@@ -185,7 +186,7 @@ class Physics(Component.Component):
         deltaWA = rAP_.Dot(normal*deltaP)/self.momentOfInertia * rotateA
         deltaWB = rBP_.Dot(normal*-deltaP)/physicsB.momentOfInertia * rotateB
         
-        if GlobalVars.debug and self.parent.GetID() == 5:
+        if GlobalVars.debug:
             GlobalVars.update = False
             print("Collision Info: %s"%(collisionInfo))
             print("Object A ID: %s, Position: %s, Velocity: %s, deltaV: %s, Rotational Speed: %s, deltaW: %s"%(self.parent.GetID(),self.parent.GetComponent(Components.Transform).position,self.velocity,deltaVA,self.angularSpeed,deltaWA))
@@ -239,7 +240,7 @@ class Physics(Component.Component):
         distance = rAP.Mag()*math.sin(phi)
         torque = force.Mag() * distance * sign
         self.AddTorque(torque)
-        if GlobalVars.debug and self.parent.GetID() == 5:
+        if GlobalVars.debug:
             startPoint = self.parent.GetComponent(Components.Transform).WorldToScreenPos(point, self.parent.GetParentScene().camera)
             endPoint = self.parent.GetComponent(Components.Transform).WorldToScreenPos(point+force, self.parent.GetParentScene().camera)
             pygame.draw.line(GlobalVars.UILayer,(220,20,20),(startPoint.x,startPoint.y),(endPoint.x,endPoint.y))
@@ -253,6 +254,9 @@ class Physics(Component.Component):
             self.netTorque = 0
         netAngAcc = self.netTorque/float(self.momentOfInertia)
         return netAngAcc if abs(netAngAcc) > self.torqueMargin else 0
+    
+    def AddImpulse(self, impulse):
+        self.deltaV += impulse * (1 / self.mass)
     
     def SaveState(self):
         return PhysicsState(self)
