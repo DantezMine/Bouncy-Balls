@@ -49,10 +49,11 @@ class Collider(Component.Component):
     def DisplayCollider(self):
         pass
     
-    def Update(self,deltaTime,colliders):
+    def Update(self,deltaTime,colliders,updateOnCollision=True):
         self.collisions = []
         self.CheckCollision(colliders)
-        self._UpdateOnCollision()
+        if updateOnCollision:
+            self._UpdateOnCollision()
     
     def _UpdateOnCollision(self):
         for collider in self.collisions:
@@ -76,11 +77,6 @@ class ColliderCircle(Collider):
         self.colliderType = ColliderType.Circle
         self.radius = 50
         self.sqRadius = radius**2
-        
-    def Update(self,deltaTime,colliders):
-        self.collisions = []
-        self.CheckCollision(colliders)
-        self._UpdateOnCollision()
     
     def CheckCollision(self, colliders):
         transform = self.parent.GetComponent(Components.Transform)
@@ -121,11 +117,6 @@ class ColliderRect(Collider):
         
     def Start(self):
         self.Recalculate(temp=False)
-    
-    def Update(self,deltaTime,colliders):
-        self.collisions = []
-        self.CheckCollision(colliders)
-        self._UpdateOnCollision()
         
     def CheckCollision(self, colliders):
         verts = self.verts

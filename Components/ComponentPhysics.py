@@ -3,8 +3,19 @@ from Vector import Vec2
 import math
 from Components import Component
 from Components import ComponentCollider
+from Components import ComponentPhysics
 from Components.Component import Components
 from lib import GlobalVars
+
+class PhysicsState:
+    def __init__(self, physics : ComponentPhysics.Physics):
+        self.prevPosition = physics.prevPosition
+        self.velocity     = physics.velocity
+        self.acceleration = physics.acceleration
+        self.deltaV       = physics.deltaV
+        self.angularSpeed = physics.angularSpeed
+        self.angularAcc   = physics.angularAcc
+        self.deltaW       = physics.deltaW
 
 class Physics(Component.Component):
     def __init__(self):
@@ -44,15 +55,27 @@ class Physics(Component.Component):
         collider = self.parent.GetComponent(Components.Collider)
         if mode == 0:
             self.TempNextState(deltaTime)
+        
         #collect collisions and count duplicates (same objects colliding)
-        if mode == 1:
+        elif mode == 1:
             if collider is not None:
                 collisions = collider.collisions
                 collisionCounts = self.DetermineSimilarCollisions(collisions, allCollisions)
                 for i in range(len(collisions)):
                     if collisions[i].collisionResponseTag:
                         self.CollisionResponseDynamic(collisions[i], collisionCounts, i)
+        
         elif mode == 2:
+            self.VelocityVerletIntegration(deltaTime)
+            
+        elif mode == 3:
+            self.TempNextState(deltaTime)
+            if collider is not None:
+                collisions = collider.collisions
+                collisionCounts = self.DetermineSimilarCollisions(collisions, allCollisions)
+                for i in range(len(collisions)):
+                    if collisions[i].tags.__contains__("Ground"):
+                        self.CollisionResponseDynamic(collisions[i], collisionCounts, i)
             self.VelocityVerletIntegration(deltaTime)
     
     def TempNextState(self,deltaTime):
@@ -231,6 +254,18 @@ class Physics(Component.Component):
         netAngAcc = self.netTorque/float(self.momentOfInertia)
         return netAngAcc if abs(netAngAcc) > self.torqueMargin else 0
     
+    def SaveState(self):
+        return PhysicsState(self)
+    
+    def LoadState(self,state):
+        self.prevPosition = state.prevPosition
+        self.velocity     = state.velocity
+        self.acceleration = state.acceleration
+        self.deltaV       = state.deltaV
+        self.angularSpeed = state.angularSpeed
+        self.angularAcc   = state.angularAcc
+        self.deltaW       = state.deltaW
+    
     def Encode(self,obj):
         outDict = super(Physics,self).Encode(obj)
         outDict["mass"] = obj.mass
@@ -252,6 +287,6 @@ class Physics(Component.Component):
             outDict["constraintRotation"] = obj.constraintRotation
         if obj.gravity != False:
             outDict["gravity"] = obj.gravity
-        if obj.gravAcc != Vec2(0,300):
+        if obj.gravAcc != Vec2(0,-9.8):
             outDict["gravAcc"] = obj.gravAcc.Encode()
         return outDict

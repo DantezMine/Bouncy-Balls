@@ -19,7 +19,7 @@ def SetupScene1(world):
     width, height = GlobalVars.screen.get_width(), GlobalVars.screen.get_height()
     
     background = GameObject.GameObject(scene)
-    background.AddComponent(ComponentBackground.BackgroundNature(Vec2(0,0),width,height))
+    background.AddComponent(ComponentBackground.BackgroundSkyline(Vec2(0,0),width,height))
     scene.AddGameObject(background)
     
     camera = GameObject.GameObject(scene)
@@ -61,8 +61,12 @@ def SetupScene1(world):
     goalField.AddComponent(ComponentGoalField.GoalField(Vec2(2,0),1,0.5))
     scene.AddGameObject(goalField)
     
+    sling = GameObject.GameObject(scene)
+    scene.AddGameObject(sling)
+    sling.GetComponent(Components.Transform).position = Vec2(-1.5,0)
+    
     ball = GameObject.GameObject(scene)
-    ball.AddComponent(ComponentBall.BallBouncy(None))
+    ball.AddComponent(ComponentBall.BallBouncy(sling))
     scene.AddGameObject(ball)
     
     # for i in range(10):

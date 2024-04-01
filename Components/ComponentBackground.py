@@ -24,3 +24,8 @@ class BackgroundNature(Background):
     def Start(self):
         super().Start()
         self.parent.AddComponent(ComponentSprite.SpriteBackground("data/BackgroundNature-Sky.png",self.lenX,self.lenY))
+
+class BackgroundSkyline(Background):
+    def Start(self):
+        super().Start()
+        self.parent.AddComponent(ComponentSprite.SpriteBackground("data/BackgroundSkyline-Sky.png",self.lenX,self.lenY))
