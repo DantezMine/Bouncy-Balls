@@ -52,7 +52,6 @@ class Sprite(Component.Component):
     
 class SpriteBackground(Sprite):
     def DisplayImg(self):
-        print("background")
         width = GlobalVars.background.get_width()
         height = GlobalVars.background.get_height()
         sprite = pygame.image.load("Bouncy-Balls/"+self.spritePath)

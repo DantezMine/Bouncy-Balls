@@ -1,6 +1,6 @@
-import ComponentSprite
-import Component
-from Component import Components
+from Components import ComponentSprite
+from Components import Component
+from Components.Component import Components
 from Vector import Vec2
 from lib import GlobalVars
 import pygame
@@ -18,12 +18,13 @@ class Cannon(Component.Component):
     def Start(self):
         self.transform = self.parent.GetComponent(Components.Transform)
         self.transform.position = self.initPos
-        self.parent.AddComponent(ComponentSprite.Sprite("data/WoodStructure.png", 150, 30))
+        self.parent.AddComponent(ComponentSprite.Sprite("data/WoodStructure.png", 0.7, 0.2))
         # self.parent.AddComponent(Base(self.initPos + self.baseOffset))
     
     def Update(self, deltaTime):
         mousePos = pygame.mouse.get_pos()
         mousePos = Vec2(mousePos[0],mousePos[1])
+        mousePosWorld = self.parent.GetComponent(Components.Transform).ScreenToWorldPos(mousePos, self.parent.GetParentScene().camera)
         for event in GlobalVars.events:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.mousePressed = True
@@ -35,8 +36,8 @@ class Cannon(Component.Component):
                     
         if self.mousePressed:
             if self.mouseLeft:
-                delta = mousePos - self.initPos
-                self.rotation = math.atan(float(delta.y)/delta.x)
+                delta = mousePosWorld - self.initPos
+                self.rotation = math.atan(float(-delta.y)/delta.x)
                 print(delta, self.rotation)
                 self.transform.rotation = self.rotation
     
@@ -50,4 +51,4 @@ class Base(Component.Component):
         transform = self.parent.GetComponent(Components.Transform)
         transform.position = self.initPos
         transform.rotation = math.pi/2
-        self.parent.AddComponent(ComponentSprite.Sprite("data/MetalStructure.png", 150, 30))
+        self.parent.AddComponent(ComponentSprite.Sprite("data/StructureMetal.png", 0.7, 0.2))
