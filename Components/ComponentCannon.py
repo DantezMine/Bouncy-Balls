@@ -18,7 +18,7 @@ class Cannon(Component.Component):
     def Start(self):
         self.transform = self.parent.GetComponent(Components.Transform)
         self.transform.position = self.initPos
-        self.parent.AddComponent(ComponentSprite.Sprite("data/WoodStructure.png", 0.7, 0.2))
+        self.parent.AddComponent(ComponentSprite.Sprite("data/Barrel.png", 0.580, 0.402))
         # self.parent.AddComponent(Base(self.initPos + self.baseOffset))
     
     def Update(self, deltaTime):
@@ -44,10 +44,9 @@ class Base(Component.Component):
     def __init__(self, position=Vec2(0, 0)):
         self.name = Components.Cannon
         self.parent = None
-        self.initPos = position + Vec2(0, 50)
+        self.initPos = position + Vec2(-0.1, -0.15)
         
     def Start(self):
         transform = self.parent.GetComponent(Components.Transform)
         transform.position = self.initPos
-        transform.rotation = math.pi/2
-        self.parent.AddComponent(ComponentSprite.Sprite("data/StructureMetal.png", 0.7, 0.2))
+        self.parent.AddComponent(ComponentSprite.Sprite("data/Base.png", 0.615, 0.345))
