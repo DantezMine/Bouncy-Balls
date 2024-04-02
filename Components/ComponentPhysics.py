@@ -9,13 +9,15 @@ from lib import GlobalVars
 
 class PhysicsState:
     def __init__(self, physics):
-        self.prevPosition = physics.prevPosition
-        self.velocity     = physics.velocity
-        self.acceleration = physics.acceleration
-        self.deltaV       = physics.deltaV
-        self.angularSpeed = physics.angularSpeed
-        self.angularAcc   = physics.angularAcc
-        self.deltaW       = physics.deltaW
+        self.prevPosition  = physics.prevPosition
+        self.velocity      = physics.velocity
+        self.acceleration  = physics.acceleration
+        self.deltaV        = physics.deltaV
+        self.angularSpeed  = physics.angularSpeed
+        self.angularAcc    = physics.angularAcc
+        self.deltaW        = physics.deltaW
+        self.constraintPos = physics.constraintPosition
+        self.constraintRot = physics.constraintRotation
 
 class Physics(Component.Component):
     def __init__(self):
@@ -25,12 +27,12 @@ class Physics(Component.Component):
         self.momentOfInertia = 5 #
         self.restitution = 0.1
         self.velDamping = 0.999
-        self.rotDamping = 0.999
-        self.forceMargin = 0.01
+        self.rotDamping = 0.99
+        self.forceMargin = 0
         self.torqueMargin = 0
-        self.velMargin = 0.0005
+        self.velMargin = 0
         self.rotMargin = 0
-        self.posMargin = 0.0001
+        self.posMargin = 0
         
         self.prevPosition = Vec2(0,0)
         self.velocity = Vec2(0,0)
@@ -269,6 +271,8 @@ class Physics(Component.Component):
         self.angularSpeed = state.angularSpeed
         self.angularAcc   = state.angularAcc
         self.deltaW       = state.deltaW
+        self.constraintPosition = state.constraintPos
+        self.constraintRotation = state.constraintRot
     
     def Encode(self,obj):
         outDict = super(Physics,self).Encode(obj)

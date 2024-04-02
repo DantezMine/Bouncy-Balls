@@ -19,7 +19,7 @@ def SetupScene1(world):
     width, height = GlobalVars.screen.get_width(), GlobalVars.screen.get_height()
     
     background = GameObject.GameObject(scene)
-    background.AddComponent(ComponentBackground.BackgroundSkyline(Vec2(0,0),width,height))
+    background.AddComponent(ComponentBackground.BackgroundNature(Vec2(0,0),width,height))
     scene.AddGameObject(background)
     
     camera = GameObject.GameObject(scene)
@@ -36,14 +36,7 @@ def SetupScene1(world):
     
     struct4 = GameObject.GameObject(scene)
     struct4.AddComponent(ComponentStructure.StructureWood(Vec2(-1,1),0.25,1.0,0.3))
-    #scene.AddGameObject(struct4)
-    struct3 = GameObject.GameObject(scene)
-    struct3.AddComponent(ComponentStructure.StructureWood(Vec2(0,1),0.25,1.0,1.57075))
-    scene.AddGameObject(struct3)
-    
-    struct4 = GameObject.GameObject(scene)
-    struct4.AddComponent(ComponentStructure.StructureWood(Vec2(-1,1),0.25,1.0,0.3))
-    #scene.AddGameObject(struct4)
+    scene.AddGameObject(struct4)
     
     ground1 = GameObject.GameObject(scene)
     ground1.AddComponent(ComponentGround.GroundDirt(Vec2(0,-2.5),6.0,1.0))
@@ -59,7 +52,7 @@ def SetupScene1(world):
     
     goalField = GameObject.GameObject(scene)
     goalField.AddComponent(ComponentGoalField.GoalField(Vec2(2,0),1,0.5))
-    scene.AddGameObject(goalField)
+    #scene.AddGameObject(goalField)
     
     sling = GameObject.GameObject(scene)
     scene.AddGameObject(sling)
@@ -67,7 +60,7 @@ def SetupScene1(world):
     
     ball = GameObject.GameObject(scene)
     ball.AddComponent(ComponentBall.BallBouncy(sling))
-    #scene.AddGameObject(ball)
+    scene.AddGameObject(ball)
     
     # for i in range(10):
         # struct = GameObject.GameObject(scene)

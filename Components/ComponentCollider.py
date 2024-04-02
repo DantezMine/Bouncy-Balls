@@ -126,7 +126,7 @@ class ColliderRect(Collider):
             #check if the objects are inside each others circumcircles
             posA = self.parent.GetComponent(Components.Transform).position
             posB = collider.parent.GetComponent(Components.Transform).position
-            if (posA-posB).SqMag() > self.sqRadius+collider.sqRadius + 1:
+            if (posA-posB).SqMag() > self.sqRadius+collider.sqRadius + 0.1:
                 continue
             
             if collider.colliderType == ColliderType.Rect:
