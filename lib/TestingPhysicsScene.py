@@ -28,18 +28,11 @@ def SetupScene1(world):
     
     struct1 = GameObject.GameObject(scene)
     struct1.AddComponent(ComponentStructure.StructureWood(Vec2(0.5,-1.5),0.25,1.0))
-    scene.AddGameObject(struct1)
+    #scene.AddGameObject(struct1)
     
     struct3 = GameObject.GameObject(scene)
     struct3.AddComponent(ComponentStructure.StructureWood(Vec2(0,1),0.25,1.0,1.57075))
-    scene.AddGameObject(struct3)
-    
-    struct4 = GameObject.GameObject(scene)
-    struct4.AddComponent(ComponentStructure.StructureWood(Vec2(-1,1),0.25,1.0,0.3))
-    #scene.AddGameObject(struct4)
-    struct3 = GameObject.GameObject(scene)
-    struct3.AddComponent(ComponentStructure.StructureWood(Vec2(0,1),0.25,1.0,1.57075))
-    scene.AddGameObject(struct3)
+    #scene.AddGameObject(struct3)
     
     struct4 = GameObject.GameObject(scene)
     struct4.AddComponent(ComponentStructure.StructureWood(Vec2(-1,1),0.25,1.0,0.3))
@@ -67,7 +60,7 @@ def SetupScene1(world):
     
     ball = GameObject.GameObject(scene)
     ball.AddComponent(ComponentBall.BallBouncy(sling))
-    #scene.AddGameObject(ball)
+    scene.AddGameObject(ball)
     
     # for i in range(10):
         # struct = GameObject.GameObject(scene)
