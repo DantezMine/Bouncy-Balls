@@ -83,7 +83,7 @@ class StructureWood(Structure):
     def Start(self):
         super(StructureWood,self).Start()
         self.destructionMomentum = 2500
-        mass = 30
+        mass = 3
         self.parent.GetComponent(Components.Physics).mass = mass
         self.parent.GetComponent(Components.Physics).momentOfInertia = self.CalculateMomentOfInertia(mass)
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/WoodStructure.png",lenX = self.lenX, lenY = self.lenY))
@@ -97,7 +97,7 @@ class StructureMetal(Structure):
     def Start(self):
         self.destructionMomentum = 3500
         super(StructureWood,self).Start()
-        mass = 50
+        mass = 5
         self.parent.GetComponent(Components.Physics).mass = mass
         self.parent.GetComponent(Components.Physics).momentOfInertia = self.CalculateMomentOfInertia(mass)
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/StructureMetal.png"))

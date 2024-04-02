@@ -96,6 +96,8 @@ class Ball(Component.Component):
         transformState = transform.SaveState()
         physicsState = physics.SaveState()
         
+        physics.constraintPosition = False
+        physics.constraintRotation = False
         physics.AddImpulse(impulse)
         #project next n timesteps, if a collision occurs with a structure, the projection stops
         path = []
@@ -103,7 +105,7 @@ class Ball(Component.Component):
             colliders = self.parent.GetParentScene().GetComponents(Components.Collider)
             collider.Update(None,colliders,False)
             physics.Update(1/60.0,collider.collisions,3)
-            path.append(transform.position)      
+            path.append(transform.position)
         
         #load state
         physics.LoadState(physicsState)
@@ -134,7 +136,7 @@ class BallBouncy(Ball):
         physics = ComponentPhysics.Physics()
         physics.constraintPosition = True
         physics.constraintRotation = True
-        physics.mass = 0.8
+        physics.mass = 1.8
         physics.restitution = 0.8
         self.parent.AddComponent(physics)
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/TennisBall.PNG", diameter=self.radius*2))

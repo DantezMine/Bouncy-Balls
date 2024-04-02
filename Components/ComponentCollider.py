@@ -115,6 +115,7 @@ class ColliderRect(Collider):
         self.sqRadius = Vec2(lenX/2.0,lenY/2.0).SqMag()
         
     def Start(self):
+        self.mags = self.PrecomputeEdgeMag()
         self.Recalculate(temp=False)
         
     def CheckCollision(self, colliders):
@@ -126,7 +127,7 @@ class ColliderRect(Collider):
             #check if the objects are inside each others circumcircles
             posA = self.parent.GetComponent(Components.Transform).position
             posB = collider.parent.GetComponent(Components.Transform).position
-            if (posA-posB).SqMag() > self.sqRadius+collider.sqRadius + 1:
+            if (posA-posB).SqMag() > self.sqRadius+collider.sqRadius + 0.1:
                 continue
             
             if collider.colliderType == ColliderType.Rect:
@@ -346,6 +347,14 @@ class ColliderRect(Collider):
         self.verts = self.GetVertices(temp)
         self.norms = self.GetNormals(self.verts)
     
+    def PrecomputeEdgeMag(self):
+        mags = list()
+        verts = self.GetVertices(temp=False)
+        for i in range(len(verts)):
+            AB = verts[(i+1)%len(verts)] - verts[i]
+            mags.append(AB.Mag())
+        return mags       
+    
     def GetVertices(self, temp=False):#CCW starting top left if not rotated
         physics = self.parent.GetComponent(Components.Physics)
         transf = self.parent.GetComponent(Components.Transform)
@@ -370,7 +379,7 @@ class ColliderRect(Collider):
         normals = list()
         for i in range(4):
             AB = verts[(i+1)%4]-verts[i]
-            normals.append(AB.Perp().Normalize())
+            normals.append(AB.Perp() * (1.0/self.mags[i]))
         return normals
     
     def DisplayCollider(self):

@@ -1,5 +1,6 @@
 import pygame
 import World
+import time
 from lib import TestingPhysicsScene
 from lib import GlobalVars
 
@@ -24,6 +25,7 @@ world.StartActiveScene()
 
 '''pygame loop'''
 while GlobalVars.running:
+    t1 = time.time()
     GlobalVars.events = pygame.event.get()
     for event in GlobalVars.events:
         if event.type == pygame.QUIT:
@@ -46,7 +48,7 @@ while GlobalVars.running:
         GlobalVars.UILayer.fill((0,0,0,0))
         GlobalVars.screen.fill((255,255,255))
         deltaTime = 1/60.0 if GlobalVars.debug else None
-        world.UpdateActiveScene(deltaTime=deltaTime,updateFrequency=10)
+        world.UpdateActiveScene(deltaTime=1/60.0,updateFrequency=10)
         GlobalVars.screen.blit(GlobalVars.background,(0,0))
         GlobalVars.screen.blit(GlobalVars.foreground,(0,0))
         GlobalVars.screen.blit(GlobalVars.UILayer,(0,0))
@@ -56,7 +58,7 @@ while GlobalVars.running:
                 GlobalVars.step = False
                 print("Frame #%s"%GlobalVars.frameCount)
 
-    GlobalVars.clock.tick(60)
+    GlobalVars.clock.tick(120)
     pygame.display.flip()
-    
+    print(1/(time.time()-t1))
 pygame.quit
