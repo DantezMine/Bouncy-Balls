@@ -1,6 +1,7 @@
 import pygame
 import math
 from Components import Component
+from Components import ComponentTransform
 from Components.Component import Components
 from lib import GlobalVars
 from Vector import Vec2
@@ -21,13 +22,8 @@ class Button(Component.Component):
         
     def Update(self, deltaTime):
         self.verts = self.GetVertices()
-        mousePos = pygame.mouse.get_pos()
-        mousePos = Vec2(mousePos[0],mousePos[1])
-        mousePosWorld = self.transform.ScreenToWorldPos(mousePos,self.parent.GetParentScene().camera)
-        if self.PointInPolygon(mousePosWorld):
-            self.DisplayButtonOutline((20,220,20))
-        else:
-            self.DisplayButtonOutline((220,20,220))
+        mousePosWorld = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen,self.parent.GetParentScene().camera)
+        self.PointInPolygon(mousePosWorld)
         
     def PointInPolygon(self,point):
         inside = True
@@ -50,6 +46,6 @@ class Button(Component.Component):
     def DisplayButtonOutline(self, color):
         vertices = []
         for v in self.verts:
-            vertScreen = self.parent.GetComponent(Components.Transform).WorldToScreenPos(v,self.parent.GetParentScene().camera)
+            vertScreen = ComponentTransform.Transform.WorldToScreenPos(v,self.parent.GetParentScene().camera)
             vertices.append((vertScreen.x,vertScreen.y))
         pygame.draw.polygon(GlobalVars.UILayer,color,vertices,1)

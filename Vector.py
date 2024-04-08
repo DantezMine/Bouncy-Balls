@@ -80,5 +80,8 @@ class Vec2:
         w_q = math.sin(theta * t)/math.sin(theta)
         return p * w_p + q * w_q
     
+    def FromList(other):
+        return Vec2(other[0],other[1])
+    
     def Encode(self):
         return (self.x,self.y)

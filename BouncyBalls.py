@@ -3,6 +3,7 @@ import World
 import time
 from lib import TestingPhysicsScene
 from lib import GlobalVars
+from Vector import Vec2
 
 world = World.World()
 GlobalVars.debug = False
@@ -27,6 +28,7 @@ world.StartActiveScene()
 while GlobalVars.running:
     t1 = time.time()
     GlobalVars.events = pygame.event.get()
+    GlobalVars.mousePosScreen = Vec2.FromList(pygame.mouse.get_pos())
     for event in GlobalVars.events:
         if event.type == pygame.QUIT:
             GlobalVars.running = False
@@ -41,7 +43,16 @@ while GlobalVars.running:
                 GlobalVars.keyReleased = False
         else:
             GlobalVars.keyReleased = True
-    
+        
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            GlobalVars.mousePressed = True
+            if event.button == pygame.BUTTON_LEFT:
+                GlobalVars.mouseLeft = True
+        elif event.type == pygame.MOUSEBUTTONUP:
+            GlobalVars.mousePressed = False
+            GlobalVars.mouseLeft = False
+            
+                
     if not GlobalVars.debug or GlobalVars.update or GlobalVars.step:
         GlobalVars.background.fill((0,0,0,0))
         GlobalVars.foreground.fill((0,0,0,0))
@@ -60,5 +71,5 @@ while GlobalVars.running:
 
     GlobalVars.clock.tick(120)
     pygame.display.flip()
-    print(1/(time.time()-t1))
+    #print(1/(time.time()-t1))
 pygame.quit

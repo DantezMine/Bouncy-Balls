@@ -1,3 +1,4 @@
+from Components import ComponentTransform
 from Components import ComponentSprite
 from Components import Component
 from Components.Component import Components
@@ -24,7 +25,7 @@ class Cannon(Component.Component):
     def Update(self, deltaTime):
         mousePos = pygame.mouse.get_pos()
         mousePos = Vec2(mousePos[0],mousePos[1])
-        mousePosWorld = self.parent.GetComponent(Components.Transform).ScreenToWorldPos(mousePos, self.parent.GetParentScene().camera)
+        mousePosWorld = ComponentTransform.Transform.ScreenToWorldPos(mousePos, self.parent.GetParentScene().camera)
         for event in GlobalVars.events:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.mousePressed = True

@@ -9,7 +9,7 @@ class GameObject(object):
         self.__parentScene = parentScene
         self.__isBackground = False
         
-        self.AddComponent(ComponentTransform.ComponentTransform())
+        self.AddComponent(ComponentTransform.Transform())
         
     def AddComponent(self, component):
         if self.__components.__contains__(component.name):

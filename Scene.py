@@ -55,7 +55,6 @@ class Scene:
             for go in self.__gameObjects.values():
                 collider = go.GetComponent(Components.Collider)
                 if  collider is not None:
-                    #print(go.GetID(), collider.verts)
                     go.UpdateCollider(dt, self.GetComponents(Components.Collider))
                     collisions += collider.collisions
             for go in self.__gameObjects.values():
@@ -69,7 +68,6 @@ class Scene:
     def StartScene(self):
         for go in self.__gameObjects.values():
             go.Start()
-        #print(self.ToJSONstr())
             
     def ToJSONstr(self):
         outString = json.dumps(obj=self,default=self.Encode,indent=4)

@@ -12,7 +12,7 @@ class TransformState:
         self.up       = transform.up
         self.forward  = transform.forward
 
-class ComponentTransform(Component.Component):
+class Transform(Component.Component):
     def __init__(self):
         self.name = Components.Transform
         self.parent = None
@@ -32,20 +32,19 @@ class ComponentTransform(Component.Component):
         da = self.forward.AngleBetween(targetPos-self.position) #angle between forward and target
         self.Rotate(da)
         
-    def WorldToScreenPos(self,pos,camera):
+    def WorldToScreenPos(pos,camera):
         width = GlobalVars.screen.get_width()
         height = GlobalVars.screen.get_height()
         xScreen =        (pos.x*camera.scale + 1)*width /2.0
         yScreen = height-(pos.y*camera.scale + 1)*height/2.0
         return Vec2(xScreen,yScreen)
     
-    def ScreenToWorldPos(self,pos,camera):
+    def ScreenToWorldPos(pos,camera):
         width = GlobalVars.screen.get_width()
         height = GlobalVars.screen.get_height()
         xWorld = (pos.x*2.0/width - 1)/camera.scale
         yWorld = ((height-pos.y)*2.0/height - 1)/camera.scale
         return Vec2(xWorld,yWorld)
-        
     
     def SaveState(self):
         return TransformState(self)

@@ -1,4 +1,5 @@
 from Components.Component import Components
+from Components import ComponentTransform
 from Components import ComponentCollider
 from Components import ComponentPhysics
 from Components import ComponentSprite
@@ -24,7 +25,7 @@ class Ball(Component.Component):
         self.state = "Origin"
         self.sling = sling
         self.mousePosStart = None
-        self.mousePressed = False
+        GlobalVars.mousePressed = False
         self.mouseLeft = False
         self.slingD = 10
     
@@ -38,27 +39,16 @@ class Ball(Component.Component):
         self.parent.AddComponent(physics)
         
     def Update(self, deltaTime):
-        mousePos = pygame.mouse.get_pos()
-        mousePos = Vec2(mousePos[0],mousePos[1])
-        mousePosWorld = self.parent.GetComponent(Components.Transform).ScreenToWorldPos(mousePos, self.parent.GetParentScene().camera)
-        for event in GlobalVars.events:
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                self.mousePressed = True
-                if event.button == 1:
-                    self.mouseLeft = True
-            elif event.type == pygame.MOUSEBUTTONUP:
-                self.mousePressed = False
-                self.mouseLeft = False
+        mousePosWorld = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen, self.parent.GetParentScene().camera)
         
         self.parent.GetComponent(Components.Collider).DisplayCollider()
         if self.state == "Origin":
             self.parent.GetComponent(Components.Transform).position = self.sling.GetComponent(Components.Transform).position
-        if self.mousePressed:
-            if self.state == "Origin" and self.mouseLeft:
+        if GlobalVars.mousePressed:
+            if self.state == "Origin" and GlobalVars.mouseLeft:
                 self.mousePosStart = mousePosWorld
                 self.state = "Dragged"
             if self.state == "Dragged" and mousePosWorld:
-                mousePos = mousePosWorld
                 deltaVec = self.mousePosStart - mousePosWorld
                 delta = deltaVec.Mag()
                 deltaNorm = deltaVec.Normalized()
@@ -67,7 +57,7 @@ class Ball(Component.Component):
                 self.ProjectPath(40,impulse)
             if self.state == "Released" and self.mouseLeft:
                 self.OnClick()
-        if not self.mousePressed:
+        if not GlobalVars.mousePressed:
              if self.state == "Dragged":
                 self.state = "Released"
                 deltaVec = self.mousePosStart - mousePosWorld
@@ -81,10 +71,9 @@ class Ball(Component.Component):
        
     def ProjectPath(self, steps, impulse):
         path = self.GetPath(steps, impulse)
-        transform = self.parent.GetComponent(Components.Transform)
         camera = self.parent.GetParentScene().camera
         for i in range(steps//5):
-            point = transform.WorldToScreenPos(path[i*5], camera)
+            point = ComponentTransform.Transform.WorldToScreenPos(path[i*5], camera)
             pygame.draw.circle(GlobalVars.foreground,(255,255,255),(point.x,point.y),5)
     
     def GetPath(self,steps, impulse):

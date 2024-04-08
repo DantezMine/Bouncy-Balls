@@ -2,6 +2,7 @@ import Scene
 import GameObject
 from Vector import Vec2
 from Components import ComponentStructure
+from Components import ComponentSlider
 from Components import ComponentBall
 from Components import ComponentCamera
 from Components import ComponentGround
@@ -65,7 +66,11 @@ def SetupScene1(world):
     
     button1 = GameObject.GameObject(scene)
     button1.AddComponent(ComponentButton.Button(6,0.8,Vec2(0,0)))
-    scene.AddGameObject(button1)
+    #scene.AddGameObject(button1)
+    
+    slider1 = GameObject.GameObject(scene)
+    slider1.AddComponent(ComponentSlider.Slider(Vec2(-1,0),Vec2(1,0),0,5,0.1))
+    #scene.AddGameObject(slider1)
     
     # for i in range(10):
         # struct = GameObject.GameObject(scene)

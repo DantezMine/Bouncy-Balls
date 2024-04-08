@@ -38,6 +38,7 @@ class Components(enum.Enum):
     Cannon = enum.auto()
     GoalField = enum.auto()
     Button = enum.auto()
+    Slider = enum.auto()
     
     def Encode(self):
         return self.name

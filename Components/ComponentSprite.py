@@ -1,5 +1,6 @@
 import math
 from Components import Component
+from Components import ComponentTransform
 from Components.Component import Components
 from Vector import Vec2
 import pygame
@@ -33,7 +34,7 @@ class Sprite(Component.Component):
         yWorld = parentTransform.position.y+dy
         
         #Screen Space
-        vScreen = parentTransform.WorldToScreenPos(Vec2(xWorld,yWorld), sceneCam)
+        vScreen = ComponentTransform.Transform.WorldToScreenPos(Vec2(xWorld,yWorld), sceneCam)
         xScreen = vScreen.x
         yScreen = vScreen.y
         screenScale = Vec2(self.lenX*width,self.lenY*height) * (parentTransform.scale * sceneCam.scale / 2.0)
