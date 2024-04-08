@@ -62,7 +62,8 @@ class Ball(Component.Component):
                 deltaVec = self.mousePosStart - mousePosWorld
                 delta = deltaVec.Mag()
                 deltaNorm = deltaVec.Normalized()
-                self.parent.GetComponent(Components.Transform).position = self.sling.GetComponent(Components.Transform).position - deltaNorm * math.log(1.5*delta + 1)
+                #self.parent.GetComponent(Components.Transform).position = self.sling.GetComponent(Components.Transform).position - deltaNorm * math.log(1.5*delta + 1)
+                self.parent.GetComponent(Components.Transform).position = self.sling.GetComponent(Components.Transform).position + deltaNorm * 0.5
                 impulse = deltaNorm * math.log(1.5*delta + 1) * self.slingD
                 self.ProjectPath(40,impulse)
             if self.state == "Released" and self.mouseLeft:
