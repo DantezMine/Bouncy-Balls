@@ -64,7 +64,7 @@ def SetupScene1(world):
     scene.AddGameObject(ball)
     
     button1 = GameObject.GameObject(scene)
-    button1.AddComponent(ComponentButton.Button(4,0.8,Vec2(0,0)))
+    button1.AddComponent(ComponentButton.Button(6,0.8,Vec2(0,0)))
     scene.AddGameObject(button1)
     
     # for i in range(10):
