@@ -7,6 +7,7 @@ from Components import ComponentCamera
 from Components import ComponentGround
 from Components import ComponentBackground
 from Components import ComponentCannon
+from Components import ComponentButton
 
 from lib import GlobalVars
 from Components import ComponentGoalField
@@ -61,6 +62,10 @@ def SetupScene1(world):
     ball = GameObject.GameObject(scene)
     ball.AddComponent(ComponentBall.BallBouncy(sling))
     scene.AddGameObject(ball)
+    
+    button1 = GameObject.GameObject(scene)
+    button1.AddComponent(ComponentButton.Button(4,0.8,Vec2(0,0)))
+    scene.AddGameObject(button1)
     
     # for i in range(10):
         # struct = GameObject.GameObject(scene)
