@@ -17,10 +17,12 @@ class Slider(Component.Component):
         self.Value = minValue
         
     def Update(self, deltaTime):
-        if GlobalVars.mousePressed:
-            if GlobalVars.mouseLeft:
-                self.CirclePos = self.GetClosestPointOnLine(self.pos1, self.pos2, ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen,self.parent.GetParentScene().camera))
-                self.Value = self.GetValue()    #has to be run after GetClosestPointToLine
+        self.CheckClick()
+        
+    def CheckClick(self):
+        if GlobalVars.mouseLeft:
+            self.CirclePos = self.GetClosestPointOnLine(self.pos1, self.pos2, ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen,self.parent.GetParentScene().camera))
+            self.Value = self.GetValue()    #has to be run after GetClosestPointToLine
         self.DisplaySlider()
                 
     def DisplaySlider(self):
@@ -42,17 +44,16 @@ class Slider(Component.Component):
         
         magAB = AB.Mag()                     #length of the slider 
         ab_to_ap_dot = AB.Dot(AP)            #dot product from ab to ap (not sure why, don't understand the math yet)
-        distance = -ab_to_ap_dot/magAB        #distance from beginning of slider to the closest point
+        distance = -ab_to_ap_dot/magAB       #distance from beginning of slider to the closest point
         if distance < 0:                     #beyond beginning
             ClosestPoint = A                 
         elif distance > magAB:               #beyond end
             ClosestPoint = B
         else:
-            stepLength = (self.maxValue-self.minValue)/self.step                    #distance to travel on slider for each step
+            stepLength = (self.maxValue-self.minValue)/self.step                        #distance to travel on slider for each step
             distance = int(stepLength * distance / AB.Mag()) * (AB.Mag() / stepLength)  #round to step length
-            ClosestPoint =  A + AB.Normalized() * distance                          #multiply normalized slider vector with distance to get closest point 
-        if (ClosestPoint-P).SqMag() < 1:                                            #only return closest point if mouse is close enough to slider, else just give the last position of the circle
-            print(ClosestPoint, distance)
+            ClosestPoint =  A + AB.Normalized() * distance                              #multiply normalized slider vector with distance to get closest point 
+        if (ClosestPoint-P).SqMag() < 0.01:                                             #only return closest point if mouse is close enough to slider, else just give the last position of the circle
             return ClosestPoint
         return self.CirclePos
     

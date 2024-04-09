@@ -11,8 +11,8 @@ class Sprite(Component.Component):
         self.name = Components.Sprite
         self.spritePath = spritePath
         self.parent = None
-        self.lenX = diameter if diameter is not None else lenX
-        self.lenY = diameter if diameter is not None else lenY
+        self.lenX = diameter*math.sqrt(2) if diameter is not None else lenX
+        self.lenY = diameter*math.sqrt(2) if diameter is not None else lenY
         self.sprite = pygame.image.load("Bouncy-Balls/"+self.spritePath)
         
     def Update(self,deltaTime):
