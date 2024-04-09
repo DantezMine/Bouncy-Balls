@@ -41,6 +41,7 @@ class Button(Component.Component):
                 self.OnClick()
     
     def OnClick(self):
+        '''To use animation, super() this function'''
         self.clickStart = time.time()
         self.animate = True
     
