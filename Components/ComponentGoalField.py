@@ -28,3 +28,10 @@ class GoalField(Component.Component):
     
     def Update(self, deltaTime):
         self.parent.GetComponent(Components.Collider).DisplayCollider()
+        
+    def Encode(self, obj):
+        outDict = super().Encode(obj)
+        outDict["lenX"] = self.lenX
+        outDict["lenY"] = self.lenY
+        outDict["success"] = self.success
+        return outDict

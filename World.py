@@ -43,6 +43,9 @@ class World:
             return True
         print("Scene %s doesn't exist"%sceneName)
         return False
+    
+    def GetActiveScene(self):
+        return self.__activeScene
         
     def CalculateDeltaTime(self):
         dt = time.time()-self.__prevTime if self.__prevTime is not None else 0

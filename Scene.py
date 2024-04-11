@@ -73,8 +73,16 @@ class Scene:
         outString = json.dumps(obj=self,default=self.Encode,indent=4)
         return outString
     
+    def WriteJSON(self, fp):
+        out = json.dump(obj=self, fp=fp, default=self.Encode,indent=4)
+        return out
+    
     def Encode(self,obj):
         joinedDict = dict()
         for gameObject in obj.__gameObjects.values():
             joinedDict[gameObject.GetID()] = gameObject.Encode(gameObject)
         return joinedDict
+    
+    def Decode(self,obj):
+        for gameObjectID in obj.keys():
+            pass

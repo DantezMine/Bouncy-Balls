@@ -3,8 +3,8 @@ from Components import ComponentTransform
 from Components.Component import Components
 
 class GameObject(object):
-    def __init__(self, parentScene):
-        self.__id = parentScene.CreateID()
+    def __init__(self, parentScene, id = None):
+        self.__id = parentScene.CreateID() if id is None else id
         self.__components = {key: value for key, value in []} #initialize an empty dictionary using dictionary comprehension
         self.__parentScene = parentScene
         self.__isBackground = False

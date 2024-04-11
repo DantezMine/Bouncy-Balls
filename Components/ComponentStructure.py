@@ -70,8 +70,7 @@ class Structure(Component.Component):
         outDict["lenX"] = obj.lenX
         outDict["lenY"] = obj.lenY
         outDict["destructionMomentum"] = obj.destructionMomentum
-        if obj.destroyed != False:
-            outDict["destroyed"] = obj.destroyed
+        outDict["destroyed"] = obj.destroyed
         return outDict
 
 class StructureWood(Structure):

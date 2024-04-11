@@ -10,3 +10,8 @@ class Camera(Component.Component):
     
     def Start(self):
         self.transform = self.parent.GetComponent(Component.Components.Transform)
+        
+    def Encode(self, obj):
+        outDict = super().Encode(obj)
+        outDict["scale"] = self.scale
+        return outDict

@@ -14,29 +14,29 @@ class Slider(Component.Component):
         self.maxValue = maxValue
         self.step = max(0.0001,step)
         self.SetPos(pos1,pos2)
-        self.Value = minValue
+        self.value = minValue
         
     def Update(self, deltaTime):
         self.CheckClick()
         
     def CheckClick(self):
         if GlobalVars.mouseLeft:
-            self.CirclePos = self.GetClosestPointOnLine(self.pos1, self.pos2, ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen,self.parent.GetParentScene().camera))
-            self.Value = self.GetValue()    #has to be run after GetClosestPointToLine
+            self.circlePos = self.GetClosestPointOnLine(self.pos1, self.pos2, ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen,self.parent.GetParentScene().camera))
+            self.value = self.GetValue()    #has to be run after GetClosestPointToLine
         self.DisplaySlider()
                 
     def DisplaySlider(self):
         camera = self.parent.GetParentScene().camera
         pos1Screen = ComponentTransform.Transform.WorldToScreenPos(self.pos1,camera)
         pos2Screen = ComponentTransform.Transform.WorldToScreenPos(self.pos2,camera)
-        circlePosScreen = ComponentTransform.Transform.WorldToScreenPos(self.CirclePos,camera)
+        circlePosScreen = ComponentTransform.Transform.WorldToScreenPos(self.circlePos,camera)
         pygame.draw.line(GlobalVars.UILayer,(51,51,51),(pos1Screen.x,pos1Screen.y),(pos2Screen.x,pos2Screen.y))
         pygame.draw.ellipse(GlobalVars.UILayer,(150,20,150),(circlePosScreen.x-5,circlePosScreen.y-5,10,10))
     
     def SetPos(self, pos1,pos2):
         self.pos1 = pos1
         self.pos2 = pos2
-        self.CirclePos = self.pos1
+        self.circlePos = self.pos1
 
     def GetClosestPointOnLine(self,A,B,P):
         AP = A-P                #vector from point to beginning of slider/line
@@ -55,12 +55,23 @@ class Slider(Component.Component):
             ClosestPoint =  A + AB.Normalized() * distance                              #multiply normalized slider vector with distance to get closest point 
         if (ClosestPoint-P).SqMag() < 0.01:                                             #only return closest point if mouse is close enough to slider, else just give the last position of the circle
             return ClosestPoint
-        return self.CirclePos
+        return self.circlePos
     
     def GetValue(self):
         sliderLength = (self.pos1-self.pos2).Mag()                                  #the length of the slider
-        distanceOnSlider = (self.pos1-self.CirclePos).Mag()                         #how far the point is along the slider
+        distanceOnSlider = (self.pos1-self.circlePos).Mag()                         #how far the point is along the slider
         distRatio = max(0,min(distanceOnSlider / sliderLength,1))                   #mapping the previous distance between 0 and 1
         UnalteredValue = self.minValue + (self.maxValue-self.minValue)*distRatio    #lerp between smallest and biggest value of slider with previous value
         Value = int(UnalteredValue/self.step) * self.step                           #divide value by step size, round to int, then multiply by step size ==> rounding to step size
         return Value
+    
+    def Encode(self, obj):
+        outDict = super().Encode(obj)
+        outDict["pos1"] = self.pos1
+        outDict["pos2"] = self.pos2
+        outDict["minValue"] = self.minValue
+        outDict["maxValue"] = self.maxValue
+        outDict["maxValue"] = self.value
+        outDict["circlePos"] = self.circlePos
+        outDict["step"] = self.step
+        return outDict

@@ -1,9 +1,11 @@
 import pygame
 import World
 import time
+import json
 from lib import TestingPhysicsScene
 from lib import GlobalVars
 from Vector import Vec2
+import Scene
 
 world = World.World()
 GlobalVars.debug = False
@@ -23,6 +25,14 @@ TestingPhysicsScene.SetupScene1(world)
 GlobalVars.frameCount = 0
 
 world.StartActiveScene()
+with open("levelTest.json","w") as fp:
+    world.GetActiveScene().WriteJSON(fp)
+
+with open("levelTest.json","r") as fp:
+    world.RemoveScene("scene")
+    scene = Scene.Scene("scene")
+    scene.Decode(json.load(fp=fp))
+
 
 '''pygame loop'''
 while GlobalVars.running:
