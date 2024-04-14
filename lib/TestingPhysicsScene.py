@@ -12,7 +12,7 @@ from Components import ComponentButton
 
 from lib import GlobalVars
 from Components import ComponentGoalField
-from Components.Component import Components
+from Components.Component import ComponentType
 
 def SetupScene1(world):
     scene = Scene.Scene("scene")
@@ -58,11 +58,11 @@ def SetupScene1(world):
     
     sling = GameObject.GameObject(scene)
     scene.AddGameObject(sling)
-    sling.GetComponent(Components.Transform).position = Vec2(-0.5,0)
+    sling.GetComponent(ComponentType.Transform).position = Vec2(-0.5,0)
     
     ball = GameObject.GameObject(scene)
     ball.AddComponent(ComponentBall.BallBouncy(sling))
-    scene.AddGameObject(ball)
+    #scene.AddGameObject(ball)
     
     button1 = GameObject.GameObject(scene)
     button1.AddComponent(ComponentButton.Button(4,0.8,Vec2(0,0)))

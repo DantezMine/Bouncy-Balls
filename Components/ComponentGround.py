@@ -1,4 +1,4 @@
-from Components.Component import Components
+from Components.Component import ComponentType
 from Vector import Vec2
 from Components import Component
 from Components import ComponentCollider
@@ -10,11 +10,11 @@ class GroundType(enum.Enum):
     Dirt = enum.auto()
     
     def Encode(self):
-        return self.name
+        return self.value
 
 class Ground(Component.Component):
     def __init__(self, position = Vec2(0,0), lenX = 50, lenY = 50, rotation = 0.0):
-        self.name = Components.Ground
+        self.name = ComponentType.Ground
         self.parent = None
 
         self.initPos = position
@@ -23,7 +23,7 @@ class Ground(Component.Component):
         self.lenY = lenY
     
     def Start(self):
-        transform = self.parent.GetComponent(Components.Transform)
+        transform = self.parent.GetComponent(ComponentType.Transform)
         transform.position = self.initPos
         transform.rotation = self.initRot
         
@@ -38,8 +38,18 @@ class Ground(Component.Component):
         outDict = super().Encode(obj)
         outDict["lenX"] = obj.lenX
         outDict["lenY"] = obj.lenY
-        outDict["groundType"] = obj.groundType.Encode()
+        outDict["groundType"] = obj.groundType.Encode() if type(obj.groundType) == GroundType else obj.groundType
+        outDict["initPos"] = obj.initPos.Encode()
+        outDict["initRot"] = obj.initRot
         return outDict
+    
+    def Decode(self, obj):
+        super().Decode(obj)
+        self.lenX = obj["lenX"]
+        self.lenY = obj["lenY"]
+        self.groundType = obj["groundType"]
+        self.initPos = Vec2.FromList(obj["initPos"])
+        self.initRot = obj["initRot"]
         
 class GroundDirt(Ground):
     def __init__(self, position=Vec2(0, 0), lenX=50, lenY=50, rotation=0.0):
@@ -51,4 +61,4 @@ class GroundDirt(Ground):
         self.sprite = self.parent.AddComponent(ComponentSprite.Sprite("data/GroundDirt.png",self.lenX,self.lenY))
         
     # def Update(self, deltaTime):
-    #     self.parent.GetComponent(Components.Collider).DisplayCollider()
+    #     self.parent.GetComponent(ComponentType.Collider).DisplayCollider()

@@ -25,6 +25,7 @@ TestingPhysicsScene.SetupScene1(world)
 GlobalVars.frameCount = 0
 
 world.StartActiveScene()
+
 with open("levelTest.json","w") as fp:
     world.GetActiveScene().WriteJSON(fp)
 
@@ -32,7 +33,10 @@ with open("levelTest.json","r") as fp:
     world.RemoveScene("scene")
     scene = Scene.Scene("scene")
     scene.Decode(json.load(fp=fp))
+    world.AddScene(scene.name,scene)
 
+with open("levelTest.json","w") as fp:
+    world.GetActiveScene().WriteJSON(fp)
 
 '''pygame loop'''
 while GlobalVars.running:

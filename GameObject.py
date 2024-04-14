@@ -1,6 +1,6 @@
 import json
 from Components import ComponentTransform
-from Components.Component import Components
+from Components.Component import ComponentType
 
 class GameObject(object):
     def __init__(self, parentScene, id = None):
@@ -12,24 +12,18 @@ class GameObject(object):
         self.AddComponent(ComponentTransform.Transform())
         
     def AddComponent(self, component):
-        if self.__components.__contains__(component.name):
-            print("Component already exists in object %d"%self.__id)
-            return False
         self.__components[component.name] = component
         self.__components[component.name].parent = self
         component.Start()
-        if component.name == Components.Background:
+        if component.name == ComponentType.Background:
             self.__isBackground = True
         return True
     
     def RemoveComponent(self,componentName):
         if self.__components.__contains__(componentName):
             self.__components.pop(componentName)
-            if componentName == Components.Background:
+            if componentName == ComponentType.Background:
                 self.__isBackground = False
-            return True
-        print("Component doesn't exist in object %d"%self.__id)
-        return False
     
     def RemoveFromScene(self):
         self.__parentScene.RemoveGameObject(self)
@@ -66,20 +60,20 @@ class GameObject(object):
     def Update(self,deltaTime):
         keysCopy = self.__components.keys()
         for key in keysCopy:
-            if key != Components.Sprite and key != Components.Collider and key != Components.Physics:
+            if key != ComponentType.Sprite and key != ComponentType.Collider and key != ComponentType.Physics:
                 self.__components[key].Update(deltaTime)
     
     def UpdateCollider(self,deltaTime, colliders):
-        if self.HasComponent(Components.Collider):
-            self.__components[Components.Collider].Update(deltaTime, colliders)
+        if self.HasComponent(ComponentType.Collider):
+            self.__components[ComponentType.Collider].Update(deltaTime, colliders)
     
     def UpdatePhysics(self,deltaTime,allCollisions,mode):
-        if self.__components.__contains__(Components.Physics):
-            self.__components[Components.Physics].Update(deltaTime,allCollisions,mode)
+        if self.__components.__contains__(ComponentType.Physics):
+            self.__components[ComponentType.Physics].Update(deltaTime,allCollisions,mode)
             
     def Show(self,deltaTime):
-        if self.__components.__contains__(Components.Sprite):
-            self.__components[Components.Sprite].Update(deltaTime)
+        if self.__components.__contains__(ComponentType.Sprite):
+            self.__components[ComponentType.Sprite].Update(deltaTime)
             
     def UpdateOnCollision(self,collider):
         keys = list(self.__components.keys())[:]

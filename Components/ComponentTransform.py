@@ -1,6 +1,5 @@
 import json
-from Components import Component
-from Components.Component import Components
+from . import Component
 from Vector import Vec2
 from lib import GlobalVars
 
@@ -14,7 +13,7 @@ class TransformState:
 
 class Transform(Component.Component):
     def __init__(self):
-        self.name = Components.Transform
+        self.name = Component.ComponentType.Transform
         self.parent = None
         
         self.position = Vec2(0,0)
@@ -58,7 +57,7 @@ class Transform(Component.Component):
         
     def Encode(self,obj):
         return {
-            "name" : obj.name.Encode(),
+            "type" : obj.name.Encode() if type(obj.name) == Component.ComponentType else obj.name,
             "parentID" : obj.parent.GetID(),
             "position" : obj.position.Encode(),
             "rotation" : obj.rotation,
@@ -66,3 +65,11 @@ class Transform(Component.Component):
             "up" : obj.up.Encode(),
             "forward" : obj.forward.Encode()
         }
+        
+    def Decode(self, obj):
+        super().Decode(obj)
+        self.position = Vec2.FromList(obj["position"])
+        self.rotation = obj["rotation"]
+        self.scale = obj["scale"]
+        self.up = Vec2.FromList(obj["up"])
+        self.forward = Vec2.FromList(obj["forward"])

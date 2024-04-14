@@ -83,5 +83,8 @@ class Vec2:
     def FromList(other):
         return Vec2(other[0],other[1])
     
+    def FromDict(other):
+        return Vec2(other["x"],other["y"])
+    
     def Encode(self):
         return (self.x,self.y)

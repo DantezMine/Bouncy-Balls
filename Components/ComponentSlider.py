@@ -1,13 +1,13 @@
 import pygame
 from Components import ComponentTransform
 from Components import Component
-from Components.Component import Components
+from Components.Component import ComponentType
 from lib import GlobalVars
 from Vector import Vec2
 
 class Slider(Component.Component):
-    def __init__(self, pos1, pos2, minValue, maxValue, step = 1):
-        self.name = Components.Slider
+    def __init__(self, pos1 = Vec2(0,0), pos2 = Vec2(0,0), minValue = 0, maxValue = 1, step = 1):
+        self.name = ComponentType.Slider
         self.parent = None
         
         self.minValue = minValue
@@ -67,11 +67,21 @@ class Slider(Component.Component):
     
     def Encode(self, obj):
         outDict = super().Encode(obj)
-        outDict["pos1"] = self.pos1
-        outDict["pos2"] = self.pos2
+        outDict["pos1"] = self.pos1.Encode()
+        outDict["pos2"] = self.pos2.Encode()
         outDict["minValue"] = self.minValue
         outDict["maxValue"] = self.maxValue
-        outDict["maxValue"] = self.value
-        outDict["circlePos"] = self.circlePos
+        outDict["value"] = self.value
+        outDict["circlePos"] = self.circlePos.Encode()
         outDict["step"] = self.step
         return outDict
+    
+    def Decode(self, obj):
+        super().Decode(obj)
+        self.pos1 = Vec2.FromList(obj["pos1"])
+        self.pos2 = Vec2.FromList(obj["pos2"])
+        self.minValue = obj["minValue"]
+        self.maxValue = obj["maxValue"]
+        self.value = obj["value"]
+        self.circlePos = Vec2.FromList(obj["circlePos"])
+        self.step = obj["step"]

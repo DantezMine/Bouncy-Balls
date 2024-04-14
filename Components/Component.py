@@ -20,12 +20,15 @@ class Component(object):
     
     def Encode(self,obj):
         outDict = {
-            "name" : obj.name.Encode(),
+            "type" : obj.name.Encode() if type(obj.name) == ComponentType else obj.name,
             "parentID" : obj.parent.GetID()
         }
         return outDict
     
-class Components(enum.Enum):
+    def Decode(self,obj):
+        pass
+    
+class ComponentType(enum.Enum):
     Transform = enum.auto()
     Physics = enum.auto()
     Sprite = enum.auto()
@@ -41,5 +44,11 @@ class Components(enum.Enum):
     Slider = enum.auto()
     
     def Encode(self):
-        return self.name
+        return self.value
     
+    def GetType(compType):
+        members = list(vars(ComponentType).values())
+        members = members[9:len(members)-1]
+        for ctype in members:
+            if compType == ctype.value:
+                return ctype

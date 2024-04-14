@@ -4,25 +4,25 @@ import time
 from Components import Component
 from Components import ComponentTransform
 from Components import ComponentSprite
-from Components.Component import Components
+from Components.Component import ComponentType
 from lib import GlobalVars
 from Vector import Vec2
 
 class Button(Component.Component):
     def __init__(self, nPoly = 4, radius = 0.2, position = Vec2(0,0)):
-        self.name = Components.Button
+        self.name = ComponentType.Button
         self.parent = None
         
         self.nPoly = nPoly
         self.radius = radius
-        self.startPosition = position
+        self.initPos = position
         self.animDuration = 0.4
         self.animScale = 0.1
         self.animate = False
         
     def Start(self):
-        self.transform = self.parent.GetComponent(Components.Transform)
-        self.transform.position = self.startPosition
+        self.transform = self.parent.GetComponent(ComponentType.Transform)
+        self.transform.position = self.initPos
         self.verts = self.GetVertices()
         
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/ButtonLocked.png",diameter=self.radius))
@@ -88,4 +88,14 @@ class Button(Component.Component):
         outDict["animate"] = self.animate
         outDict["animDuration"] = self.animDuration
         outDict["animScale"] = self.animScale
+        outDict["initPos"] = self.initPos.Encode()
         return outDict
+    
+    def Decode(self, obj):
+        super().Decode(obj)
+        self.nPoly = obj["nPoly"]
+        self.radius = obj["radius"]
+        self.animate = obj["animate"]
+        self.animDuration = obj["animDuration"]
+        self.animScale = obj["animScale"]
+        self.initPos = Vec2.FromList(obj["initPos"])
