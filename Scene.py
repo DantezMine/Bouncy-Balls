@@ -16,8 +16,8 @@ from Components import ComponentStructure
 from Components import ComponentTransform
 
 class Scene:
-    ID = 0
     def __init__(self, name):
+        self.ID = 0
         self.__gameObjects = dict()
         self.name = name
         
@@ -36,8 +36,8 @@ class Scene:
         return False
         
     def CreateID(self):
-        Scene.ID += 1
-        return Scene.ID
+        self.ID += 1
+        return self.ID
     
     def GameObjectWithID(self,id):
         return self.__gameObjects[int(id)]
@@ -110,16 +110,7 @@ class Scene:
                 gameObject.AddComponent(component)
             self.AddGameObject(gameObject)
             self.IDmap[gameObjectID] = str(gameObject.GetID())
-        self.HandleIDQueue()
         return self
-                
-    def AddToIDQueue(self,ID, variable):
-        self.IDQueue[ID] = variable
-        
-    def HandleIDQueue(self):
-        for id in self.IDQueue.keys():
-            self.IDQueue[id] = self.GameObjectWithID(self.IDmap[str(id)])
-        self.IDQueue = dict()
     
     def GetComponent(self, component):
         ctype = component["name"]

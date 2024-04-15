@@ -62,7 +62,7 @@ def SetupScene1(world):
     
     ball = GameObject.GameObject(scene)
     ball.AddComponent(ComponentBall.BallBouncy(sling))
-    #scene.AddGameObject(ball)
+    scene.AddGameObject(ball)
     
     button1 = GameObject.GameObject(scene)
     button1.AddComponent(ComponentButton.Button(4,0.8,Vec2(0,0)))

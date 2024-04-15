@@ -15,12 +15,9 @@ class BallType(enum.Enum):
     Bouncy = enum.auto()
     Heavy = enum.auto()
     
-    def Encode(self):
-        return self.value
-    
     def Decode(value):
         members = list(vars(BallType).values())
-        members = members[9:len(members)-1]
+        members = members[8:len(members)-1]
         for member in members:
             if value == member.value:
                 return member
@@ -44,15 +41,16 @@ class Ball(Component.Component):
         physics.constraintPosition = True
         physics.constraintRotation = True
         self.parent.AddComponent(physics)
-        if self.sling is None and self.slingID is not None:
-            self.parent.GetParentScene().AddToIDQueue(self.slingID,self.sling)
         
     def Update(self, deltaTime):
-        mousePosWorld = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen, self.parent.GetParentScene().camera)
+        if self.sling is None:
+            self.sling = self.parent.GetParentScene().GameObjectWithID(self.slingID)
+        self.slingTransform = self.sling.GetComponent(ComponentType.Transform)
         
+        mousePosWorld = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen, self.parent.GetParentScene().camera)
         self.parent.GetComponent(ComponentType.Collider).DisplayCollider()
         if self.state == "Origin":
-            self.parent.GetComponent(ComponentType.Transform).position = self.sling.GetComponent(ComponentType.Transform).position
+            self.parent.GetComponent(ComponentType.Transform).position = self.slingTransform.position
         if GlobalVars.mousePressed:
             if self.state == "Origin" and GlobalVars.mouseLeft:
                 self.mousePosStart = mousePosWorld
@@ -61,7 +59,7 @@ class Ball(Component.Component):
                 deltaVec = self.mousePosStart - mousePosWorld
                 delta = deltaVec.Mag()
                 deltaNorm = deltaVec.Normalized()
-                self.parent.GetComponent(ComponentType.Transform).position = self.sling.GetComponent(ComponentType.Transform).position - deltaNorm * math.log(1.5*delta + 1)
+                self.parent.GetComponent(ComponentType.Transform).position = self.slingTransform.position - deltaNorm * math.log(1.5*delta + 1)
                 impulse = deltaNorm * math.log(1.5*delta + 1) * self.slingD
                 self.ProjectPath(40,impulse)
             if self.state == "Released" and self.mouseLeft:
@@ -138,8 +136,6 @@ class BallBouncy(Ball):
         physics.restitution = 0.8
         self.parent.AddComponent(physics)
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/TennisBall.PNG", diameter=self.radius*2))
-        if self.sling is None and self.slingID is not None:
-            self.parent.GetParentScene().AddToIDQueue(self.slingID,self.sling)
 
 class BallBowling(Ball):
     '''type : "Heavy"'''
@@ -158,5 +154,3 @@ class BallBowling(Ball):
         physics.restitution = 0.1
         self.parent.AddComponent(physics)
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/BowlingBall.PNG", diameter=self.radius*2))
-        if self.sling is None and self.slingID is not None:
-            self.parent.GetParentScene().AddToIDQueue(self.slingID,self.sling)
