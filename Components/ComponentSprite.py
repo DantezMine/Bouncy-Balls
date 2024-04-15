@@ -12,6 +12,7 @@ class Sprite(Component.Component):
         self.parent = None
         self.lenX = diameter if diameter is not None else lenX
         self.lenY = diameter if diameter is not None else lenY
+        self.sprite = pygame.image.load("Bouncy-Balls/"+self.spritePath)
         
     def Update(self,deltaTime):
         self.DisplayImg()
@@ -19,7 +20,6 @@ class Sprite(Component.Component):
     def DisplayImg(self):
         sceneCam = self.parent.GetParentScene().camera
         parentTransform = self.parent.GetComponent(Components.Transform)
-        sprite = pygame.image.load("Bouncy-Balls/"+self.spritePath)
         width = GlobalVars.screen.get_width()
         height = GlobalVars.screen.get_height()
         
@@ -38,8 +38,8 @@ class Sprite(Component.Component):
         yScreen = vScreen.y
         screenScale = Vec2(self.lenX*width,self.lenY*height) * (parentTransform.scale * sceneCam.scale / 2.0)
                 
-        image = pygame.transform.scale(sprite,(screenScale.x,screenScale.y))
-        image = pygame.transform.rotate(image,-parentTransform.rotation*180.0/math.pi)
+        image = pygame.transform.scale(self.sprite,(screenScale.x,screenScale.y))
+        image = pygame.transform.rotate(image,parentTransform.rotation*180.0/math.pi)
         
         GlobalVars.foreground.blit(image,(xScreen,yScreen))
         
@@ -54,6 +54,5 @@ class SpriteBackground(Sprite):
     def DisplayImg(self):
         width = GlobalVars.background.get_width()
         height = GlobalVars.background.get_height()
-        sprite = pygame.image.load("Bouncy-Balls/"+self.spritePath)
-        image = pygame.transform.scale(sprite,(width,height))
+        image = pygame.transform.scale(self.sprite,(width,height))
         GlobalVars.background.blit(image,(0,0))

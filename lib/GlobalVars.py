@@ -8,5 +8,6 @@ debug : bool= False
 screen : pygame.Surface = None
 background : pygame.Surface = None
 foreground : pygame.Surface = None
+UILayer : pygame.Surface = None
 clock = None
 running : bool = None

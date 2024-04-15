@@ -30,26 +30,30 @@ class CollisionInfo:
         return ("Object A: %s, Object B: %s, Collision Type: %s, Collision Point: %s, Other Collision Point: %s, Collision Normal: %s, Other Normal: %s, Collision Response: %s"%(self.objectA.GetID(),self.objectB.GetID(),self.collisionType,self.collisionPoint,self.otherCollisionPoint,self.collisionNormal,self.otherNormal,self.collisionResponseTag))
 
 class Collider(Component.Component):
-    def __init__(self, localPosition=Vec2(0,0),localRotation=0,localScale=1):
+    def __init__(self, localPosition=Vec2(0,0),localRotation=0,localScale=1,tags=[]):
         self.name = Component.Components.Collider
         self.parent = None
         self.colliderType = None
-        self.tags = []
-                
+        self.tags = tags
+
         self.collisions = []
         self._safetyMargin = 10
         self._edgeAlignmentMargin = 0.01
         self.localPosition = localPosition
         self.localRotation = localRotation
         self.localScale = localScale
+        
+    def Recalculate(self,temp):
+        pass
 
     def DisplayCollider(self):
         pass
     
-    def Update(self,deltaTime,colliders):
+    def Update(self,deltaTime,colliders,updateOnCollision=True):
         self.collisions = []
         self.CheckCollision(colliders)
-        self._UpdateOnCollision()
+        if updateOnCollision:
+            self._UpdateOnCollision()
     
     def _UpdateOnCollision(self):
         for collider in self.collisions:
@@ -68,20 +72,14 @@ class Collider(Component.Component):
         return outDict
     
 class ColliderCircle(Collider):
-    def __init__(self, radius=50, localPosition=Vec2(0, 0), localRotation=0, localScale=1):
-        super(ColliderCircle,self).__init__(localPosition, localRotation, localScale)
+    def __init__(self, radius=50, localPosition=Vec2(0, 0), localRotation=0, localScale=1, tags=[]):
+        super(ColliderCircle,self).__init__(localPosition, localRotation, localScale, tags)
         self.colliderType = ColliderType.Circle
-        self.radius = 50
+        self.radius = radius
         self.sqRadius = radius**2
-        
-    def Update(self,deltaTime,colliders):
-        self.collisions = []
-        self.CheckCollision(colliders)
-        self._UpdateOnCollision()
     
     def CheckCollision(self, colliders):
-        transform = self.parent.GetComponent(Components.Transform)
-        center = transform.position
+        center = self.parent.GetComponent(Components.Physics).tempNextPos
         for collider in colliders:
             self.CheckCollisionCircle(collider,center)
     
@@ -109,21 +107,16 @@ class ColliderCircle(Collider):
         return outDict
 
 class ColliderRect(Collider):
-    def __init__(self, lenX = 50, lenY = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = 1):
-        super(ColliderRect,self).__init__(localPosition, localRotation, localScale)
+    def __init__(self, lenX = 50, lenY = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = 1, tags = []):
+        super(ColliderRect,self).__init__(localPosition, localRotation, localScale, tags)
         self.colliderType = ColliderType.Rect
         self.lenX = lenX
         self.lenY = lenY
         self.sqRadius = Vec2(lenX/2.0,lenY/2.0).SqMag()
         
     def Start(self):
+        self.mags = self.PrecomputeEdgeMag()
         self.Recalculate(temp=False)
-    
-    def Update(self,deltaTime,colliders):
-        self.collisions = []
-        self.CheckCollision(colliders)
-        self._UpdateOnCollision()
-        self.DisplayCollider()
         
     def CheckCollision(self, colliders):
         verts = self.verts
@@ -134,7 +127,7 @@ class ColliderRect(Collider):
             #check if the objects are inside each others circumcircles
             posA = self.parent.GetComponent(Components.Transform).position
             posB = collider.parent.GetComponent(Components.Transform).position
-            if (posA-posB).SqMag() > self.sqRadius+collider.sqRadius:
+            if (posA-posB).SqMag() > self.sqRadius+collider.sqRadius + 0.1:
                 continue
             
             if collider.colliderType == ColliderType.Rect:
@@ -198,7 +191,7 @@ class ColliderRect(Collider):
                     #check if closest point projects onto the actual segment
                     if onLine:
                         #check if the closest point to edge is inside the rectangle
-                        if self.IsPointInsideRect(closestVertex,verts):                        
+                        if self.IsPointInsideRect(closestVertex,verts):
                             if collisionDistance < SqMinEdgeEdgeDistance:
                                 SqMinEdgeEdgeDistance = collisionDistance
                                 A_,B_,C_,D_ = A,B,C,D
@@ -354,6 +347,14 @@ class ColliderRect(Collider):
         self.verts = self.GetVertices(temp)
         self.norms = self.GetNormals(self.verts)
     
+    def PrecomputeEdgeMag(self):
+        mags = list()
+        verts = self.GetVertices(temp=False)
+        for i in range(len(verts)):
+            AB = verts[(i+1)%len(verts)] - verts[i]
+            mags.append(AB.Mag())
+        return mags       
+    
     def GetVertices(self, temp=False):#CCW starting top left if not rotated
         physics = self.parent.GetComponent(Components.Physics)
         transf = self.parent.GetComponent(Components.Transform)
@@ -378,15 +379,16 @@ class ColliderRect(Collider):
         normals = list()
         for i in range(4):
             AB = verts[(i+1)%4]-verts[i]
-            normals.append(AB.Perp().Normalize())
+            normals.append(AB.Perp() * (1.0/self.mags[i]))
         return normals
     
     def DisplayCollider(self):
-        verts = self.GetVertices()
+        verts = self.verts
         vertices = []
         for v in verts:
-            vertices.append((v.x,v.y))
-        pygame.draw.polygon(GlobalVars.screen,(20,220,20),vertices,1)
+            vertScreen = self.parent.GetComponent(Components.Transform).WorldToScreenPos(v,self.parent.GetParentScene().camera)
+            vertices.append((vertScreen.x,vertScreen.y))
+        pygame.draw.polygon(GlobalVars.UILayer,(220,20,20),vertices,1)
 
     def Encode(self,obj):
         outDict = super(ColliderRect,self).Encode(obj)

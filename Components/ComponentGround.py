@@ -32,7 +32,7 @@ class Ground(Component.Component):
         physics.constraintRotation = True
         self.parent.AddComponent(physics)
         
-        self.parent.AddComponent(ComponentCollider.ColliderRect(lenX = self.lenX, lenY = self.lenY))
+        self.parent.AddComponent(ComponentCollider.ColliderRect(lenX = self.lenX, lenY = self.lenY, tags=["Ground"]))
         
     def Encode(self, obj):
         outDict = super().Encode(obj)
@@ -50,5 +50,5 @@ class GroundDirt(Ground):
         super().Start()
         self.sprite = self.parent.AddComponent(ComponentSprite.Sprite("data/GroundDirt.png",self.lenX,self.lenY))
         
-    def Update(self, deltaTime):
-        self.parent.GetComponent(Components.Collider).DisplayCollider()
+    # def Update(self, deltaTime):
+    #     self.parent.GetComponent(Components.Collider).DisplayCollider()
