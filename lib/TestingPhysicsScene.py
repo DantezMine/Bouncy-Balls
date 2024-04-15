@@ -47,7 +47,7 @@ def SetupScene1(world):
     sling.GetComponent(Components.Transform).position = Vec2(-1,-1)
     
     ball = GameObject.GameObject(scene)
-    ball.AddComponent(ComponentBall.BallBouncy(sling))
+    ball.AddComponent(ComponentBall.BallBouncy(sling, Vec2(-1,-1)))
     scene.AddGameObject(ball)
     
     cannon = GameObject.GameObject(scene)

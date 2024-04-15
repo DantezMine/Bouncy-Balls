@@ -60,5 +60,5 @@ while GlobalVars.running:
 
     GlobalVars.clock.tick(120)
     pygame.display.flip()
-    print(1/(time.time()-t1))
+    # print(1/(time.time()-t1))
 pygame.quit
