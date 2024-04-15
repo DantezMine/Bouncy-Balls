@@ -106,15 +106,6 @@ class Ball(Component.Component):
     def OnClick(self):
         pass
     
-    def Encode(self,obj):
-        outDict = super(Ball,self).Encode(obj)
-        outDict["radius"] = obj.radius
-        outDict["state"] = obj.state
-        outDict["sling"] = obj.sling.GetID()
-        outDict["slingD"] = obj.slingD
-        outDict["ballType"] = obj.ballType.Encode() if type(obj.ballType) == BallType else obj.ballType
-        return outDict
-    
     def Decode(self, obj):
         super().Decode(obj)
         self.radius = obj["radius"]

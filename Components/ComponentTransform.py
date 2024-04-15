@@ -55,17 +55,6 @@ class Transform(Component.Component):
         self.up       = state.up
         self.forward  = state.forward
         
-    def Encode(self,obj):
-        return {
-            "type" : obj.name.Encode() if type(obj.name) == Component.ComponentType else obj.name,
-            "parentID" : obj.parent.GetID(),
-            "position" : obj.position.Encode(),
-            "rotation" : obj.rotation,
-            "scale" : obj.scale,
-            "up" : obj.up.Encode(),
-            "forward" : obj.forward.Encode()
-        }
-        
     def Decode(self, obj):
         super().Decode(obj)
         self.position = Vec2.FromList(obj["position"])

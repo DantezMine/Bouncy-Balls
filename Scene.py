@@ -122,7 +122,7 @@ class Scene:
         self.IDQueue = dict()
     
     def GetComponent(self, component):
-        ctype = component["type"]
+        ctype = component["name"]
         
         if ctype == ComponentType.Transform.value:
             return ComponentTransform.Transform

@@ -33,15 +33,6 @@ class Ground(Component.Component):
         self.parent.AddComponent(physics)
         
         self.parent.AddComponent(ComponentCollider.ColliderRect(lenX = self.lenX, lenY = self.lenY, tags=["Ground"]))
-        
-    def Encode(self, obj):
-        outDict = super().Encode(obj)
-        outDict["lenX"] = obj.lenX
-        outDict["lenY"] = obj.lenY
-        outDict["groundType"] = obj.groundType.Encode() if type(obj.groundType) == GroundType else obj.groundType
-        outDict["initPos"] = obj.initPos.Encode()
-        outDict["initRot"] = obj.initRot
-        return outDict
     
     def Decode(self, obj):
         super().Decode(obj)

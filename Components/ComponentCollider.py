@@ -59,13 +59,13 @@ class Collider(Component.Component):
         for collider in self.collisions:
             self.parent.UpdateOnCollision(collider.objectB.GetComponent(ComponentType.Collider))
     
-    def Encode(self,obj):
-        outDict = super(Collider,self).Encode(obj)
-        outDict["localPosition"] = obj.localPosition.Encode()
-        outDict["localRotation"] = obj.localRotation
-        outDict["localScale"] = obj.localScale
-        outDict["colliderType"] = obj.colliderType.Encode() if type(obj.colliderType) == ColliderType else obj.colliderType
-        return outDict
+    # def Encode(self,obj):
+    #     outDict = super(Collider,self).Encode(obj)
+    #     outDict["localPosition"] = obj.localPosition.Encode()
+    #     outDict["localRotation"] = obj.localRotation
+    #     outDict["localScale"] = obj.localScale
+    #     outDict["colliderType"] = obj.colliderType.Encode() if type(obj.colliderType) == ColliderType else obj.colliderType
+    #     return outDict
     
     def Decode(self, obj):
         super().Decode(obj)
@@ -103,11 +103,6 @@ class ColliderCircle(Collider):
         transform = self.parent.GetComponent(ComponentType.Transform)
         center = transform.position
         pygame.draw.circle(GlobalVars.screen,(20,220,20),(center.x,center.y),self.radius*transform.scale)
-        
-    def Encode(self,obj):
-        outDict = super(ColliderCircle,self).Encode(obj)
-        outDict["radius"] = obj.radius
-        return outDict
     
     def Decode(self, obj):
         super().Decode(obj)
@@ -397,11 +392,11 @@ class ColliderRect(Collider):
             vertices.append((vertScreen.x,vertScreen.y))
         pygame.draw.polygon(GlobalVars.UILayer,(220,20,20),vertices,1)
 
-    def Encode(self,obj):
-        outDict = super().Encode(obj)
-        outDict["lenX"] = obj.lenX
-        outDict["lenY"] = obj.lenY
-        return outDict
+    # def Encode(self,obj):
+    #     outDict = super().Encode(obj)
+    #     outDict["lenX"] = obj.lenX
+    #     outDict["lenY"] = obj.lenY
+    #     return outDict
     
     def Decode(self, obj):
         super().Decode(obj)

@@ -80,16 +80,6 @@ class Button(Component.Component):
             vertScreen = ComponentTransform.Transform.WorldToScreenPos(v,self.parent.GetParentScene().camera)
             vertices.append((vertScreen.x,vertScreen.y))
         pygame.draw.polygon(GlobalVars.UILayer,color,vertices,1)
-        
-    def Encode(self, obj):
-        outDict = super().Encode(obj)
-        outDict["nPoly"] = self.nPoly
-        outDict["radius"] = self.radius
-        outDict["animate"] = self.animate
-        outDict["animDuration"] = self.animDuration
-        outDict["animScale"] = self.animScale
-        outDict["initPos"] = self.initPos.Encode()
-        return outDict
     
     def Decode(self, obj):
         super().Decode(obj)

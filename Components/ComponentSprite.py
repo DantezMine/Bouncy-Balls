@@ -54,14 +54,6 @@ class Sprite(Component.Component):
         image = pygame.transform.rotate(image,parentTransform.rotation*180.0/math.pi)
         
         GlobalVars.foreground.blit(image,(xScreen,yScreen))
-        
-    def Encode(self,obj):
-        outDict = super(Sprite,self).Encode(obj)
-        outDict["spritePath"] = obj.spritePath
-        outDict["spriteType"] = obj.spriteType.Encode() if type(obj.spriteType) == SpriteType else obj.spriteType
-        outDict["lenX"] = obj.lenX
-        outDict["lenY"] = obj.lenY
-        return outDict
     
     def Decode(self, obj):
         super().Decode(obj)

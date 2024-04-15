@@ -65,17 +65,6 @@ class Slider(Component.Component):
         Value = int(UnalteredValue/self.step) * self.step                           #divide value by step size, round to int, then multiply by step size ==> rounding to step size
         return Value
     
-    def Encode(self, obj):
-        outDict = super().Encode(obj)
-        outDict["pos1"] = self.pos1.Encode()
-        outDict["pos2"] = self.pos2.Encode()
-        outDict["minValue"] = self.minValue
-        outDict["maxValue"] = self.maxValue
-        outDict["value"] = self.value
-        outDict["circlePos"] = self.circlePos.Encode()
-        outDict["step"] = self.step
-        return outDict
-    
     def Decode(self, obj):
         super().Decode(obj)
         self.pos1 = Vec2.FromList(obj["pos1"])

@@ -274,26 +274,10 @@ class Physics(Component.Component):
         self.constraintPosition = state.constraintPos
         self.constraintRotation = state.constraintRot
     
-    def Encode(self,obj):
-        outDict = super(Physics,self).Encode(obj)
-        outDict["mass"] = obj.mass
-        outDict["inertia"] = obj.momentOfInertia
-        outDict["restitution"] = obj.restitution
-        outDict["prevPosition"] = obj.prevPosition.Encode()
-        outDict["velocity"] = obj.velocity.Encode()
-        outDict["acceleration"] = obj.acceleration.Encode()
-        outDict["angularSpeed"] = obj.angularSpeed
-        outDict["angularAcc"] = obj.angularAcc
-        outDict["constraintPosition"] = obj.constraintPosition
-        outDict["constraintRotation"] = obj.constraintRotation
-        outDict["gravity"] = obj.gravity
-        outDict["gravAcc"] = obj.gravAcc.Encode()
-        return outDict
-    
     def Decode(self, obj):
         super().Decode(obj)
         self.mass = obj["mass"]
-        self.momentOfInertia = obj["inertia"]
+        self.momentOfInertia = obj["momentOfInertia"]
         self.restitution = obj["restitution"]
         self.prevPosition = Vec2.FromList(obj["prevPosition"])
         self.velocity = Vec2.FromList(obj["velocity"])

@@ -24,11 +24,6 @@ class Cannon(Component.Component):
         if GlobalVars.mouseLeft:
             delta = mousePosWorld - self.initPos
             self.transform.rotation = math.atan(float(delta.y)/delta.x)
-                
-    def Encode(self, obj):
-        outDict = super().Encode(obj)
-        outDict["initPos"] = self.initPos.Encode()
-        return outDict
     
     def Decode(self, obj):
         super().Decode(obj)

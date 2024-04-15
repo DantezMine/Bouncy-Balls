@@ -24,14 +24,6 @@ class Background(Component.Component):
         
     def Start(self):
         self.parent.GetComponent(ComponentType.Transform).position = self.initPos
-        
-    def Encode(self, obj):
-        outDict = super().Encode(obj)
-        outDict["backgroundType"] = obj.backgroundType.Encode() if type(obj.backgroundType) == BackgroundType else obj.backgroundType
-        outDict["lenX"] = obj.lenX
-        outDict["lenY"] = obj.lenY
-        outDict["initPos"] = obj.initPos.Encode()
-        return outDict
     
     def Decode(self, obj):
         super().Decode(obj)

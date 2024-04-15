@@ -28,15 +28,6 @@ class GoalField(Component.Component):
     
     def Update(self, deltaTime):
         self.parent.GetComponent(ComponentType.Collider).DisplayCollider()
-        
-    def Encode(self, obj):
-        outDict = super().Encode(obj)
-        outDict["lenX"] = self.lenX
-        outDict["lenY"] = self.lenY
-        outDict["success"] = self.success
-        outDict["initPos"] = self.initPos.Encode()
-        outDict["initRot"] = self.initRot
-        return outDict
     
     def Decode(self, obj):
         super().Decode(obj)

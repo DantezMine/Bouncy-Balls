@@ -64,17 +64,6 @@ class Structure(Component.Component):
         self.destroyed = True
         self.destructionTime = time.time()
     
-    def Encode(self,obj):
-        outDict = super(Structure,self).Encode(obj)
-        outDict["structureType"] = obj.structureType.Encode() if type(obj.structureType) == StructureType else obj.structureType
-        outDict["lenX"] = obj.lenX
-        outDict["lenY"] = obj.lenY
-        outDict["destructionMomentum"] = obj.destructionMomentum
-        outDict["destroyed"] = obj.destroyed
-        outDict["initPos"] = obj.initPos.Encode()
-        outDict["initRot"] = obj.initRot
-        return outDict
-    
     def Decode(self, obj):
         super().Decode(obj)
         self.structureType = obj["structureType"]
