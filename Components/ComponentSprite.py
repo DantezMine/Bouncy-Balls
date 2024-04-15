@@ -11,8 +11,12 @@ class SpriteType(enum.Enum):
     Sprite = enum.auto()
     Background = enum.auto()
     
-    def Encode(self):
-        return self.value
+    def Decode(value):
+        members = list(vars(SpriteType).values())
+        members = members[9:len(members)-1]
+        for member in members:
+            if value == member.value:
+                return member
 
 class Sprite(Component.Component):
     def __init__(self, spritePath = None, lenX = 0.5, lenY = 0.5, diameter = None): #s_spritePath must be given
@@ -58,7 +62,7 @@ class Sprite(Component.Component):
     def Decode(self, obj):
         super().Decode(obj)
         self.spritePath = obj["spritePath"]
-        self.spriteType = obj["spriteType"]
+        self.spriteType = SpriteType.Decode(obj["spriteType"])
         self.lenX = obj["lenX"]
         self.lenY = obj["lenY"]
     

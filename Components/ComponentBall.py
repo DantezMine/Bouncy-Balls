@@ -17,6 +17,13 @@ class BallType(enum.Enum):
     
     def Encode(self):
         return self.value
+    
+    def Decode(value):
+        members = list(vars(BallType).values())
+        members = members[9:len(members)-1]
+        for member in members:
+            if value == member.value:
+                return member
 
 class Ball(Component.Component):
     def __init__(self, sling = None):
@@ -112,7 +119,7 @@ class Ball(Component.Component):
         self.state = obj["state"]
         self.slingID = obj["sling"]
         self.slingD = obj["slingD"]
-        self.ballType = obj["ballType"]
+        self.ballType = BallType.Decode(obj["ballType"])
     
 class BallBouncy(Ball):
     '''type : "Bouncy"'''

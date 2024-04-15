@@ -9,8 +9,12 @@ import enum
 class GroundType(enum.Enum):
     Dirt = enum.auto()
     
-    def Encode(self):
-        return self.value
+    def Decode(value):
+        members = list(vars(GroundType).values())
+        members = members[9:len(members)-1]
+        for member in members:
+            if value == member.value:
+                return member
 
 class Ground(Component.Component):
     def __init__(self, position = Vec2(0,0), lenX = 50, lenY = 50, rotation = 0.0):
@@ -38,7 +42,7 @@ class Ground(Component.Component):
         super().Decode(obj)
         self.lenX = obj["lenX"]
         self.lenY = obj["lenY"]
-        self.groundType = obj["groundType"]
+        self.groundType = GroundType.Decode(obj["groundType"])
         self.initPos = Vec2.FromList(obj["initPos"])
         self.initRot = obj["initRot"]
         
@@ -50,6 +54,3 @@ class GroundDirt(Ground):
     def Start(self):
         super().Start()
         self.sprite = self.parent.AddComponent(ComponentSprite.Sprite("data/GroundDirt.png",self.lenX,self.lenY))
-        
-    # def Update(self, deltaTime):
-    #     self.parent.GetComponent(ComponentType.Collider).DisplayCollider()

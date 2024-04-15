@@ -2,7 +2,7 @@ import pygame
 from Vector import Vec2
 
 update : bool = True
-step : bool = False
+step : bool = True
 keyReleased : bool = True
 frameCount : int = 0
 debug : bool= False

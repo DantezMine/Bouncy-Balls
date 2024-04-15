@@ -35,7 +35,7 @@ with open("levelTest.json","r") as fp:
     scene.Decode(json.load(fp=fp))
     world.AddScene(scene.name,scene)
 
-with open("levelTest.json","w") as fp:
+with open("levelTest1.json","w") as fp:
     world.GetActiveScene().WriteJSON(fp)
 
 '''pygame loop'''
@@ -67,7 +67,7 @@ while GlobalVars.running:
             GlobalVars.mouseLeft = False
             
                 
-    if not GlobalVars.debug or GlobalVars.update or GlobalVars.step:
+    if not GlobalVars.debug and GlobalVars.update and GlobalVars.step:
         GlobalVars.background.fill((0,0,0,0))
         GlobalVars.foreground.fill((0,0,0,0))
         GlobalVars.UILayer.fill((0,0,0,0))
@@ -85,5 +85,5 @@ while GlobalVars.running:
 
     GlobalVars.clock.tick(120)
     pygame.display.flip()
-    #print(1/(time.time()-t1))
+    # print(1/(time.time()-t1))
 pygame.quit

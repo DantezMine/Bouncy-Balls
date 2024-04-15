@@ -11,8 +11,12 @@ class StructureType(enum.Enum):
     Wood = enum.auto()
     Metal = enum.auto()
     
-    def Encode(self):
-        return self.value
+    def Decode(value):
+        members = list(vars(StructureType).values())
+        members = members[9:len(members)-1]
+        for member in members:
+            if value == member.value:
+                return member
 
 class Structure(Component.Component):
     def __init__(self, position = Vec2(0,0), lenX = 50, lenY = 50, rotation = 0):
@@ -66,7 +70,7 @@ class Structure(Component.Component):
     
     def Decode(self, obj):
         super().Decode(obj)
-        self.structureType = obj["structureType"]
+        self.structureType = StructureType.Decode(obj["structureType"])
         self.lenX = obj["lenX"]
         self.lenY = obj["lenY"]
         self.destructionMomentum = obj["destructionMomentum"]

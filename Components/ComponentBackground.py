@@ -8,9 +8,13 @@ class BackgroundType(enum.Enum):
     Background = enum.auto()
     Nature = enum.auto()
     Skyline = enum.auto()
-
-    def Encode(self):
-        return self.value
+    
+    def Decode(value):
+        members = list(vars(BackgroundType).values())
+        members = members[9:len(members)-1]
+        for member in members:
+            if value == member.value:
+                return member
 
 class Background(Component.Component):
     def __init__(self, position = Vec2(0,0),lenX=50,lenY=50):
@@ -27,7 +31,7 @@ class Background(Component.Component):
     
     def Decode(self, obj):
         super().Decode(obj)
-        self.backgroundType = obj["backgroundType"]
+        self.backgroundType = BackgroundType.Decode(obj["backgroundType"])
         self.lenX = obj["lenX"]
         self.lenY = obj["lenY"]
         self.initPos = Vec2.FromList(obj["initPos"])

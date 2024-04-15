@@ -9,8 +9,12 @@ class ColliderType(enum.Enum):
     Circle = enum.auto()
     Rect = enum.auto()
     
-    def Encode(self):
-        return self.value
+    def Decode(value):
+        members = list(vars(ColliderType).values())
+        members = members[9:len(members)-1]
+        for member in members:
+            if value == member.value:
+                return member
 
 class CollisionInfo:
     def __init__(self, collisionPoint, otherCollisionPoint, collisionNormal, otherNormal, objectA, objectB, collisionType, collisionResponseTag):
@@ -59,20 +63,12 @@ class Collider(Component.Component):
         for collider in self.collisions:
             self.parent.UpdateOnCollision(collider.objectB.GetComponent(ComponentType.Collider))
     
-    # def Encode(self,obj):
-    #     outDict = super(Collider,self).Encode(obj)
-    #     outDict["localPosition"] = obj.localPosition.Encode()
-    #     outDict["localRotation"] = obj.localRotation
-    #     outDict["localScale"] = obj.localScale
-    #     outDict["colliderType"] = obj.colliderType.Encode() if type(obj.colliderType) == ColliderType else obj.colliderType
-    #     return outDict
-    
     def Decode(self, obj):
         super().Decode(obj)
         self.localPosition = Vec2.FromList(obj["localPosition"])
         self.localRotation = obj["localRotation"]
         self.localScale = obj["localScale"]
-        self.colliderType = obj["colliderType"]
+        self.colliderType = ColliderType.Decode(obj["colliderType"])
     
 class ColliderCircle(Collider):
     def __init__(self, radius=50, localPosition=Vec2(0, 0), localRotation=0, localScale=1, tags=[]):
@@ -107,6 +103,7 @@ class ColliderCircle(Collider):
     def Decode(self, obj):
         super().Decode(obj)
         self.radius = obj["radius"]
+        self.sqRadius = obj["sqRadius"]
 
 class ColliderRect(Collider):
     def __init__(self, lenX = 50, lenY = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = 1, tags = []):
@@ -391,14 +388,9 @@ class ColliderRect(Collider):
             vertScreen = self.parent.GetComponent(ComponentType.Transform).WorldToScreenPos(v,self.parent.GetParentScene().camera)
             vertices.append((vertScreen.x,vertScreen.y))
         pygame.draw.polygon(GlobalVars.UILayer,(220,20,20),vertices,1)
-
-    # def Encode(self,obj):
-    #     outDict = super().Encode(obj)
-    #     outDict["lenX"] = obj.lenX
-    #     outDict["lenY"] = obj.lenY
-    #     return outDict
     
     def Decode(self, obj):
         super().Decode(obj)
         self.lenX = obj["lenX"]
         self.lenY = obj["lenY"]
+        self.sqRadius = obj["sqRadius"]
