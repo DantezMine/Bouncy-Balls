@@ -1,8 +1,11 @@
 import pygame
 import World
 import time
+import json
 from lib import TestingPhysicsScene
 from lib import GlobalVars
+from Vector import Vec2
+import Scene
 
 world = World.World()
 GlobalVars.debug = False
@@ -23,10 +26,23 @@ GlobalVars.frameCount = 0
 
 world.StartActiveScene()
 
+with open("levelTest.json","w") as fp:
+    world.GetActiveScene().WriteJSON(fp)
+
+with open("levelTest.json","r") as fp:
+    world.RemoveScene("scene")
+    scene = Scene.Scene("scene")
+    scene.Decode(json.load(fp=fp))
+    world.AddScene(scene.name,scene)
+
+with open("levelTest1.json","w") as fp:
+    world.GetActiveScene().WriteJSON(fp)
+
 '''pygame loop'''
 while GlobalVars.running:
     t1 = time.time()
     GlobalVars.events = pygame.event.get()
+    GlobalVars.mousePosScreen = Vec2.FromList(pygame.mouse.get_pos())
     for event in GlobalVars.events:
         if event.type == pygame.QUIT:
             GlobalVars.running = False
@@ -41,8 +57,17 @@ while GlobalVars.running:
                 GlobalVars.keyReleased = False
         else:
             GlobalVars.keyReleased = True
-    
-    if not GlobalVars.debug or GlobalVars.update or GlobalVars.step:
+        
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            GlobalVars.mousePressed = True
+            if event.button == pygame.BUTTON_LEFT:
+                GlobalVars.mouseLeft = True
+        elif event.type == pygame.MOUSEBUTTONUP:
+            GlobalVars.mousePressed = False
+            GlobalVars.mouseLeft = False
+            
+                
+    if not GlobalVars.debug and GlobalVars.update and GlobalVars.step:
         GlobalVars.background.fill((0,0,0,0))
         GlobalVars.foreground.fill((0,0,0,0))
         GlobalVars.UILayer.fill((0,0,0,0))

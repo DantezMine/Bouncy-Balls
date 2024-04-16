@@ -1,3 +1,4 @@
+from Components import ComponentTransform
 from Components import ComponentSprite
 from Components import Component
 import GameObject
@@ -9,7 +10,7 @@ import math
 
 class Cannon(Component.Component):
     def __init__(self, position = Vec2(0,0), cannonScale=1):
-        self.name = Components.Cannon
+        self.name = ComponentType.Cannon
         self.parent = None
         self.initPos = position
         self.rotation = 0
@@ -18,7 +19,7 @@ class Cannon(Component.Component):
         self.cannonScale = 2
         
     def Start(self):
-        self.transform = self.parent.GetComponent(Components.Transform)
+        self.transform = self.parent.GetComponent(ComponentType.Transform)
         self.transform.position = self.initPos
         self.parent.AddComponent(ComponentSprite.Sprite("data/Barrel.png", self.cannonScale*0.580, self.cannonScale*0.402))
         # self.parent.AddComponent(Base(self.initPos + self.baseOffset))
@@ -51,13 +52,13 @@ class Cannon(Component.Component):
     
 class Base(Component.Component):
     def __init__(self, position=Vec2(0, 0), baseScale=1):
-        self.name = Components.Cannon
+        self.name = ComponentType.Cannon
         self.parent = None
         self.initPos = position
         self.baseScale = 2
         
     def Start(self):
         self.initPos += Vec2(self.baseScale*-0.1, self.baseScale*-0.15)
-        transform = self.parent.GetComponent(Components.Transform)
+        transform = self.parent.GetComponent(ComponentType.Transform)
         transform.position = self.initPos
         self.parent.AddComponent(ComponentSprite.Sprite("data/Base.png", self.baseScale*0.615, self.baseScale*0.345))

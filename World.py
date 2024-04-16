@@ -23,6 +23,9 @@ class World:
         return True
     
     def RemoveScene(self, sceneName):
+        if sceneName == self.__activeSceneKey:
+            self.__activeScene = None
+            self.__activeSceneKey = None
         if self.__scenes.__contains__(sceneName):
             self.__scenes.pop(sceneName)
             return True
@@ -31,7 +34,8 @@ class World:
     def UpdateActiveScene(self,deltaTime = None, updateFrequency = 1):
         if deltaTime is None:
             deltaTime = self.CalculateDeltaTime()
-        self.__activeScene.UpdateScene(deltaTime, updateFrequency)
+        if self.__activeScene is not None:
+            self.__activeScene.UpdateScene(deltaTime, updateFrequency)
     
     def StartActiveScene(self):
         self.__activeScene.StartScene()
@@ -43,6 +47,9 @@ class World:
             return True
         print("Scene %s doesn't exist"%sceneName)
         return False
+    
+    def GetActiveScene(self):
+        return self.__activeScene
         
     def CalculateDeltaTime(self):
         dt = time.time()-self.__prevTime if self.__prevTime is not None else 0

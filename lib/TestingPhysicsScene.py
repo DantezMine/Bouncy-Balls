@@ -2,15 +2,17 @@ import Scene
 import GameObject
 from Vector import Vec2
 from Components import ComponentStructure
+from Components import ComponentSlider
 from Components import ComponentBall
 from Components import ComponentCamera
 from Components import ComponentGround
 from Components import ComponentBackground
 from Components import ComponentCannon
+from Components import ComponentButton
 
 from lib import GlobalVars
 from Components import ComponentGoalField
-from Components.Component import Components
+from Components.Component import ComponentType
 
 def SetupScene1(world):
     scene = Scene.Scene("scene")
@@ -60,6 +62,21 @@ def SetupScene1(world):
     goalField.AddComponent(ComponentGoalField.GoalField(Vec2(2,0),1,0.5))
     #scene.AddGameObject(goalField)
     
+    sling = GameObject.GameObject(scene)
+    scene.AddGameObject(sling)
+    sling.GetComponent(ComponentType.Transform).position = Vec2(-0.5,0)
+    
+    ball = GameObject.GameObject(scene)
+    ball.AddComponent(ComponentBall.BallBouncy(sling))
+    scene.AddGameObject(ball)
+    
+    button1 = GameObject.GameObject(scene)
+    button1.AddComponent(ComponentButton.Button(4,0.8,Vec2(0,0)))
+    scene.AddGameObject(button1)
+    
+    slider1 = GameObject.GameObject(scene)
+    slider1.AddComponent(ComponentSlider.Slider(Vec2(-1,0),Vec2(1,0),0,5,0.1))
+    #scene.AddGameObject(slider1)
     
     # for i in range(10):
         # struct = GameObject.GameObject(scene)
