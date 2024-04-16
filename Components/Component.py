@@ -54,6 +54,7 @@ class ComponentType(enum.Enum):
     GoalField = enum.auto()
     Button = enum.auto()
     Slider = enum.auto()
+    Base = enum.auto()
     
     def GetType(compType):
         members = list(vars(ComponentType).values())

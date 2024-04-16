@@ -32,7 +32,6 @@ class Ball(Component.Component):
         GlobalVars.mousePressed = False
         self.mouseLeft = False
         self.slingD = 10
-        self.cannonPos = cannonPos
     
     def Start(self):
         self.radius = 0.2
@@ -46,24 +45,23 @@ class Ball(Component.Component):
     def Update(self, deltaTime):
         if self.sling is None:
             self.sling = self.parent.GetParentScene().GameObjectWithID(self.slingID)
-        self.slingTransform = self.sling.GetComponent(ComponentType.Transform)
+        slingTransform = self.sling.GetComponent(ComponentType.Transform)
+        transform = self.parent.GetComponent(ComponentType.Transform)
         
         mousePosWorld = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen, self.parent.GetParentScene().camera)
         self.parent.GetComponent(ComponentType.Collider).DisplayCollider()
         if self.state == "Origin":
-            self.parent.GetComponent(ComponentType.Transform).position = self.slingTransform.position
+            transform.position = slingTransform.position
         if GlobalVars.mousePressed:
             if self.state == "Origin" and GlobalVars.mouseLeft:
                 self.mousePosStart = mousePosWorld
                 self.state = "Dragged"
             if self.state == "Dragged" and mousePosWorld:
                 mousePos = mousePosWorld
-                deltaVec = self.cannonPos - mousePosWorld
+                deltaVec = slingTransform.position - mousePosWorld
                 delta = deltaVec.Mag()
                 deltaNorm = deltaVec.Normalized()
-                #deltaOffset = deltaNorm.Rotate(0.436)
-                #self.parent.GetComponent(Components.Transform).position = self.sling.GetComponent(Components.Transform).position - deltaNorm * math.log(1.5*delta + 1)
-                self.parent.GetComponent(Components.Transform).position = self.slingTransform.position + deltaNorm * 0.25
+                transform.position = slingTransform.position + deltaNorm * 0.25
                 impulse = deltaNorm * math.log(1.5*delta + 1) * self.slingD
                 self.ProjectPath(40,impulse)
             if self.state == "Released" and self.mouseLeft:
@@ -125,12 +123,12 @@ class Ball(Component.Component):
     
 class BallBouncy(Ball):
     '''type : "Bouncy"'''
-    def __init__(self, sling, cannonPos):
-        super().__init__(sling, cannonPos)
+    def __init__(self, sling = None):
+        super().__init__(sling)
         self.ballType = BallType.Bouncy
     
     def Start(self):
-        self.radius = 0.2
+        self.radius = 0.15
         circColl = ComponentCollider.ColliderCircle(radius=self.radius,tags=["Ball"])
         self.parent.AddComponent(circColl)
         physics = ComponentPhysics.Physics()
@@ -143,8 +141,8 @@ class BallBouncy(Ball):
 
 class BallBowling(Ball):
     '''type : "Heavy"'''
-    def __init__(self, sling, cannonPos):
-        super().__init__(sling, cannonPos)
+    def __init__(self, sling = None):
+        super().__init__(sling)
         self.ballType = BallType.Heavy
     
     def Start(self):

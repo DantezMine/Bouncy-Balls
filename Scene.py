@@ -137,6 +137,8 @@ class Scene:
             return ComponentCamera.Camera
         if ctype == ComponentType.Cannon.value:
             return ComponentCannon.Cannon
+        if ctype == ComponentType.Base.value:
+            return ComponentCannon.Base
         if ctype == ComponentType.Collider.value:
             colliderType = component["colliderType"]
             if colliderType == ComponentCollider.ColliderType.Circle.value:
