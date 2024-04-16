@@ -32,6 +32,7 @@ class Ball(Component.Component):
         GlobalVars.mousePressed = False
         self.mouseLeft = False
         self.slingD = 10
+        self.cannonPos = cannonPos
     
     def Start(self):
         self.radius = 0.2
@@ -56,10 +57,13 @@ class Ball(Component.Component):
                 self.mousePosStart = mousePosWorld
                 self.state = "Dragged"
             if self.state == "Dragged" and mousePosWorld:
-                deltaVec = self.mousePosStart - mousePosWorld
+                mousePos = mousePosWorld
+                deltaVec = self.cannonPos - mousePosWorld
                 delta = deltaVec.Mag()
                 deltaNorm = deltaVec.Normalized()
-                self.parent.GetComponent(ComponentType.Transform).position = self.slingTransform.position - deltaNorm * math.log(1.5*delta + 1)
+                #deltaOffset = deltaNorm.Rotate(0.436)
+                #self.parent.GetComponent(Components.Transform).position = self.sling.GetComponent(Components.Transform).position - deltaNorm * math.log(1.5*delta + 1)
+                self.parent.GetComponent(Components.Transform).position = self.slingTransform.position + deltaNorm * 0.25
                 impulse = deltaNorm * math.log(1.5*delta + 1) * self.slingD
                 self.ProjectPath(40,impulse)
             if self.state == "Released" and self.mouseLeft:
@@ -121,8 +125,8 @@ class Ball(Component.Component):
     
 class BallBouncy(Ball):
     '''type : "Bouncy"'''
-    def __init__(self, sling = None):
-        super().__init__(sling)
+    def __init__(self, sling, cannonPos):
+        super().__init__(sling, cannonPos)
         self.ballType = BallType.Bouncy
     
     def Start(self):
@@ -139,8 +143,8 @@ class BallBouncy(Ball):
 
 class BallBowling(Ball):
     '''type : "Heavy"'''
-    def __init__(self, sling = None):
-        super().__init__(sling)
+    def __init__(self, sling, cannonPos):
+        super().__init__(sling, cannonPos)
         self.ballType = BallType.Heavy
     
     def Start(self):

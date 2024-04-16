@@ -44,13 +44,19 @@ def SetupScene1(world):
     ground1.AddComponent(ComponentGround.GroundDirt(Vec2(0,-2.5),6.0,1.0))
     scene.AddGameObject(ground1)
     
+    sling = GameObject.GameObject(scene)
+    scene.AddGameObject(sling)
+    sling.GetComponent(Components.Transform).position = Vec2(-1,-1)
+    
+    ball = GameObject.GameObject(scene)
+    ball.AddComponent(ComponentBall.BallBouncy(sling, Vec2(-1,-1)))
+    scene.AddGameObject(ball)
+    
     cannon = GameObject.GameObject(scene)
     cannon.AddComponent(ComponentCannon.Cannon(Vec2(-1,-1)))
-    #scene.AddGameObject(cannon)
+    scene.AddGameObject(cannon)
     
-    cannonBase = GameObject.GameObject(scene)
-    cannonBase.AddComponent(ComponentCannon.Base(Vec2(-1,-1)))
-    #scene.AddGameObject(cannonBase)
+    
     
     goalField = GameObject.GameObject(scene)
     goalField.AddComponent(ComponentGoalField.GoalField(Vec2(2,0),1,0.5))
