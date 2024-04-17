@@ -8,19 +8,13 @@ class World:
         self.__activeScene = None
         self.__prevTime = None
         
-    def AddScene(self, sceneName, scene):
+    def AddScene(self, scene):
         if len(self.__scenes) == 0:
-            self.__activeSceneKey = sceneName
+            self.__activeSceneKey = scene.name
             self.__activeScene = scene
-        if self.__scenes.__contains__(sceneName):
-            inp = input("Scene %s already exists. Do you want to replace it? " %sceneName)
-            if inp == "yes" or inp == "Yes" or inp == "YES" or inp == "y":
-                self.__scenes[sceneName] = scene
-                return True
-            else:
-                return False
-        self.__scenes[sceneName] = scene
-        return True
+        self.__scenes[scene.name] = scene
+        scene.world = self
+        return
     
     def RemoveScene(self, sceneName):
         if sceneName == self.__activeSceneKey:
@@ -50,6 +44,9 @@ class World:
     
     def GetActiveScene(self):
         return self.__activeScene
+    
+    def GetScene(self, sceneName):
+        return self.__scenes[sceneName]
         
     def CalculateDeltaTime(self):
         dt = time.time()-self.__prevTime if self.__prevTime is not None else 0

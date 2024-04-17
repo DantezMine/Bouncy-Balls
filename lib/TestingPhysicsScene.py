@@ -14,7 +14,7 @@ from Components import ComponentGoalField
 
 def SetupScene1(world):
     scene = Scene.Scene("scene")
-    world.AddScene(scene.name,scene)
+    world.AddScene(scene)
     
     width, height = GlobalVars.screen.get_width(), GlobalVars.screen.get_height()
     
@@ -62,6 +62,10 @@ def SetupScene1(world):
     slider1.AddComponent(ComponentSlider.Slider(Vec2(-1,0),Vec2(1,0),0,5,0.1))
     #scene.AddGameObject(slider1)
     
+    lvlSelectButton1 = GameObject.GameObject(scene)
+    lvlSelectButton1.AddComponent(ComponentButton.ButtonLevel(nPoly=4,radius=0.2,position=Vec2(-0.7,0.7),scenePath="Levels/levelSelect.json"))
+    scene.AddGameObject(lvlSelectButton1)
+    
     # for i in range(10):
         # struct = GameObject.GameObject(scene)
         # struct.AddComponent(ComponentStructure.StructureWood(Vec2(60*i,300),50,100))
@@ -74,3 +78,18 @@ def SetupScene1(world):
     # block1.AddComponent(Structure("Wood",posX=300,posY=350,lenX=20,lenY=100))
     # scene.AddGameObject(block1)
     
+def SetupLevelSelect(world):
+    scene = Scene.Scene("levelSelect")
+    world.AddScene(scene)
+    
+    background = GameObject.GameObject(scene)
+    background.AddComponent(ComponentBackground.BackgroundNature(position=Vec2(0,0),lenX=1,lenY=1))
+    scene.AddGameObject(background)
+    
+    camera = GameObject.GameObject(scene)
+    camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1))
+    scene.AddGameObject(camera)
+    
+    lvlButton1 = GameObject.GameObject(scene)
+    lvlButton1.AddComponent(ComponentButton.ButtonLevel(nPoly=4,radius=0.2,position=Vec2(-0.7,0.7),scenePath="Levels/levelTest.json"))
+    scene.AddGameObject(lvlButton1)

@@ -4,8 +4,9 @@ from Vector import Vec2
 
 class Component(object):
     def __init__(self):
+        import GameObject
         self.name = None #needs to be set in each component class individually
-        self.parent = None
+        self.parent : GameObject.GameObject = None
     
     def Start(self):
         pass

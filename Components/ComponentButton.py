@@ -1,6 +1,7 @@
 import pygame
 import math
 import time
+import enum
 from Components import Component
 from Components import ComponentTransform
 from Components import ComponentSprite
@@ -8,10 +9,20 @@ from Components.Component import ComponentType
 from lib import GlobalVars
 from Vector import Vec2
 
+class ButtonType(enum.Enum):
+    Level = enum.auto()
+    Button = enum.auto()
+    
+    def Decode(value):
+        members = list(vars(ButtonType).values())
+        members = members[8:len(members)-1]
+        for member in members:
+            if value == member.value:
+                return member
+
 class Button(Component.Component):
     def __init__(self, nPoly = 4, radius = 0.2, position = Vec2(0,0)):
         self.name = ComponentType.Button
-        self.parent = None
         
         self.nPoly = nPoly
         self.radius = radius
@@ -19,6 +30,7 @@ class Button(Component.Component):
         self.animDuration = 0.4
         self.animScale = 0.1
         self.animate = False
+        self.buttonType = ButtonType.Button
         
     def Start(self):
         self.transform = self.parent.GetComponent(ComponentType.Transform)
@@ -29,7 +41,7 @@ class Button(Component.Component):
         
     def Update(self, deltaTime):
         self.verts = self.GetVertices()
-        self.DisplayButtonOutline((220,20,220))
+        # self.DisplayButtonOutline((220,20,220))
         self.CheckClick()
         if self.animate:
             self.Animate()
@@ -89,3 +101,25 @@ class Button(Component.Component):
         self.animDuration = obj["animDuration"]
         self.animScale = obj["animScale"]
         self.initPos = Vec2.FromList(obj["initPos"])
+        self.buttonType = ButtonType.Decode(obj["buttonType"])
+        
+class ButtonLevel(Button):
+    def __init__(self, nPoly=4, radius=0.2, position=Vec2(0, 0), scenePath = None):
+        super().__init__(nPoly, radius, position)
+        self.scenePath = scenePath
+        self.buttonType = ButtonType.Level
+        
+    def OnClick(self):
+        import Scene
+        super().OnClick()
+        scene = Scene.Scene()
+        scene.FromJSON(self.scenePath)
+        self.sceneName = scene.name
+        
+        world = self.parent.GetParentScene().world
+        world.AddScene(scene)
+        world.SetActiveScene(scene.name)
+        
+    def Decode(self, obj):
+        super().Decode(obj)
+        self.scenePath = obj["scenePath"]

@@ -12,6 +12,7 @@ foreground : pygame.Surface = None
 UILayer : pygame.Surface = None
 clock = None
 running : bool = None
+updateFrequency : int = 1
 
 mousePosScreen : Vec2 = None
 mousePressed : bool = None

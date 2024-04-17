@@ -100,10 +100,11 @@ class Ball(Component.Component):
         #project next n timesteps, if a collision occurs with a structure, the projection stops
         path = []
         for i in range(steps):
-            colliders = self.parent.GetParentScene().GetComponents(ComponentType.Collider)
-            collider.Update(None,colliders,False)
-            physics.Update(1/60.0,collider.collisions,3)
-            path.append(transform.position)
+            for k in range(GlobalVars.updateFrequency):
+                colliders = self.parent.GetParentScene().GetComponents(ComponentType.Collider)
+                collider.Update(None,colliders,False)
+                physics.Update(1/60.0,collider.collisions,3)
+                path.append(transform.position)
         
         #load state
         physics.LoadState(physicsState)

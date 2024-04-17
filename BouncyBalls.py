@@ -1,14 +1,13 @@
 import pygame
 import World
 import time
-import json
 from lib import TestingPhysicsScene
 from lib import GlobalVars
 from Vector import Vec2
-import Scene
 
 world = World.World()
 GlobalVars.debug = False
+GlobalVars.updateFrequency = 10
 
 '''pygame setup'''
 pygame.init()
@@ -26,17 +25,11 @@ GlobalVars.frameCount = 0
 
 world.StartActiveScene()
 
-with open("levelTest.json","w") as fp:
-    world.GetActiveScene().WriteJSON(fp)
+# with open("Bouncy-Balls/Levels/levelTest.json","w") as fp:
+#     world.GetActiveScene().WriteJSON(fp)
 
-with open("levelTest.json","r") as fp:
-    world.RemoveScene("scene")
-    scene = Scene.Scene("scene")
-    scene.Decode(json.load(fp=fp))
-    world.AddScene(scene.name,scene)
-
-with open("levelTest1.json","w") as fp:
-    world.GetActiveScene().WriteJSON(fp)
+# with open("Bouncy-Balls/Levels/levelSelect.json","w") as fp:
+#     world.GetScene("levelSelect").WriteJSON(fp)
 
 '''pygame loop'''
 while GlobalVars.running:
@@ -73,7 +66,7 @@ while GlobalVars.running:
         GlobalVars.UILayer.fill((0,0,0,0))
         GlobalVars.screen.fill((255,255,255))
         deltaTime = 1/60.0 if GlobalVars.debug else None
-        world.UpdateActiveScene(deltaTime=1/60.0,updateFrequency=10)
+        world.UpdateActiveScene(deltaTime=1/60.0,updateFrequency=GlobalVars.updateFrequency)
         GlobalVars.screen.blit(GlobalVars.background,(0,0))
         GlobalVars.screen.blit(GlobalVars.foreground,(0,0))
         GlobalVars.screen.blit(GlobalVars.UILayer,(0,0))

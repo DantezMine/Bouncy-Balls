@@ -16,10 +16,11 @@ from Components import ComponentStructure
 from Components import ComponentTransform
 
 class Scene:
-    def __init__(self, name):
+    def __init__(self, name = ""):
         self.ID = 0
         self.__gameObjects = dict()
         self.name = name
+        self.world = None
         
     def AddGameObject(self,gameObject):
         if self.__gameObjects.__contains__(gameObject):
@@ -91,19 +92,28 @@ class Scene:
         out = json.dump(obj=self, fp=fp, default=self.Encode,indent=4)
         return out
     
+    def FromJSON(self, scenePath):
+        with open("Bouncy-Balls/"+scenePath, 'r') as fp:
+            self.Decode(json.load(fp=fp))
+    
     def Encode(self,obj):
         joinedDict = dict()
         for gameObject in obj.__gameObjects.values():
             joinedDict[gameObject.GetID()] = gameObject.Encode(gameObject)
-        return joinedDict
+        return {
+            "name" : self.name,
+            "__gameObjects" : joinedDict
+        }
     
     def Decode(self,obj):
         self.IDQueue = dict()
         self.IDmap = dict()
-        for gameObjectID in obj.keys():
+        self.name = obj["name"]
+        gameObjects = obj["__gameObjects"]
+        for gameObjectID in gameObjects.keys():
             gameObjectID = int(gameObjectID)
             gameObject = GameObject.GameObject(self, gameObjectID)
-            for componentObj in obj[str(gameObjectID)].values():
+            for componentObj in gameObjects[str(gameObjectID)].values():
                 componentConstr = self.GetComponent(componentObj)
                 component = componentConstr()
                 component.Decode(componentObj)
@@ -132,7 +142,11 @@ class Scene:
             if ballType == ComponentBall.BallType.Bouncy.value:
                 return ComponentBall.BallBouncy
         if ctype == ComponentType.Button.value:
-            return ComponentButton.Button
+            buttonType = component["buttonType"]
+            if buttonType == ComponentButton.ButtonType.Button.value:
+                return ComponentButton.Button
+            if buttonType == ComponentButton.ButtonType.Level.value:
+                return ComponentButton.ButtonLevel
         if ctype == ComponentType.Camera.value:
             return ComponentCamera.Camera
         if ctype == ComponentType.Cannon.value:

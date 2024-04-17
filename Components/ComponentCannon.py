@@ -28,7 +28,7 @@ class Cannon(Component.Component):
         #only create base if it doesn't exist in the scene yet
         if len(scene.GetComponents(ComponentType.Base)) == 0:
             cannonBase = GameObject.GameObject(scene)
-            cannonBase.AddComponent(Base(Vec2(-1,-1)))
+            cannonBase.AddComponent(Base(Vec2(-1,-0.95)))
             scene.AddGameObject(cannonBase)
     
     def Update(self, deltaTime):
