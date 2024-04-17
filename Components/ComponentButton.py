@@ -27,7 +27,7 @@ class Button(Component.Component):
         self.nPoly = nPoly
         self.radius = radius
         self.initPos = position
-        self.animDuration = 0.4
+        self.animDuration = 0.2
         self.animScale = 0.1
         self.animate = False
         self.buttonType = ButtonType.Button
@@ -56,17 +56,27 @@ class Button(Component.Component):
         '''To use animation, super() this function'''
         self.clickStart = time.time()
         self.animate = True
+        
+    def EndOfClick(self):
+        pass
     
     def CubicEase(self,x):
         return 4*math.pow(x,3) if x < 0.5 else 1 - math.pow(-2 * x + 2, 3)/2.0
+    
+    def Cubic(self,x):
+        return x**3
+    
+    def EaseOutQuint(self,x):
+        return 1 - math.pow(1 - x, 6)
     
     def Animate(self):
         t = (time.time()-self.clickStart)/self.animDuration
         if t > 1:
             self.animate = False
             self.transform.scale = 1
+            self.EndOfClick()
             return
-        self.transform.scale = 1 + self.animScale * math.sin(math.pi * self.CubicEase(t))
+        self.transform.scale = 1 + self.animScale * math.sin(math.pi * self.EaseOutQuint(t))
         
     def PointInPolygon(self,point):
         inside = True
@@ -109,9 +119,8 @@ class ButtonLevel(Button):
         self.scenePath = scenePath
         self.buttonType = ButtonType.Level
         
-    def OnClick(self):
+    def EndOfClick(self):
         import Scene
-        super().OnClick()
         scene = Scene.Scene()
         scene.FromJSON(self.scenePath)
         self.sceneName = scene.name
