@@ -2,8 +2,8 @@ import math
 
 class Vec2:
     def __init__(self,x,y):
-        self.x = float(x)
-        self.y = float(y)
+        self.x = x
+        self.y = y
         
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
@@ -79,6 +79,12 @@ class Vec2:
         w_p = math.sin((1-t)*theta)/math.sin(theta)
         w_q = math.sin(theta * t)/math.sin(theta)
         return p * w_p + q * w_q
+    
+    def FromList(other):
+        return Vec2(other[0],other[1])
+    
+    def FromDict(other):
+        return Vec2(other["x"],other["y"])
     
     def Encode(self):
         return (self.x,self.y)
