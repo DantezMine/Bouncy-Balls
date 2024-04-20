@@ -21,11 +21,13 @@ class ButtonType(enum.Enum):
                 return member
 
 class Button(Component.Component):
-    def __init__(self, nPoly = 4, radius = 0.2, position = Vec2(0,0)):
+    def __init__(self, nPoly = 4, lenX = None, lenY = None, radius = 0.2, position = Vec2(0,0)):
+        '''If lenX and lenY aren't specified, 2*radius is chosen for both sidelengths'''
         self.name = ComponentType.Button
         
         self.nPoly = nPoly
-        self.radius = radius
+        self.lenX = lenX if lenX is not None else radius * 2
+        self.lenY = lenY if lenY is not None else radius * 2
         self.initPos = position
         self.animDuration = 0.2
         self.animScale = 0.1
@@ -37,7 +39,7 @@ class Button(Component.Component):
         self.transform.position = self.initPos
         self.verts = self.GetVertices()
         
-        self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/ButtonLocked.png",diameter=self.radius))
+        self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/ButtonLocked.png", lenX=self.lenX, lenY=self.lenY))
         
     def Update(self, deltaTime):
         self.verts = self.GetVertices()
@@ -93,7 +95,7 @@ class Button(Component.Component):
         verts = list()
         deltaPhi = 2*math.pi/self.nPoly
         for i in range(self.nPoly):
-            verts.append(self.transform.position + Vec2(math.cos(deltaPhi*i+deltaPhi/2.0), math.sin(deltaPhi*i+deltaPhi/2.0)) * self.radius)
+            verts.append(self.transform.position + Vec2(math.cos(deltaPhi*i+deltaPhi/2.0)*self.lenX/2.0, math.sin(deltaPhi*i+deltaPhi/2.0)*self.lenY/2.0))
         return verts
     
     def DisplayButtonOutline(self, color):
@@ -106,7 +108,8 @@ class Button(Component.Component):
     def Decode(self, obj):
         super().Decode(obj)
         self.nPoly = obj["nPoly"]
-        self.radius = obj["radius"]
+        self.lenX = obj["lenX"]
+        self.lenY = obj["lenY"]
         self.animate = obj["animate"]
         self.animDuration = obj["animDuration"]
         self.animScale = obj["animScale"]
@@ -114,20 +117,23 @@ class Button(Component.Component):
         self.buttonType = ButtonType.Decode(obj["buttonType"])
         
 class ButtonLevel(Button):
-    def __init__(self, nPoly=4, radius=0.2, position=Vec2(0, 0), scenePath = None):
-        super().__init__(nPoly, radius, position)
+    def __init__(self, nPoly=4, lenX = None, lenY = None, radius = 0.2, position=Vec2(0, 0), scenePath = None):
+        super().__init__(nPoly, lenX, lenY, radius, position)
         self.scenePath = scenePath
         self.buttonType = ButtonType.Level
         
     def EndOfClick(self):
         import Scene
         scene = Scene.Scene()
-        scene.FromJSON(self.scenePath)
-        self.sceneName = scene.name
-        
-        world = self.parent.GetParentScene().world
-        world.AddScene(scene)
-        world.SetActiveScene(scene.name)
+        try:
+            scene.FromJSON(self.scenePath)
+            self.sceneName = scene.name
+            
+            world = self.parent.GetParentScene().world
+            world.AddScene(scene)
+            world.SetActiveScene(scene.name)
+        except:
+            print("File \"%s\" doesn't exist"%self.scenePath)
         
     def Decode(self, obj):
         super().Decode(obj)

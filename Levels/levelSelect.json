@@ -93,12 +93,13 @@
             "ComponentType.Button": {
                 "name": 12,
                 "nPoly": 4,
-                "radius": 0.2,
+                "lenX": 0.4,
+                "lenY": 0.4,
                 "initPos": [
                     -0.7,
                     0.7
                 ],
-                "animDuration": 0.4,
+                "animDuration": 0.2,
                 "animScale": 0.1,
                 "animate": false,
                 "buttonType": 1,
@@ -111,8 +112,8 @@
                 "name": 3,
                 "spritePath": "data/ButtonLocked.png",
                 "parent": 3,
-                "lenX": 0.28284271247461906,
-                "lenY": 0.28284271247461906,
+                "lenX": 0.4,
+                "lenY": 0.4,
                 "spriteType": 1,
                 "sprite": null
             }

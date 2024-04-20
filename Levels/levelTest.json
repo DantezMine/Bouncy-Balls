@@ -367,8 +367,8 @@
                 "name": 1,
                 "parent": 13,
                 "position": [
-                    -0.7,
-                    0.7
+                    -2.5,
+                    2.5
                 ],
                 "rotation": 0,
                 "scale": 1,
@@ -384,12 +384,13 @@
             "ComponentType.Button": {
                 "name": 12,
                 "nPoly": 4,
-                "radius": 0.2,
+                "lenX": 1.0,
+                "lenY": 1.0,
                 "initPos": [
-                    -0.7,
-                    0.7
+                    -2.5,
+                    2.5
                 ],
-                "animDuration": 0.4,
+                "animDuration": 0.2,
                 "animScale": 0.1,
                 "animate": false,
                 "buttonType": 1,
@@ -402,8 +403,8 @@
                 "name": 3,
                 "spritePath": "data/ButtonLocked.png",
                 "parent": 13,
-                "lenX": 0.28284271247461906,
-                "lenY": 0.28284271247461906,
+                "lenX": 1.0,
+                "lenY": 1.0,
                 "spriteType": 1,
                 "sprite": null
             }

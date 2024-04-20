@@ -51,7 +51,7 @@ def SetupScene1(world):
     scene.AddGameObject(ball)
     
     button1 = GameObject.GameObject(scene)
-    button1.AddComponent(ComponentButton.Button(4,0.8,Vec2(0,0)))
+    button1.AddComponent(ComponentButton.Button(nPoly=4,radius=0.8,position=Vec2(0,0)))
     #scene.AddGameObject(button1)
     
     goalField = GameObject.GameObject(scene)
@@ -63,7 +63,7 @@ def SetupScene1(world):
     #scene.AddGameObject(slider1)
     
     lvlSelectButton1 = GameObject.GameObject(scene)
-    lvlSelectButton1.AddComponent(ComponentButton.ButtonLevel(nPoly=4,radius=0.2,position=Vec2(-0.7,0.7),scenePath="Levels/levelSelect.json"))
+    lvlSelectButton1.AddComponent(ComponentButton.ButtonLevel(nPoly=4,radius=0.5,position=Vec2(-2.5,2.5),scenePath="Levels/levelSelect.json"))
     scene.AddGameObject(lvlSelectButton1)
     
     # for i in range(10):
@@ -93,3 +93,40 @@ def SetupLevelSelect(world):
     lvlButton1 = GameObject.GameObject(scene)
     lvlButton1.AddComponent(ComponentButton.ButtonLevel(nPoly=4,radius=0.2,position=Vec2(-0.7,0.7),scenePath="Levels/levelTest.json"))
     scene.AddGameObject(lvlButton1)
+    
+
+def SetupMainMenu(world):
+    scene = Scene.Scene("mainMenu")
+    world.AddScene(scene)
+    
+    background = GameObject.GameObject(scene)
+    background.AddComponent(ComponentBackground.BackgroundNature(position=Vec2(0,0),lenX=1,lenY=1))
+    scene.AddGameObject(background)
+    
+    camera = GameObject.GameObject(scene)
+    camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1))
+    scene.AddGameObject(camera)
+    
+    levelSelectButton = GameObject.GameObject(scene)
+    levelSelectButton.AddComponent(ComponentButton.ButtonLevel(nPoly=4,lenX=0.5, lenY=0.15, position=Vec2(0,0.1), scenePath="Levels/levelSelect.json"))
+    scene.AddGameObject(levelSelectButton)
+    
+    levelEditorButton = GameObject.GameObject(scene)
+    levelEditorButton.AddComponent(ComponentButton.ButtonLevel(nPoly=4,lenX=0.5, lenY=0.15, position=Vec2(0,-0.1), scenePath="Levels/levelEditor.json"))
+    scene.AddGameObject(levelEditorButton)
+    
+def SetupEditor(world):
+    scene = Scene.Scene("editor")
+    world.AddScene(scene)
+    
+    background = GameObject.GameObject(scene)
+    background.AddComponent(ComponentBackground.BackgroundNature(position=Vec2(0,0),lenX=1,lenY=1))
+    scene.AddGameObject(background)
+    
+    camera = GameObject.GameObject(scene)
+    camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1))
+    scene.AddGameObject(camera)
+    
+    editor = GameObject.GameObject(scene)
+    editor.AddComponent()
+    scene.AddGameObject(editor)
