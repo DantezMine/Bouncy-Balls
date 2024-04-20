@@ -12,6 +12,7 @@ from Vector import Vec2
 class ButtonType(enum.Enum):
     Level = enum.auto()
     Button = enum.auto()
+    Selectable = enum.auto()
     
     def Decode(value):
         members = list(vars(ButtonType).values())
@@ -21,7 +22,7 @@ class ButtonType(enum.Enum):
                 return member
 
 class Button(Component.Component):
-    def __init__(self, nPoly = 4, lenX = None, lenY = None, radius = 0.2, position = Vec2(0,0)):
+    def __init__(self, nPoly = 4, lenX = None, lenY = None, radius = 0.2, position = Vec2(0,0), spritePath="data/ButtonLocked.png"):
         '''If lenX and lenY aren't specified, 2*radius is chosen for both sidelengths'''
         self.name = ComponentType.Button
         
@@ -33,13 +34,14 @@ class Button(Component.Component):
         self.animScale = 0.1
         self.animate = False
         self.buttonType = ButtonType.Button
+        self.spritePath = spritePath
         
     def Start(self):
         self.transform = self.parent.GetComponent(ComponentType.Transform)
         self.transform.position = self.initPos
         self.verts = self.GetVertices()
         
-        self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/ButtonLocked.png", lenX=self.lenX, lenY=self.lenY))
+        self.parent.AddComponent(ComponentSprite.Sprite(self.spritePath, lenX=self.lenX, lenY=self.lenY))
         
     def Update(self, deltaTime):
         self.verts = self.GetVertices()
@@ -117,8 +119,8 @@ class Button(Component.Component):
         self.buttonType = ButtonType.Decode(obj["buttonType"])
         
 class ButtonLevel(Button):
-    def __init__(self, nPoly=4, lenX = None, lenY = None, radius = 0.2, position=Vec2(0, 0), scenePath = None):
-        super().__init__(nPoly, lenX, lenY, radius, position)
+    def __init__(self, nPoly=4, lenX = None, lenY = None, radius = 0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", scenePath = None):
+        super().__init__(nPoly, lenX, lenY, radius, position, spritePath)
         self.scenePath = scenePath
         self.buttonType = ButtonType.Level
         
@@ -133,8 +135,22 @@ class ButtonLevel(Button):
             world.AddScene(scene)
             world.SetActiveScene(scene.name)
         except:
-            print("File \"%s\" doesn't exist"%self.scenePath)
+            pass
         
     def Decode(self, obj):
         super().Decode(obj)
         self.scenePath = obj["scenePath"]
+        
+class ButtonSelectable(Button):
+    def __init__(self, nPoly=4, lenX=None, lenY=None, radius=0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", editor = None, componentInit = None):
+        super().__init__(nPoly, lenX, lenY, radius, position, spritePath)
+        self.buttonType = ButtonType.Selectable
+        self.editor = editor
+        self.componentInit = componentInit
+        
+    def EndOfClick(self):
+        self.editor.SelectType(self.componentInit)
+        
+    def Decode(self, obj):
+        super().Decode(obj)
+        self.editorID = obj["editor"]

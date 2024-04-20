@@ -14,6 +14,7 @@ from Components import ComponentSlider
 from Components import ComponentSprite
 from Components import ComponentStructure
 from Components import ComponentTransform
+from Components import ComponentEditor
 
 class Scene:
     def __init__(self, name = ""):
@@ -147,6 +148,8 @@ class Scene:
                 return ComponentButton.Button
             if buttonType == ComponentButton.ButtonType.Level.value:
                 return ComponentButton.ButtonLevel
+            if buttonType == ComponentButton.ButtonType.Selectable.value:
+                return ComponentButton.ButtonSelectable
         if ctype == ComponentType.Camera.value:
             return ComponentCamera.Camera
         if ctype == ComponentType.Cannon.value:
@@ -181,3 +184,5 @@ class Scene:
                 return ComponentStructure.StructureMetal
             elif structureType == ComponentStructure.StructureType.Wood.value:
                 return ComponentStructure.StructureWood
+        if ctype == ComponentType.Editor.value:
+            return ComponentEditor.Editor
