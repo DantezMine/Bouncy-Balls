@@ -1,5 +1,5 @@
 from Vector import Vec2
-from Components.Component import Components
+from Components.Component import ComponentType
 from Components import Component
 from lib import GlobalVars
 import enum
@@ -9,8 +9,12 @@ class ColliderType(enum.Enum):
     Circle = enum.auto()
     Rect = enum.auto()
     
-    def Encode(self):
-        return self.name
+    def Decode(value):
+        members = list(vars(ColliderType).values())
+        members = members[8:len(members)-1]
+        for member in members:
+            if value == member.value:
+                return member
 
 class CollisionInfo:
     def __init__(self, collisionPoint, otherCollisionPoint, collisionNormal, otherNormal, objectA, objectB, collisionType, collisionResponseTag):
@@ -31,7 +35,7 @@ class CollisionInfo:
 
 class Collider(Component.Component):
     def __init__(self, localPosition=Vec2(0,0),localRotation=0,localScale=1,tags=[]):
-        self.name = Component.Components.Collider
+        self.name = Component.ComponentType.Collider
         self.parent = None
         self.colliderType = None
         self.tags = tags
@@ -57,19 +61,14 @@ class Collider(Component.Component):
     
     def _UpdateOnCollision(self):
         for collider in self.collisions:
-            self.parent.UpdateOnCollision(collider.objectB.GetComponent(Components.Collider))
+            self.parent.UpdateOnCollision(collider.objectB.GetComponent(ComponentType.Collider))
     
-    def Encode(self,obj):
-        outDict = super(Collider,self).Encode(obj)
-        if obj.localPosition != Vec2(0,0):
-            outDict["localPosition"] = obj.localPosition
-        if obj.localRotation != 0:
-            outDict["localRotation"] = obj.localRotation
-        if obj.localScale != 1:
-            outDict["localScale"] = obj.localScale
-        if obj.colliderType is not None:
-            outDict["colliderType"] = obj.colliderType.Encode()
-        return outDict
+    def Decode(self, obj):
+        super().Decode(obj)
+        self.localPosition = Vec2.FromList(obj["localPosition"])
+        self.localRotation = obj["localRotation"]
+        self.localScale = obj["localScale"]
+        self.colliderType = ColliderType.Decode(obj["colliderType"])
     
 class ColliderCircle(Collider):
     def __init__(self, radius=50, localPosition=Vec2(0, 0), localRotation=0, localScale=1, tags=[]):
@@ -79,7 +78,7 @@ class ColliderCircle(Collider):
         self.sqRadius = radius**2
     
     def CheckCollision(self, colliders):
-        center = self.parent.GetComponent(Components.Physics).tempNextPos
+        center = self.parent.GetComponent(ComponentType.Physics).tempNextPos
         for collider in colliders:
             self.CheckCollisionCircle(collider,center)
     
@@ -87,7 +86,7 @@ class ColliderCircle(Collider):
         collisionResponseTag = False if self.tags.__contains__("NoCollisionResponse") or collider.tags.__contains__("NoCollisionResponse") else True
         if not collider.parent.GetID() == self.parent.GetID():
             if collider.colliderType == ColliderType.Circle:
-                collTransform = collider.parent.GetComponent(Components.Transform)
+                collTransform = collider.parent.GetComponent(ComponentType.Transform)
                 collCenter = collTransform.position
                 deltaLocalPosition = center - collCenter
                 if (collider.radius + self.radius)**2 >= deltaLocalPosition.SqMag():
@@ -97,14 +96,14 @@ class ColliderCircle(Collider):
         return
     
     def DisplayCollider(self):
-        transform = self.parent.GetComponent(Components.Transform)
+        transform = self.parent.GetComponent(ComponentType.Transform)
         center = transform.position
         pygame.draw.circle(GlobalVars.screen,(20,220,20),(center.x,center.y),self.radius*transform.scale)
-        
-    def Encode(self,obj):
-        outDict = super(ColliderCircle,self).Encode(obj)
-        outDict["radius"] = obj.radius
-        return outDict
+    
+    def Decode(self, obj):
+        super().Decode(obj)
+        self.radius = obj["radius"]
+        self.sqRadius = obj["sqRadius"]
 
 class ColliderRect(Collider):
     def __init__(self, lenX = 50, lenY = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = 1, tags = []):
@@ -115,6 +114,7 @@ class ColliderRect(Collider):
         self.sqRadius = Vec2(lenX/2.0,lenY/2.0).SqMag()
         
     def Start(self):
+        self.mags = self.PrecomputeEdgeMag()
         self.Recalculate(temp=False)
         
     def CheckCollision(self, colliders):
@@ -124,9 +124,9 @@ class ColliderRect(Collider):
             if collider.parent.GetID() == self.parent.GetID():
                 continue
             #check if the objects are inside each others circumcircles
-            posA = self.parent.GetComponent(Components.Transform).position
-            posB = collider.parent.GetComponent(Components.Transform).position
-            if (posA-posB).SqMag() > self.sqRadius+collider.sqRadius + 1:
+            posA = self.parent.GetComponent(ComponentType.Transform).position
+            posB = collider.parent.GetComponent(ComponentType.Transform).position
+            if (posA-posB).SqMag() > self.sqRadius+collider.sqRadius + 0.1:
                 continue
             
             if collider.colliderType == ColliderType.Rect:
@@ -142,7 +142,7 @@ class ColliderRect(Collider):
     
     def CheckCollisionCircle(self, collider, verts):
         collisionResponseTag = False if self.tags.__contains__("NoCollisionResponse") or collider.tags.__contains__("NoCollisionResponse") else True
-        collTransform = collider.parent.GetComponent(Components.Transform)
+        collTransform = collider.parent.GetComponent(ComponentType.Transform)
         collCenter = collTransform.position
         radSq = collider.radius**2
         for i in range(len(verts)):
@@ -203,9 +203,9 @@ class ColliderRect(Collider):
             normalCD = CD.Perp().Normalized()
             
             #project COM on other edge segment
-            projectionCOMA = self.ClosestPointOnSegment(C_,D_,self.parent.GetComponent(Components.Transform).position)
+            projectionCOMA = self.ClosestPointOnSegment(C_,D_,self.parent.GetComponent(ComponentType.Transform).position)
             collisionPointA = projectionCOMA
-            projectionCOMB = self.ClosestPointOnSegment(A_,B_,collider.parent.GetComponent(Components.Transform).position)
+            projectionCOMB = self.ClosestPointOnSegment(A_,B_,collider.parent.GetComponent(ComponentType.Transform).position)
             collisionPointB = projectionCOMB
             self.collisions.append(CollisionInfo(collisionPoint=collisionPointA,otherCollisionPoint=collisionPointB,collisionNormal=normalAB,otherNormal=normalCD,objectA=self.parent,objectB=collider.parent,collisionType="edge",collisionResponseTag=collisionResponseTag))
             return True
@@ -321,17 +321,17 @@ class ColliderRect(Collider):
         return (sqD, onLine)
     
     def GetRelativeVelocity(self,collider,pointA,pointB): #points on the body whose velocity we use
-        parentPhysics = self.parent.GetComponent(Components.Physics)
-        otherPhysics = collider.parent.GetComponent(Components.Physics)
+        parentPhysics = self.parent.GetComponent(ComponentType.Physics)
+        otherPhysics = collider.parent.GetComponent(ComponentType.Physics)
         relativeVelocity = Vec2(0,0)
             
         #check if objects have a physics component whose velocity we need to consider
         if parentPhysics is not None:
-            rAP_   =  -(pointA - self.parent.GetComponent(Components.Transform).position).Perp()
+            rAP_   =  -(pointA - self.parent.GetComponent(ComponentType.Transform).position).Perp()
             vAP    =   parentPhysics.velocity + rAP_ * parentPhysics.angularSpeed
             relativeVelocity -= vAP
         if otherPhysics is not None:
-            rBP_   =  -(pointB - otherPhysics.parent.GetComponent(Components.Transform).position).Perp()
+            rBP_   =  -(pointB - otherPhysics.parent.GetComponent(ComponentType.Transform).position).Perp()
             vBP    =   otherPhysics.velocity + rBP_ * otherPhysics.angularSpeed
             relativeVelocity += vBP
         if parentPhysics is None and otherPhysics is None:
@@ -346,9 +346,17 @@ class ColliderRect(Collider):
         self.verts = self.GetVertices(temp)
         self.norms = self.GetNormals(self.verts)
     
+    def PrecomputeEdgeMag(self):
+        mags = list()
+        verts = self.GetVertices(temp=False)
+        for i in range(len(verts)):
+            AB = verts[(i+1)%len(verts)] - verts[i]
+            mags.append(AB.Mag())
+        return mags       
+    
     def GetVertices(self, temp=False):#CCW starting top left if not rotated
-        physics = self.parent.GetComponent(Components.Physics)
-        transf = self.parent.GetComponent(Components.Transform)
+        physics = self.parent.GetComponent(ComponentType.Physics)
+        transf = self.parent.GetComponent(ComponentType.Transform)
         scale = self.localScale*transf.scale
         if temp and physics is not None:
             center = physics.tempNextPos+self.localPosition
@@ -370,19 +378,19 @@ class ColliderRect(Collider):
         normals = list()
         for i in range(4):
             AB = verts[(i+1)%4]-verts[i]
-            normals.append(AB.Perp().Normalize())
+            normals.append(AB.Perp() * (1.0/self.mags[i]))
         return normals
     
     def DisplayCollider(self):
         verts = self.verts
         vertices = []
         for v in verts:
-            vertScreen = self.parent.GetComponent(Components.Transform).WorldToScreenPos(v,self.parent.GetParentScene().camera)
+            vertScreen = self.parent.GetComponent(ComponentType.Transform).WorldToScreenPos(v,self.parent.GetParentScene().camera)
             vertices.append((vertScreen.x,vertScreen.y))
         pygame.draw.polygon(GlobalVars.UILayer,(220,20,20),vertices,1)
-
-    def Encode(self,obj):
-        outDict = super(ColliderRect,self).Encode(obj)
-        outDict["lenX"] = obj.lenX
-        outDict["lenY"] = obj.lenY
-        return outDict
+    
+    def Decode(self, obj):
+        super().Decode(obj)
+        self.lenX = obj["lenX"]
+        self.lenY = obj["lenY"]
+        self.sqRadius = obj["sqRadius"]
