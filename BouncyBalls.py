@@ -20,7 +20,7 @@ GlobalVars.UILayer = GlobalVars.UILayer.convert_alpha()
 GlobalVars.clock = pygame.time.Clock()
 GlobalVars.running = True
 
-TestingPhysicsScene.SetupEditor(world)
+TestingPhysicsScene.SetupScene1(world)
 GlobalVars.frameCount = 0
 
 world.StartActiveScene()
