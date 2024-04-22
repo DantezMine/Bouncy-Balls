@@ -11,6 +11,7 @@ from Components import ComponentBackground
 from Components import ComponentCannon
 from Components import ComponentButton
 from Components import ComponentGoalField
+from Components import ComponentEditor
 
 def SetupScene1(world):
     scene = Scene.Scene("scene")
@@ -128,5 +129,5 @@ def SetupEditor(world):
     scene.AddGameObject(camera)
     
     editor = GameObject.GameObject(scene)
-    editor.AddComponent()
+    editor.AddComponent(ComponentEditor.Editor())
     scene.AddGameObject(editor)

@@ -23,7 +23,7 @@ class StructureType(enum.Enum):
                 return member
 
 class Structure(Component.Component):
-    def __init__(self, position = Vec2(0,0), lenX = 50, lenY = 50, rotation = 0):
+    def __init__(self, position = Vec2(0,0), lenX = 0.25, lenY = 1, rotation = 0):
         self.name = ComponentType.Structure
         self.parent = None
         self.initPos = position
@@ -119,7 +119,7 @@ class Structure(Component.Component):
 
 class StructureWood(Structure):
     '''type : "Wood"'''
-    def __init__(self, position = Vec2(0,0), lenX=50, lenY=50, rotation = 0):
+    def __init__(self, position = Vec2(0,0), lenX=0.25, lenY=1, rotation = 0):
         super(StructureWood, self).__init__(position, lenX, lenY, rotation)
         self.structureType = StructureType.Wood
 
@@ -133,14 +133,14 @@ class StructureWood(Structure):
 
 class StructureMetal(Structure):
     '''type : "Metal"'''
-    def __init__(self, position = Vec2(0,0), lenX=50, lenY=50, rotation = 0):
+    def __init__(self, position = Vec2(0,0), lenX=0.3, lenY=0.8, rotation = 0):
         super(StructureWood, self).__init__(position, lenX, lenY, rotation)
         self.structureType = StructureType.Metal
 
     def Start(self):
         self.destructionMomentum = 3500
         super(StructureWood,self).Start()
-        mass = 5
+        mass = 40
         self.parent.GetComponent(ComponentType.Physics).mass = mass
         self.parent.GetComponent(ComponentType.Physics).momentOfInertia = self.CalculateMomentOfInertia(mass)
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/StructureMetal.png"))

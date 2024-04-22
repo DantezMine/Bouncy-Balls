@@ -17,7 +17,7 @@ class GroundType(enum.Enum):
                 return member
 
 class Ground(Component.Component):
-    def __init__(self, position = Vec2(0,0), lenX = 50, lenY = 50, rotation = 0.0):
+    def __init__(self, position = Vec2(0,0), lenX = 1, lenY = 1, rotation = 0.0):
         self.name = ComponentType.Ground
         self.parent = None
 
