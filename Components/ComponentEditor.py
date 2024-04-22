@@ -27,7 +27,8 @@ class Editor(Component.Component):
         if self.workingObject is not None:
             objTransform = self.workingObject.GetComponent(ComponentType.Transform)
             objTransform.position = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen, camera)
-        self.workingScene.UpdateScene(deltaTime=deltaTime,updateFrequency=10)
+        self.workingScene.ShowScene(deltaTime)
+        self.CheckMouse()
         
     def CreateSelectables(self):
         parentScene = self.parent.GetParentScene()
@@ -39,3 +40,10 @@ class Editor(Component.Component):
         self.workingObject = GameObject.GameObject(self.workingScene)
         self.workingObject.AddComponent(componentInit())
         self.workingScene.AddGameObject(self.workingObject)
+
+    def CheckMouse(self):
+        if GlobalVars.mouseLeft:
+            self.OnLeftClick()
+            
+    def OnLeftClick(self):
+        pass

@@ -61,8 +61,15 @@ class Scene:
         return outList
     
     def UpdateScene(self,deltaTime, updateFrequency):
+        self.UpdateComponents(deltaTime)
+        self.UpdatePhysicsScene(deltaTime, updateFrequency)
+        self.ShowScene(deltaTime)
+        
+    def UpdateComponents(self, deltaTime):
         for go in self.__gameObjects.values():
             go.Update(deltaTime)
+            
+    def UpdatePhysicsScene(self, deltaTime, updateFrequency):
         for i in range(updateFrequency):
             dt = float(deltaTime)/updateFrequency
             collisions = []
@@ -77,9 +84,10 @@ class Scene:
                 go.UpdatePhysics(dt,collisions,1)
             for go in self.__gameObjects.values():
                 go.UpdatePhysics(dt,None,2)
+                
+    def ShowScene(self,deltaTime):
         for go in self.__gameObjects.values():
             go.Show(deltaTime)
-    
 
     def StartScene(self):
         for go in self.__gameObjects.values():
