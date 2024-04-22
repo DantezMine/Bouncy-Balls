@@ -2,10 +2,14 @@ from Components import ComponentCollider
 from Components import ComponentPhysics
 from Components import ComponentSprite
 from Components import Component
+from Components import ComponentStructure
 from Components.Component import Components
 from Vector import Vec2
 import time
 import enum
+import math
+import GameObject
+
 
 class StructureType(enum.Enum):
     Wood = enum.auto()
@@ -22,7 +26,7 @@ class Structure(Component.Component):
         self.initRot = rotation
         self.lenX = lenX
         self.lenY = lenY
-        self.destructionMomentum = 100
+        self.destructionMomentum = 0
         self.destroyed = False
 
     def Start(self):
@@ -44,7 +48,6 @@ class Structure(Component.Component):
         self.DestructionCheck(collider)
 
     def DestructionCheck(self,collider):
-        return
         physicsComponent = self.parent.GetComponent(Components.Physics)
         otherPhysicsComponent = collider.parent.GetComponent(Components.Physics)
         momentum = 0
@@ -58,11 +61,24 @@ class Structure(Component.Component):
             momentum += physicsComponent.mass * physicsComponent.velocity.Mag()
         if self.destructionMomentum < momentum:
             self.Destruct()
+
         
     def Destruct(self):
-        self.parent.RemoveComponent(Components.Collider)
-        self.destroyed = True
-        self.destructionTime = time.time()
+        #self.parent.RemoveComponent(Components.Collider)
+        #self.destroyed = True
+        #self.destructionTime = time.time()
+        scene = self.parent.GetParentScene()
+        self.parent.RemoveFromScene()
+        transform = self.parent.GetComponent(Components.Transform)
+        dir = Vec2(math.cos(transform.rotation),math.sin(transform.rotation))
+        offset = dir*(self.lenY/4.0)
+        fragment1 = GameObject.GameObject(scene)
+        fragment1.AddComponent(ComponentStructure.StructureWood(transform.position+offset,self.lenX,self.lenY/2.0,transform.rotation))
+        scene.AddGameObject(fragment1)
+        fragment2 = GameObject.GameObject(scene)
+        fragment2.AddComponent(ComponentStructure.StructureWood(transform.position-offset,self.lenX,self.lenY/2.0,transform.rotation))
+        scene.AddGameObject(fragment2)
+        print("something")
     
     def Encode(self,obj):
         outDict = super(Structure,self).Encode(obj)
@@ -82,7 +98,7 @@ class StructureWood(Structure):
 
     def Start(self):
         super(StructureWood,self).Start()
-        self.destructionMomentum = 2500
+        self.destructionMomentum = 100
         mass = 30
         self.parent.GetComponent(Components.Physics).mass = mass
         self.parent.GetComponent(Components.Physics).momentOfInertia = self.CalculateMomentOfInertia(mass)
