@@ -7,6 +7,7 @@ class Component(object):
         import GameObject
         self.name = None #needs to be set in each component class individually
         self.parent : GameObject.GameObject = None
+        self.started = False
     
     def Start(self):
         pass
@@ -39,7 +40,7 @@ class Component(object):
             return varValue.GetID()
     
     def Decode(self,obj):
-        pass
+        self.started = obj["started"]
     
 class ComponentType(enum.Enum):
     Transform = enum.auto()

@@ -22,20 +22,14 @@ class Scene:
         self.__gameObjects = dict()
         self.name = name
         self.world = None
+        self.removeQueue = list()
+        self.addQueue = list()
         
     def AddGameObject(self,gameObject):
-        if self.__gameObjects.__contains__(gameObject):
-            return False
-        if gameObject.HasComponent(ComponentType.Camera):
-            self.camera = gameObject.GetComponent(ComponentType.Camera)
-        self.__gameObjects[gameObject.GetID()] = gameObject
-        return True
+        self.addQueue.append(gameObject)
     
     def RemoveGameObject(self,gameObject):
-        if self.__gameObjects.__contains__(gameObject):
-            self.__gameObjects.pop(gameObject.GetID())
-            return True
-        return False
+        self.removeQueue.append(gameObject)
         
     def CreateID(self):
         self.ID += 1
@@ -61,6 +55,9 @@ class Scene:
         return outList
     
     def UpdateScene(self,deltaTime, updateFrequency):
+        self.HandleAddQueue()
+        self.HandleRemoveQueue()
+
         self.UpdateComponents(deltaTime)
         self.UpdatePhysicsScene(deltaTime, updateFrequency)
         self.ShowScene(deltaTime)
@@ -89,7 +86,25 @@ class Scene:
         for go in self.__gameObjects.values():
             go.Show(deltaTime)
 
+    def HandleAddQueue(self):
+        for gameObject in self.addQueue:
+            if self.__gameObjects.__contains__(gameObject):
+                continue
+            if gameObject.HasComponent(ComponentType.Camera):
+                self.camera = gameObject.GetComponent(ComponentType.Camera)
+            self.__gameObjects[gameObject.GetID()] = gameObject
+        self.addQueue = list()
+            
+    def HandleRemoveQueue(self):
+        for go in self.removeQueue:
+            if self.__gameObjects.__contains__(go.GetID()):
+                self.__gameObjects.pop(go.GetID())
+        self.removeQueue = list()
+
     def StartScene(self):
+        self.HandleAddQueue()
+        self.HandleRemoveQueue()
+        # deprecated
         for go in self.__gameObjects.values():
             go.Start()
             
