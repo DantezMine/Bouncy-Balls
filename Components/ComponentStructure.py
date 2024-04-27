@@ -119,28 +119,28 @@ class Structure(Component.Component):
 
 class StructureWood(Structure):
     '''type : "Wood"'''
-    def __init__(self, position = Vec2(0,0), lenX=0.25, lenY=1, rotation = 0):
-        super(StructureWood, self).__init__(position, lenX, lenY, rotation)
+    def __init__(self, position = Vec2(0,0), lenX=0.3, lenY=0.8, rotation = 0):
+        super().__init__(position, lenX, lenY, rotation)
         self.structureType = StructureType.Wood
 
     def Start(self):
-        super(StructureWood,self).Start()
-        self.destructionMomentum = 10
-        mass = 3
+        super().Start()
+        self.destructionMomentum = 25
+        mass = 5
         self.parent.GetComponent(ComponentType.Physics).mass = mass
         self.parent.GetComponent(ComponentType.Physics).momentOfInertia = self.CalculateMomentOfInertia(mass)
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/WoodStructure.png",lenX = self.lenX, lenY = self.lenY))
 
 class StructureMetal(Structure):
     '''type : "Metal"'''
-    def __init__(self, position = Vec2(0,0), lenX=0.3, lenY=0.8, rotation = 0):
-        super(StructureWood, self).__init__(position, lenX, lenY, rotation)
+    def __init__(self, position = Vec2(0,0), lenX=0.25, lenY=1.0, rotation = 0):
+        super().__init__(position, lenX, lenY, rotation)
         self.structureType = StructureType.Metal
 
     def Start(self):
-        self.destructionMomentum = 3500
-        super(StructureWood,self).Start()
-        mass = 40
+        super().Start()
+        self.destructionMomentum = 35
+        mass = 10
         self.parent.GetComponent(ComponentType.Physics).mass = mass
         self.parent.GetComponent(ComponentType.Physics).momentOfInertia = self.CalculateMomentOfInertia(mass)
-        self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/StructureMetal.png"))
+        self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/StructureMetal.png",lenX = self.lenX, lenY = self.lenY))

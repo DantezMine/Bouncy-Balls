@@ -1,4 +1,5 @@
 import pygame
+from PIL import Image
 import math
 import time
 import enum
@@ -148,9 +149,35 @@ class ButtonSelectable(Button):
         self.editor = editor
         self.componentInit = componentInit
         
+    def Start(self):
+        super().Start()
+        self.CreateButtonSprite()
+        
     def EndOfClick(self):
         self.editor.SelectType(self.componentInit)
         
     def Decode(self, obj):
         super().Decode(obj)
         self.editorID = obj["editor"]
+        
+    def CreateButtonSprite(self):
+        canvas = pygame.Surface((150,150), pygame.SRCALPHA, 32)
+        canvas = canvas.convert_alpha()
+        
+        width = canvas.get_width()
+        height = canvas.get_height()
+        
+        image = pygame.transform.scale(pygame.image.load("Bouncy-Balls/data/ButtonSelectableBackground.png"), (width,height))
+        canvas.blit(image, (0,0))
+        
+        comp = self.componentInit()
+        topLeft = (width * (1-comp.lenX* 0.9)/2.0, height * (1-comp.lenY* 0.9)/2.0)
+        sprite = pygame.image.load("Bouncy-Balls/" + self.spritePath)
+        image = pygame.transform.scale(sprite, (width * comp.lenX * 0.9, height * comp.lenY * 0.9))
+        canvas.blit(image, topLeft)
+        
+        imageData = pygame.image.tobytes(canvas, 'RGBA')
+        img = Image.frombytes('RGBA', (width,height), imageData)
+        img.save("Bouncy-Balls/data/" + self.spritePath[:-4] + "Button.png",'PNG')
+        
+        self.parent.AddComponent(ComponentSprite.Sprite("data/" + self.spritePath[:-4] + "Button.png", lenX=self.lenX, lenY=self.lenY))
