@@ -1,4 +1,4 @@
-from lib import GlobalVars
+import GlobalVars
 import pygame
 from Vector import Vec2
 
@@ -7,6 +7,7 @@ def HandleEvents():
     GlobalVars.mousePosScreen = Vec2.FromList(pygame.mouse.get_pos())
     GlobalVars.scrollEvent = None
     
+    GlobalVars.mouseChanged = False
     for event in GlobalVars.events:
         if event.type == pygame.QUIT:
             GlobalVars.running = False
@@ -23,6 +24,7 @@ def HandleEvents():
             GlobalVars.keyReleased = True
         
         if event.type == pygame.MOUSEBUTTONDOWN:
+            GlobalVars.mouseChanged = True
             GlobalVars.mousePressed = True
             if event.button == pygame.BUTTON_LEFT:
                 GlobalVars.mouseLeft = True
@@ -31,6 +33,7 @@ def HandleEvents():
             if event.button == pygame.BUTTON_RIGHT:
                 GlobalVars.mouseRight = True
         elif event.type == pygame.MOUSEBUTTONUP:
+            GlobalVars.mouseChanged = True
             GlobalVars.mousePressed = False
             GlobalVars.mouseLeft = False
             GlobalVars.mouseMid = False

@@ -1,19 +1,15 @@
 from Components import Component
+from Components.Component import ComponentType
 from Vector import Vec2
-import time
-import ComponentBall
+import math
 
 class Camera(Component.Component):
-    def __init__(self, position = Vec2(0,0), scale = 1, boundLenX, boundLenY):
+    def __init__(self, position = Vec2(0,0), scale = 1, boundLen = Vec2(5,5)):
         self.name = Component.ComponentType.Camera
         self.parent = None
         self.initPos = position
-        self.scale = scale #factor by which the scene scales, or zoom factor ; greater -> more zoomed in
-        self.boundLenX = boundLenX
-        self.boundLenY = boundLenY
-    
-    # def Start(self):
-    #     self.transform = self.parent.GetComponent(Component.ComponentType.Transform)
+        self.scale = scale #factor by which the scene scales, or zoom factor ; greater -> more zoomed in ; screen length = 2/scale
+        self.boundLen = boundLen
     
     def Decode(self, obj):
         super().Decode(obj)
@@ -21,26 +17,22 @@ class Camera(Component.Component):
         self.initPos = Vec2.FromList(obj["initPos"])
         
         
+    def EnforceBounds(self):
+        def sign(x):
+            if x == 0:
+                return 0
+            return -1 if x < 0 else 1
+         
+        transform = self.parent.GetComponent(ComponentType.Transform)
+        signedDist = Vec2(1,1)/self.scale - self.boundLen/2.0 + abs(transform.position)
+        signedDist.x = max(0,signedDist.x) * sign(transform.position.x)
+        signedDist.y = max(0,signedDist.y) * sign(transform.position.y)
+        transform.position -= signedDist
         
-    def Follow(self, ComponentBall):
+    def MoveCamera(self, position):
+        self.parent.GetComponent(ComponentType.Transform).position = position
+        self.EnforceBounds()
         
-        ballTransform = Ball.parent.GetComponent(ComponentType.Transform)
-        
-        if abs(Vec2.y) < (1/self.scale):
-            dy = (1/self.scale) - Vec2.y
-        else:
-            dy = 0
-        targetY = ballTransform.position.y + dy #Vec2.y but from the target (here the ball), where can i get that from?
-        
-        pass
-        
-    def Update(self, deltaTime, C, B, t):
-        self.C = C
-        self.B = B
-        self.t = t
-        
-        C = Vec2.x, Vec2.y
-        B = Vec2.x, Vec2.y #but from the target, same question as above
-        lerp = C + (C-B)*deltaTime
-        pass
-    
+    def ScaleCamera(self, scale):
+        self.scale = scale
+        self.EnforceBounds()

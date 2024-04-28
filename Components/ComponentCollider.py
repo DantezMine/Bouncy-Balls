@@ -1,7 +1,7 @@
 from Vector import Vec2
 from Components.Component import ComponentType
 from Components import Component
-from lib import GlobalVars
+import GlobalVars
 import enum
 import pygame
 

@@ -4,7 +4,7 @@ from Components import ComponentTransform
 from Components.Component import ComponentType
 from Vector import Vec2
 import pygame
-from lib import GlobalVars
+import GlobalVars
 import enum
 
 class SpriteType(enum.Enum):

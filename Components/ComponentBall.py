@@ -4,9 +4,9 @@ from Components import ComponentCollider
 from Components import ComponentPhysics
 from Components import ComponentSprite
 from Components import Component
-from lib import GlobalVars
+import GlobalVars
 from Vector import Vec2
-from lib import GlobalVars
+import GlobalVars
 import enum
 import pygame
 import math

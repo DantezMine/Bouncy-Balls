@@ -2,7 +2,7 @@ import pygame
 from Components import ComponentTransform
 from Components import Component
 from Components.Component import ComponentType
-from lib import GlobalVars
+import GlobalVars
 from Vector import Vec2
 
 class Slider(Component.Component):

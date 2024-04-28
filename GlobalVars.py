@@ -15,6 +15,7 @@ running : bool = False
 updateFrequency : int = 1
 
 mousePosScreen : Vec2 = None
+mouseChanged : bool = False
 mousePressed : bool = False
 mouseLeft : bool = False
 mouseMid : bool = False

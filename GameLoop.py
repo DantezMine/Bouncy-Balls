@@ -1,6 +1,6 @@
 import pygame
 import EventHandler
-from lib import GlobalVars
+import GlobalVars
 
 def RunGame(world):
     '''pygame loop'''

@@ -1,7 +1,7 @@
 import json
 from . import Component
 from Vector import Vec2
-from lib import GlobalVars
+import GlobalVars
 from Components.Component import ComponentType
 
 class TransformState:

@@ -7,7 +7,7 @@ from Components import Component
 from Components import ComponentTransform
 from Components import ComponentSprite
 from Components.Component import ComponentType
-from lib import GlobalVars
+import GlobalVars
 from Vector import Vec2
 
 class ButtonType(enum.Enum):
@@ -120,23 +120,26 @@ class Button(Component.Component):
         self.buttonType = ButtonType.Decode(obj["buttonType"])
         
 class ButtonLevel(Button):
-    def __init__(self, nPoly=4, lenX = None, lenY = None, radius = 0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", scenePath = None):
+    def __init__(self, nPoly=4, lenX = None, lenY = None, radius = 0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", scenePath = None, setupFunc = None, sceneName = None):
         super().__init__(nPoly, lenX, lenY, radius, position, spritePath)
         self.scenePath = scenePath
+        self.setupFunc = setupFunc
+        self.sceneName = sceneName
         self.buttonType = ButtonType.Level
         
     def EndOfClick(self):
         import Scene
         scene = Scene.Scene()
-        try:
+        if self.scenePath is not None:
             scene.FromJSON(self.scenePath)
             self.sceneName = scene.name
             
             world = self.parent.GetParentScene().world
             world.AddScene(scene)
             world.SetActiveScene(scene.name)
-        except:
-            pass
+        else:
+            self.setupFunc(self.parent.GetParentScene().world)
+            self.parent.GetParentScene().world.SetActiveScene(self.sceneName)
         
     def Decode(self, obj):
         super().Decode(obj)
@@ -166,15 +169,19 @@ class ButtonSelectable(Button):
         
         width = canvas.get_width()
         height = canvas.get_height()
+        imgScale = 0.8
         
         image = pygame.transform.scale(pygame.image.load("Bouncy-Balls/data/ButtonSelectableBackground.png"), (width,height))
         canvas.blit(image, (0,0))
         
-        comp = self.componentInit()
-        topLeft = (width * (1-comp.lenX* 0.9)/2.0, height * (1-comp.lenY* 0.9)/2.0)
-        sprite = pygame.image.load("Bouncy-Balls/" + self.spritePath)
-        image = pygame.transform.scale(sprite, (width * comp.lenX * 0.9, height * comp.lenY * 0.9))
-        canvas.blit(image, topLeft)
+        if self.componentInit is not None:
+            comp = self.componentInit()
+            compLen = Vec2(comp.lenX,comp.lenY)
+            compLen = compLen/comp.lenX if comp.lenX > comp.lenY else compLen/comp.lenY
+            topLeft = (width * (1 - compLen.x * imgScale)/2.0, height * (1 - compLen.y * imgScale)/2.0)
+            sprite = pygame.image.load("Bouncy-Balls/" + self.spritePath)
+            image = pygame.transform.scale(sprite, (width * compLen.x * imgScale, height * compLen.y * imgScale))
+            canvas.blit(image, topLeft)
         
         imageData = pygame.image.tobytes(canvas, 'RGBA')
         img = Image.frombytes('RGBA', (width,height), imageData)

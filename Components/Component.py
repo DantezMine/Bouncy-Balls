@@ -40,7 +40,8 @@ class Component(object):
             return varValue.GetID()
     
     def Decode(self,obj):
-        self.started = obj["started"]
+        pass
+        #self.started = obj["started"]
     
 class ComponentType(enum.Enum):
     Transform = enum.auto()
