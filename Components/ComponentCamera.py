@@ -8,8 +8,8 @@ class Camera(Component.Component):
         self.initPos = position
         self.scale = scale #factor by which the scene scales, or zoom factor ; greater -> more zoomed in
     
-    def Start(self):
-        self.transform = self.parent.GetComponent(Component.ComponentType.Transform)
+    # def Start(self):
+    #     self.transform = self.parent.GetComponent(Component.ComponentType.Transform)
     
     def Decode(self, obj):
         super().Decode(obj)

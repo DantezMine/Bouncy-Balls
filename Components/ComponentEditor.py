@@ -24,6 +24,7 @@ class Editor(Component.Component):
         self.state = EditorState.Free
         self.minZoom = 1.0/15
         self.maxZoom = 1.0
+        self.startDrag = None
         
     def Start(self):
         self.CreateSelectables()
@@ -73,7 +74,12 @@ class Editor(Component.Component):
         if GlobalVars.mouseLeft:
             self.OnLeftClick()
         if GlobalVars.mouseMid:
+            if self.startDrag is None:
+                self.startDrag = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen, self.workingScene.camera)
+                self.camStartPos = self.workingScene.camera.parent.GetComponent(ComponentType.Transform).position
             self.MoveCamera()
+        else:
+            self.startDrag = None
         if GlobalVars.scrollEvent is not None:
             self.ScrollCamera()
             
@@ -83,8 +89,9 @@ class Editor(Component.Component):
         if self.state == EditorState.Placing:
             self.PlaceObject()
             
-    def MoveCamera(self):
-        pass
+    def MoveCamera(self): #function jiggles aroung the more zoomed out it is, probably because camera moves but is also used for screen to world transform
+        drag = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen, self.workingScene.camera) - self.startDrag
+        self.workingScene.camera.parent.GetComponent(ComponentType.Transform).position = self.camStartPos - drag #change to camera's internal move function
     
     def ScrollCamera(self):
         scroll = GlobalVars.scrollEvent.y
