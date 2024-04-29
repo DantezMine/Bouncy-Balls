@@ -55,6 +55,8 @@ class Vec2:
     
     def Normalized(self):
         mag = self.Mag()
+        if mag == 0:
+            return self
         return Vec2(self.x/mag,self.y/mag)
     
     def AngleBetween(self,other): #in radians between 0 and pi
