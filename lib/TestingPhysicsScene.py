@@ -54,7 +54,7 @@ def SetupScene1(world):
     scene.AddGameObject(goalField)
     
     ball = GameObject.GameObject(scene)
-    ball.AddComponent(ComponentBall.BallBouncy(None))
+    ball.AddComponent(ComponentBall.BallSdlyBig(None,1))
     scene.AddGameObject(ball)    
     ball.GetComponent(Components.Transform).position = Vec2(2,2)
     ball.GetComponent(Components.Ball).state = "Released"
