@@ -1,7 +1,8 @@
 import pygame
+from Vector import Vec2
 
 update : bool = True
-step : bool = False
+step : bool = True
 keyReleased : bool = True
 frameCount : int = 0
 debug : bool= False
@@ -11,3 +12,8 @@ foreground : pygame.Surface = None
 UILayer : pygame.Surface = None
 clock = None
 running : bool = None
+updateFrequency : int = 1
+
+mousePosScreen : Vec2 = None
+mousePressed : bool = None
+mouseLeft : bool = None
