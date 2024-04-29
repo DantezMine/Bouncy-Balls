@@ -8,21 +8,18 @@ class World:
         self.__activeScene = None
         self.__prevTime = None
         
-    def AddScene(self, sceneName, scene):
+    def AddScene(self, scene):
         if len(self.__scenes) == 0:
-            self.__activeSceneKey = sceneName
+            self.__activeSceneKey = scene.name
             self.__activeScene = scene
-        if self.__scenes.__contains__(sceneName):
-            inp = input("Scene %s already exists. Do you want to replace it? " %sceneName)
-            if inp == "yes" or inp == "Yes" or inp == "YES" or inp == "y":
-                self.__scenes[sceneName] = scene
-                return True
-            else:
-                return False
-        self.__scenes[sceneName] = scene
-        return True
+        self.__scenes[scene.name] = scene
+        scene.world = self
+        return
     
     def RemoveScene(self, sceneName):
+        if sceneName == self.__activeSceneKey:
+            self.__activeScene = None
+            self.__activeSceneKey = None
         if self.__scenes.__contains__(sceneName):
             self.__scenes.pop(sceneName)
             return True
@@ -31,7 +28,8 @@ class World:
     def UpdateActiveScene(self,deltaTime = None, updateFrequency = 1):
         if deltaTime is None:
             deltaTime = self.CalculateDeltaTime()
-        self.__activeScene.UpdateScene(deltaTime, updateFrequency)
+        if self.__activeScene is not None:
+            self.__activeScene.UpdateScene(deltaTime, updateFrequency)
     
     def StartActiveScene(self):
         self.__activeScene.StartScene()
@@ -43,6 +41,12 @@ class World:
             return True
         print("Scene %s doesn't exist"%sceneName)
         return False
+    
+    def GetActiveScene(self):
+        return self.__activeScene
+    
+    def GetScene(self, sceneName):
+        return self.__scenes[sceneName]
         
     def CalculateDeltaTime(self):
         dt = time.time()-self.__prevTime if self.__prevTime is not None else 0

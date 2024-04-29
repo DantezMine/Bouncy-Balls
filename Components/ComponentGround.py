@@ -1,4 +1,4 @@
-from Components.Component import Components
+from Components.Component import ComponentType
 from Vector import Vec2
 from Components import Component
 from Components import ComponentCollider
@@ -9,12 +9,16 @@ import enum
 class GroundType(enum.Enum):
     Dirt = enum.auto()
     
-    def Encode(self):
-        return self.name
+    def Decode(value):
+        members = list(vars(GroundType).values())
+        members = members[8:len(members)-1]
+        for member in members:
+            if value == member.value:
+                return member
 
 class Ground(Component.Component):
     def __init__(self, position = Vec2(0,0), lenX = 50, lenY = 50, rotation = 0.0):
-        self.name = Components.Ground
+        self.name = ComponentType.Ground
         self.parent = None
 
         self.initPos = position
@@ -23,7 +27,7 @@ class Ground(Component.Component):
         self.lenY = lenY
     
     def Start(self):
-        transform = self.parent.GetComponent(Components.Transform)
+        transform = self.parent.GetComponent(ComponentType.Transform)
         transform.position = self.initPos
         transform.rotation = self.initRot
         
@@ -34,12 +38,13 @@ class Ground(Component.Component):
         
         self.parent.AddComponent(ComponentCollider.ColliderRect(lenX = self.lenX, lenY = self.lenY, tags=["Ground"]))
         
-    def Encode(self, obj):
-        outDict = super().Encode(obj)
-        outDict["lenX"] = obj.lenX
-        outDict["lenY"] = obj.lenY
-        outDict["groundType"] = obj.groundType.Encode()
-        return outDict
+    def Decode(self, obj):
+        super().Decode(obj)
+        self.lenX = obj["lenX"]
+        self.lenY = obj["lenY"]
+        self.groundType = GroundType.Decode(obj["groundType"])
+        self.initPos = Vec2.FromList(obj["initPos"])
+        self.initRot = obj["initRot"]
         
 class GroundDirt(Ground):
     def __init__(self, position=Vec2(0, 0), lenX=50, lenY=50, rotation=0.0):
@@ -49,6 +54,3 @@ class GroundDirt(Ground):
     def Start(self):
         super().Start()
         self.sprite = self.parent.AddComponent(ComponentSprite.Sprite("data/GroundDirt.png",self.lenX,self.lenY))
-        
-    # def Update(self, deltaTime):
-    #     self.parent.GetComponent(Components.Collider).DisplayCollider()
