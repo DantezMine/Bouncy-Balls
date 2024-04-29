@@ -19,7 +19,7 @@ def SetupScene1(world):
     width, height = GlobalVars.screen.get_width(), GlobalVars.screen.get_height()
     
     background = GameObject.GameObject(scene)
-    background.AddComponent(ComponentBackground.BackgroundNature(Vec2(0,0),width,height))
+    background.AddComponent(ComponentBackground.BackgroundSkyline(Vec2(0,0),width,height))
     scene.AddGameObject(background)
     
     camera = GameObject.GameObject(scene)
@@ -65,6 +65,12 @@ def SetupScene1(world):
     lvlSelectButton1 = GameObject.GameObject(scene)
     lvlSelectButton1.AddComponent(ComponentButton.ButtonLevel(nPoly=4,radius=0.5,position=Vec2(-2.5,2.5),scenePath="Levels/levelSelect.json"))
     scene.AddGameObject(lvlSelectButton1)
+    
+    ball = GameObject.GameObject(scene)
+    ball.AddComponent(ComponentBall.BallBouncy(None))
+    scene.AddGameObject(ball)    
+    ball.GetComponent(Components.Transform).position = Vec2(2,2)
+    ball.GetComponent(Components.Ball).state = "Released"
     
     # for i in range(10):
         # struct = GameObject.GameObject(scene)

@@ -66,13 +66,18 @@ class Ball(Component.Component):
                 self.ProjectPath(40,impulse)
             if self.state == "Released" and self.mouseLeft:
                 self.OnClick()
+        
         if not GlobalVars.mousePressed:
              if self.state == "Dragged":
                 self.state = "Released"
+                delta = self.mousePosStart - self.mousePos
+                force = delta * self.slingD
+                self.parent.GetComponent(Components.Physics).AddForce(force)
                 deltaVec = self.mousePosStart - mousePosWorld
                 delta = deltaVec.Mag()
                 deltaNorm = deltaVec.Normalized()
                 impulse = deltaNorm * math.log(1.5*delta + 1) * self.slingD
+
                 physics = self.parent.GetComponent(ComponentType.Physics)
                 physics.constraintPosition = False
                 physics.constraintRotation = False
@@ -89,6 +94,11 @@ class Ball(Component.Component):
         physics : ComponentPhysics = self.parent.GetComponent(ComponentType.Physics)
         collider : ComponentCollider = self.parent.GetComponent(ComponentType.Collider)
         transform = self.parent.GetComponent(ComponentType.Transform)
+        transform = self.parent.GetComponent(Components.Transform)
+        camera = self.parent.GetParentScene().camera
+        for i in range(steps//5):
+            point = transform.WorldToScreenPos(path[i*5], camera)
+            pygame.draw.circle(GlobalVars.foreground,(255,255,255),(point.x,point.y),5)
         
         #save state
         transformState = transform.SaveState()

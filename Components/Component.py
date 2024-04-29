@@ -53,10 +53,10 @@ class ComponentType(enum.Enum):
     Background = enum.auto()
     Camera = enum.auto()
     Cannon = enum.auto()
-    GoalField = enum.auto()
     Button = enum.auto()
     Slider = enum.auto()
     Base = enum.auto()
+    GoalField = enum.auto()
     
     def GetType(compType):
         members = list(vars(ComponentType).values())

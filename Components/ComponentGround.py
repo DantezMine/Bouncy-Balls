@@ -37,7 +37,7 @@ class Ground(Component.Component):
         self.parent.AddComponent(physics)
         
         self.parent.AddComponent(ComponentCollider.ColliderRect(lenX = self.lenX, lenY = self.lenY, tags=["Ground"]))
-    
+        
     def Decode(self, obj):
         super().Decode(obj)
         self.lenX = obj["lenX"]

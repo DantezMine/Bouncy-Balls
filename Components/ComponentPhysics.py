@@ -176,7 +176,7 @@ class Physics(Component.Component):
         if alpha > math.pi/2.0:
             alpha -= math.pi/2.0
             
-        forceNormalA, forceNormalB = Vec2(0,0), Vec2(0,0)
+        nNormalA, forceNormalB = Vec2(0,0), Vec2(0,0)
         accNormal = normal * -self.gravAcc.Mag() * math.cos(alpha)
         if self.gravity:
             forceNormalA = accNormal * (self.mass / collisionCounts[collisionIndex])

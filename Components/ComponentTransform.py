@@ -44,7 +44,7 @@ class Transform(Component.Component):
         xWorld = (pos.x*2.0/width - 1)/camera.scale
         yWorld = ((height-pos.y)*2.0/height - 1)/camera.scale
         return Vec2(xWorld,yWorld)
-    
+      
     def SaveState(self):
         return TransformState(self)
     
