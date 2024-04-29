@@ -28,15 +28,15 @@
                     0,
                     0
                 ],
-                "lenX": 600,
-                "lenY": 600
+                "lenX": 1000,
+                "lenY": 1000
             },
             "ComponentType.Sprite": {
                 "name": 3,
                 "spritePath": "data/BackgroundNature-Sky.png",
                 "parent": 1,
-                "lenX": 600,
-                "lenY": 600,
+                "lenX": 1000,
+                "lenY": 1000,
                 "spriteType": 2,
                 "sprite": null
             }
@@ -68,7 +68,230 @@
                     0
                 ],
                 "scale": 0.3333333333333333,
-                "transform": null
+                "boundLen": [
+                    5,
+                    5
+                ]
+            }
+        },
+        "3": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 3,
+                "position": [
+                    0.5,
+                    1
+                ],
+                "rotation": 0,
+                "scale": 1,
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Structure": {
+                "name": 6,
+                "parent": 3,
+                "initPos": [
+                    0.5,
+                    1
+                ],
+                "initRot": 0,
+                "lenX": 0.25,
+                "lenY": 1.0,
+                "destructionMomentum": 25,
+                "destroyed": false,
+                "structureType": 1
+            },
+            "ComponentType.Collider": {
+                "name": 4,
+                "parent": 3,
+                "colliderType": 2,
+                "tags": null,
+                "collisions": null,
+                "_safetyMargin": 10,
+                "_edgeAlignmentMargin": 0.01,
+                "localPosition": [
+                    0,
+                    0
+                ],
+                "localRotation": 0,
+                "localScale": 1,
+                "lenX": 0.25,
+                "lenY": 1.0,
+                "sqRadius": 0.265625,
+                "mags": null,
+                "verts": null,
+                "norms": null
+            },
+            "ComponentType.Physics": {
+                "name": 2,
+                "parent": 3,
+                "mass": 5,
+                "momentOfInertia": 0.4427083333333333,
+                "restitution": 0.1,
+                "velDamping": 0.999,
+                "rotDamping": 0.99,
+                "forceMargin": 0,
+                "torqueMargin": 0,
+                "velMargin": 0,
+                "rotMargin": 0,
+                "posMargin": 0,
+                "prevPosition": [
+                    0.5,
+                    1
+                ],
+                "velocity": [
+                    0,
+                    0
+                ],
+                "acceleration": [
+                    0,
+                    0
+                ],
+                "netForce": [
+                    0,
+                    0
+                ],
+                "deltaV": [
+                    0,
+                    0
+                ],
+                "angularSpeed": 0,
+                "angularAcc": 0,
+                "netTorque": 0,
+                "deltaW": 0,
+                "deltaPhi": 0,
+                "constraintPosition": false,
+                "constraintRotation": false,
+                "gravity": true,
+                "gravAcc": [
+                    0,
+                    -9.8
+                ]
+            },
+            "ComponentType.Sprite": {
+                "name": 3,
+                "spritePath": "data/WoodStructure.png",
+                "parent": 3,
+                "lenX": 0.25,
+                "lenY": 1.0,
+                "spriteType": 1,
+                "sprite": null
+            }
+        },
+        "4": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 4,
+                "position": [
+                    0,
+                    0
+                ],
+                "rotation": 1.57075,
+                "scale": 1,
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Structure": {
+                "name": 6,
+                "parent": 4,
+                "initPos": [
+                    0,
+                    0
+                ],
+                "initRot": 1.57075,
+                "lenX": 0.25,
+                "lenY": 1.0,
+                "destructionMomentum": 25,
+                "destroyed": false,
+                "structureType": 1
+            },
+            "ComponentType.Collider": {
+                "name": 4,
+                "parent": 4,
+                "colliderType": 2,
+                "tags": null,
+                "collisions": null,
+                "_safetyMargin": 10,
+                "_edgeAlignmentMargin": 0.01,
+                "localPosition": [
+                    0,
+                    0
+                ],
+                "localRotation": 0,
+                "localScale": 1,
+                "lenX": 0.25,
+                "lenY": 1.0,
+                "sqRadius": 0.265625,
+                "mags": null,
+                "verts": null,
+                "norms": null
+            },
+            "ComponentType.Physics": {
+                "name": 2,
+                "parent": 4,
+                "mass": 5,
+                "momentOfInertia": 0.4427083333333333,
+                "restitution": 0.1,
+                "velDamping": 0.999,
+                "rotDamping": 0.99,
+                "forceMargin": 0,
+                "torqueMargin": 0,
+                "velMargin": 0,
+                "rotMargin": 0,
+                "posMargin": 0,
+                "prevPosition": [
+                    0,
+                    0
+                ],
+                "velocity": [
+                    0,
+                    0
+                ],
+                "acceleration": [
+                    0,
+                    0
+                ],
+                "netForce": [
+                    0,
+                    0
+                ],
+                "deltaV": [
+                    0,
+                    0
+                ],
+                "angularSpeed": 0,
+                "angularAcc": 0,
+                "netTorque": 0,
+                "deltaW": 0,
+                "deltaPhi": 0,
+                "constraintPosition": false,
+                "constraintRotation": false,
+                "gravity": true,
+                "gravAcc": [
+                    0,
+                    -9.8
+                ]
+            },
+            "ComponentType.Sprite": {
+                "name": 3,
+                "spritePath": "data/WoodStructure.png",
+                "parent": 4,
+                "lenX": 0.25,
+                "lenY": 1.0,
+                "spriteType": 1,
+                "sprite": null
             }
         },
         "6": {
@@ -394,7 +617,10 @@
                 "animScale": 0.1,
                 "animate": false,
                 "buttonType": 1,
+                "spritePath": "data/ButtonLocked.png",
                 "scenePath": "Levels/levelSelect.json",
+                "setupFunc": null,
+                "sceneName": null,
                 "parent": 13,
                 "transform": null,
                 "verts": null

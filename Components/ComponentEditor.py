@@ -53,7 +53,7 @@ class Editor(Component.Component):
         
     def CreateSelectables(self):
         parentScene = self.parent.GetParentScene()
-        size = 0.3
+        size = 0.2
         
         selectables = (
             ("data/WoodStructure.png", ComponentStructure.StructureWood),

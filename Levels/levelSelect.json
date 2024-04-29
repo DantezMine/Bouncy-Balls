@@ -68,7 +68,10 @@
                     0
                 ],
                 "scale": 1,
-                "transform": null
+                "boundLen": [
+                    5,
+                    5
+                ]
             }
         },
         "3": {
@@ -103,7 +106,10 @@
                 "animScale": 0.1,
                 "animate": false,
                 "buttonType": 1,
+                "spritePath": "data/ButtonLocked.png",
                 "scenePath": "Levels/levelTest.json",
+                "setupFunc": null,
+                "sceneName": null,
                 "parent": 3,
                 "transform": null,
                 "verts": null

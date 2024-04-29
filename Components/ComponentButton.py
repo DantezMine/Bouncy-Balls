@@ -121,6 +121,7 @@ class Button(Component.Component):
         
 class ButtonLevel(Button):
     def __init__(self, nPoly=4, lenX = None, lenY = None, radius = 0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", scenePath = None, setupFunc = None, sceneName = None):
+        '''Since the setup func cannot be saved, it can only be used on scenes that don't get saved, e.g. the main menu, the editor, level select. To return back to the editor, level select or main menu from a saved level, only the sceneName should be assigned.'''
         super().__init__(nPoly, lenX, lenY, radius, position, spritePath)
         self.scenePath = scenePath
         self.setupFunc = setupFunc
@@ -138,12 +139,15 @@ class ButtonLevel(Button):
             world.AddScene(scene)
             world.SetActiveScene(scene.name)
         else:
-            self.setupFunc(self.parent.GetParentScene().world)
+            # loads scenes that cannot be saved to JSON. Since the setup func cannot be saved, it can only be used on scenes that don't get saved, i.e. the main menu, the editor etc. To return back to the editor, level select or main menu from a saved level, only the sceneName should be assigned
+            if self.setupFunc is not None:
+                self.setupFunc(self.parent.GetParentScene().world)
             self.parent.GetParentScene().world.SetActiveScene(self.sceneName)
         
     def Decode(self, obj):
         super().Decode(obj)
         self.scenePath = obj["scenePath"]
+        self.sceneName = obj["sceneName"]
         
 class ButtonSelectable(Button):
     def __init__(self, nPoly=4, lenX=None, lenY=None, radius=0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", editor = None, componentInit = None):
