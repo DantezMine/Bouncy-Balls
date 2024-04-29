@@ -65,7 +65,7 @@ def SetupScene1(world):
     scene.AddGameObject(lvlSelectButton1)
     
     ball = GameObject.GameObject(scene)
-    ball.AddComponent(ComponentBall.BallSdlyBig(cannon,1))
+    ball.AddComponent(ComponentBall.BallNoGrav(cannon,1))
     scene.AddGameObject(ball)    
    
     

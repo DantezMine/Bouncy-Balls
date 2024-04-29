@@ -194,5 +194,57 @@ class BallSdlyBig(Ball):
         physics.mass = 1.8
         self.parent.AddComponent(ComponentCollider.ColliderCircle(radius=self.radius,tags=["Ball"]))
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/TennisBall.PNG", diameter=self.radius*2))
+
+
+class BallSdlyFast(Ball):
+    '''type : "Normal"'''
+    def __init__(self, sling, scale):
+        super().__init__(sling)
+        self.ballType = BallType.Normal
+        self.scale = scale
+        self.activated = False
         
+    def Start(self):
+        self.radius = 0.15
+        circColl = ComponentCollider.ColliderCircle(radius=self.radius,tags=["Ball"])
+        self.parent.AddComponent(circColl)
+        physics = ComponentPhysics.Physics()
+        physics.constraintPosition = True
+        physics.constraintRotation = True
+        physics.mass = 1.5
+        physics.restitution = 0.1
+        self.parent.AddComponent(physics)
+        self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/TennisBall.PNG", diameter=self.radius*2))
+    
+    def OnClick(self):
+        if self.activated == False:
+            physics = self.parent.GetComponent(ComponentType.Physics)
+            physics.AddImpulse(physics.velocity.Normalized() * physics.mass * 3)
+            self.activated = True
+        
+
+
+class BallNoGrav(Ball):
+    '''type : "Normal"'''
+    def __init__(self, sling, scale):
+        super().__init__(sling)
+        self.ballType = BallType.Normal
+        self.scale = scale
+        
+    def Start(self):
+        self.radius = 0.15
+        circColl = ComponentCollider.ColliderCircle(radius=self.radius,tags=["Ball"])
+        self.parent.AddComponent(circColl)
+        physics = ComponentPhysics.Physics()
+        physics.constraintPosition = True
+        physics.constraintRotation = True
+        physics.mass = 1.5
+        physics.restitution = 0.1
+        self.parent.AddComponent(physics)
+        self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/TennisBall.PNG", diameter=self.radius*2))
+    
+    def OnClick(self):
+        physics = self.parent.GetComponent(ComponentType.Physics)
+        physics.gravAcc *= 0
+
         
