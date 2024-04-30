@@ -6,6 +6,7 @@ from Components import ComponentStructure
 from Components import ComponentButton
 from Components import ComponentCamera
 from Components import ComponentGround
+from Components import ComponentSprite
 from Components import Component
 import GameObject
 import Scene
@@ -14,7 +15,11 @@ import math
 
 class EditorState(enum.Enum):
     Free = enum.auto()
-    Placing = enum.auto()
+    Selected = enum.auto()
+    Move = enum.auto()
+    ScaleX = enum.auto()
+    ScaleY = enum.auto()
+    Rotate = enum.auto()
     EditingObject = enum.auto()
 
 class Editor(Component.Component):
@@ -35,6 +40,10 @@ class Editor(Component.Component):
         camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1/1.0))
         self.workingScene.AddGameObject(camera)
         self.workingObject = None
+        gizmoObject = GameObject.GameObject(self.workingScene)
+        gizmoObject.AddComponent(ComponentSprite.SpriteGizmo(lenX=0.3,lenY=0.3,targetID=None))
+        self.workingScene.AddGameObject(gizmoObject)
+        self.gizmoObjectID = gizmoObject.GetID()
         
     def Update(self, deltaTime):
         camera = None
@@ -42,14 +51,15 @@ class Editor(Component.Component):
             camera = self.workingScene.camera
         except:
             pass
-        if self.state == EditorState.Placing:
+        if self.state == EditorState.Selected:
             objTransform = self.workingObject.GetComponent(ComponentType.Transform)
-            objTransform.position = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen, camera)
+            # objTransform.position = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen, camera)
         
         self.workingScene.HandleAddQueue()
         self.workingScene.HandleRemoveQueue()
         self.workingScene.ShowScene(deltaTime)
         self.CheckMouse()
+        
         
     def CreateSelectables(self):
         parentScene = self.parent.GetParentScene()
@@ -69,16 +79,16 @@ class Editor(Component.Component):
     def SelectType(self, componentInit):
         self.workingObject = GameObject.GameObject(self.workingScene)
         self.workingObject.AddComponent(componentInit())
+        self.workingObject.GetComponent(ComponentType.Transform).position = ComponentTransform.Transform.ScreenToWorldPos(Vec2(GlobalVars.foreground.get_width()/2.0,GlobalVars.foreground.get_height()/2.0),self.workingScene.camera)
         self.workingScene.AddGameObject(self.workingObject)
         self.objectIDs.append(self.workingObject.GetID())
-        self.state = EditorState.Placing
+        self.state = EditorState.Selected
         
     def PlaceObject(self):
         self.workingObject = None
         self.state = EditorState.Free
         
     def CheckMouse(self):
-        self.clickThisFrame = False
         if GlobalVars.mouseLeft:
             self.OnLeftClick()
         if GlobalVars.mouseMid:
@@ -95,7 +105,9 @@ class Editor(Component.Component):
         if GlobalVars.mouseChanged:
             if self.state == EditorState.Free:
                 self.SelectObject()
-            elif self.state == EditorState.Placing:
+            elif self.state == EditorState.Selected:
+                if self.SelectGizmo():
+                    return
                 self.PlaceObject()
             
     def MoveCamera(self): #function jiggles aroung the more zoomed out it is, probably because camera moves but is also used for screen to world transform
@@ -129,7 +141,15 @@ class Editor(Component.Component):
         
         if intersection:
             self.workingObject = self.workingScene.GameObjectWithID(ID)
-            self.state = EditorState.Placing
+            gizmoSprite = self.workingScene.GameObjectWithID(self.gizmoObjectID).GetComponent(ComponentType.Sprite)
+            gizmoSprite.targetID = self.gizmoObjectID
+            gizmoSprite.gizmoVal = 0
+            self.state = EditorState.Selected
+            
+    def SelectGizmo(self):
+        pass
+        gizmoSprite = self.workingScene.GameObjectWithID(self.gizmoObjectID).GetComponent(ComponentType.Sprite)
+        gizmoSprite.gizmoVal = 0
     
     def CheckIntersection(self, point, comp):
         verts = list()

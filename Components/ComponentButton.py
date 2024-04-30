@@ -42,7 +42,7 @@ class Button(Component.Component):
         self.transform.position = self.initPos
         self.verts = self.GetVertices()
         
-        self.parent.AddComponent(ComponentSprite.Sprite(self.spritePath, lenX=self.lenX, lenY=self.lenY))
+        self.parent.AddComponent(ComponentSprite.SpriteUI(self.spritePath, lenX=self.lenX, lenY=self.lenY))
         
     def Update(self, deltaTime):
         self.verts = self.GetVertices()
@@ -191,4 +191,4 @@ class ButtonSelectable(Button):
         img = Image.frombytes('RGBA', (width,height), imageData)
         img.save("Bouncy-Balls/data/" + self.spritePath[:-4] + "Button.png",'PNG')
         
-        self.parent.AddComponent(ComponentSprite.Sprite("data/" + self.spritePath[:-4] + "Button.png", lenX=self.lenX, lenY=self.lenY))
+        self.parent.AddComponent(ComponentSprite.SpriteUI("data/" + self.spritePath[:-4] + "Button.png", lenX=self.lenX, lenY=self.lenY))

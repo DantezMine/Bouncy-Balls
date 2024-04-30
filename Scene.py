@@ -201,6 +201,8 @@ class Scene:
                 return ComponentSprite.Sprite
             elif spriteType == ComponentSprite.SpriteType.Background.value:
                 return ComponentSprite.SpriteBackground
+            elif spriteType == ComponentSprite.SpriteType.UI.value:
+                return ComponentSprite.SpriteUI
         if ctype == ComponentType.Structure.value:
             structureType = component["structureType"]
             if structureType == ComponentStructure.StructureType.Metal.value:
