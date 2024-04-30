@@ -111,7 +111,7 @@ class SpriteGizmo(Sprite):
         #World Space
         topLeft = (Vec2(self.lenX,-self.lenY)/(sceneCam.scale*2.0)).Rotate(targetTransform.rotation)
         botLeft = (Vec2(self.lenX, self.lenY)/(sceneCam.scale*2.0)).Rotate(targetTransform.rotation)
-        #get extrems of AABB
+        #get extremes of AABB
         dx = max(abs(topLeft.x),abs(botLeft.x))
         dy = max(abs(topLeft.y),abs(botLeft.y))
         xWorld = targetTransform.position.x-dx
