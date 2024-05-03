@@ -17,7 +17,7 @@ class GroundType(enum.Enum):
                 return member
 
 class Ground(Component.Component):
-    def __init__(self, position = Vec2(0,0), lenX = 50, lenY = 50, rotation = 0.0):
+    def __init__(self, position = Vec2(0,0), lenX = 1, lenY = 1, rotation = 0.0):
         self.name = ComponentType.Ground
         self.parent = None
 
@@ -47,7 +47,7 @@ class Ground(Component.Component):
         self.initRot = obj["initRot"]
         
 class GroundDirt(Ground):
-    def __init__(self, position=Vec2(0, 0), lenX=50, lenY=50, rotation=0.0):
+    def __init__(self, position=Vec2(0, 0), lenX=2, lenY=1, rotation=0.0):
         super().__init__(position, lenX, lenY, rotation)
         self.groundType = GroundType.Dirt
     

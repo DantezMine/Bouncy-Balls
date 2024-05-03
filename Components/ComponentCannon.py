@@ -4,7 +4,7 @@ from Components import ComponentSprite
 from Components import Component
 import GameObject
 from Vector import Vec2
-from lib import GlobalVars
+import GlobalVars
 import pygame
 import math
 

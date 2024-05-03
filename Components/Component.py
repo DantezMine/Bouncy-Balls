@@ -40,7 +40,8 @@ class Component(object):
             return varValue.GetID()
     
     def Decode(self,obj):
-        self.started = obj["started"]
+        pass
+        #self.started = obj["started"]
     
 class ComponentType(enum.Enum):
     Transform = enum.auto()
@@ -57,6 +58,7 @@ class ComponentType(enum.Enum):
     Button = enum.auto()
     Slider = enum.auto()
     Base = enum.auto()
+    Editor = enum.auto()
     
     def GetType(compType):
         members = list(vars(ComponentType).values())

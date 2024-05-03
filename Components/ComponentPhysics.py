@@ -5,7 +5,7 @@ from Components import Component
 from Components import ComponentCollider
 from Components import ComponentPhysics
 from Components.Component import ComponentType
-from lib import GlobalVars
+import GlobalVars
 
 class PhysicsState:
     def __init__(self, physics):

@@ -1,7 +1,8 @@
 import json
 from . import Component
 from Vector import Vec2
-from lib import GlobalVars
+import GlobalVars
+from Components.Component import ComponentType
 
 class TransformState:
     def __init__(self, transform):
@@ -34,15 +35,17 @@ class Transform(Component.Component):
     def WorldToScreenPos(pos,camera):
         width = GlobalVars.screen.get_width()
         height = GlobalVars.screen.get_height()
-        xScreen =        (pos.x*camera.scale + 1)*width /2.0
-        yScreen = height-(pos.y*camera.scale + 1)*height/2.0
+        camTransf = camera.parent.GetComponent(ComponentType.Transform)
+        xScreen =        ((pos.x-camTransf.position.x)*camera.scale + 1)*width /2.0
+        yScreen = height-((pos.y-camTransf.position.y)*camera.scale + 1)*height/2.0
         return Vec2(xScreen,yScreen)
     
     def ScreenToWorldPos(pos,camera):
         width = GlobalVars.screen.get_width()
         height = GlobalVars.screen.get_height()
-        xWorld = (pos.x*2.0/width - 1)/camera.scale
-        yWorld = ((height-pos.y)*2.0/height - 1)/camera.scale
+        camTransf = camera.parent.GetComponent(ComponentType.Transform)
+        xWorld = (pos.x*2.0/width - 1)/camera.scale + camTransf.position.x
+        yWorld = ((height-pos.y)*2.0/height - 1)/camera.scale + camTransf.position.y
         return Vec2(xWorld,yWorld)
     
     def SaveState(self):
