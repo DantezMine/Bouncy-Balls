@@ -23,7 +23,7 @@ def SetupScene1(world):
     scene.AddGameObject(background)
     
     camera = GameObject.GameObject(scene)
-    camera.AddComponent(ComponentCamera.Camera(Vec2(0,0),1.0/3.0))
+    camera.AddComponent(ComponentCamera.Camera(Vec2(0,0),1.0/2.0))
     scene.AddGameObject(camera)
     
     struct1 = GameObject.GameObject(scene)
@@ -64,7 +64,7 @@ def SetupScene1(world):
     
     lvlSelectButton1 = GameObject.GameObject(scene)
     lvlSelectButton1.AddComponent(ComponentButton.ButtonLevel(nPoly=4,radius=0.5,position=Vec2(-2.5,2.5),scenePath="Levels/levelSelect.json"))
-    scene.AddGameObject(lvlSelectButton1)
+    #scene.AddGameObject(lvlSelectButton1)
     
     # for i in range(10):
         # struct = GameObject.GameObject(scene)
