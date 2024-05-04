@@ -14,6 +14,7 @@ import math
 class BallType(enum.Enum):
     Bouncy = enum.auto()
     Heavy = enum.auto()
+
     
     def Decode(value):
         members = list(vars(BallType).values())
@@ -52,13 +53,11 @@ class Ball(Component.Component):
         self.parent.GetComponent(ComponentType.Collider).DisplayCollider()
         if self.state == "Origin":
             transform.position = slingTransform.position
-        if GlobalVars.mousePressed:
-            if self.state == "Origin" and GlobalVars.mouseLeft:
-                self.mousePosStart = mousePosWorld
+        if GlobalVars.mousePressed and GlobalVars.mouseLeft:
+            if self.state == "Origin" :
                 self.state = "Dragged"
             if self.state == "Dragged" and mousePosWorld:
-                mousePos = mousePosWorld
-                deltaVec = slingTransform.position - mousePosWorld
+                deltaVec = transform.position - mousePosWorld
                 delta = deltaVec.Mag()
                 deltaNorm = deltaVec.Normalized()
                 transform.position = slingTransform.position + deltaNorm * 0.25
@@ -69,7 +68,7 @@ class Ball(Component.Component):
         if not GlobalVars.mousePressed:
              if self.state == "Dragged":
                 self.state = "Released"
-                deltaVec = self.mousePosStart - mousePosWorld
+                deltaVec = transform.position - mousePosWorld
                 delta = deltaVec.Mag()
                 deltaNorm = deltaVec.Normalized()
                 impulse = deltaNorm * math.log(1.5*delta + 1) * self.slingD
