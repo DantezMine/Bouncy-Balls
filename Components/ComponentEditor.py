@@ -79,12 +79,12 @@ class Editor(Component.Component):
         self.workingScene.AddGameObject(self.workingObject)
         self.objectIDs.append(self.workingObject.GetID())
         gizmoSprite = self.workingScene.GameObjectWithID(self.gizmoObjectID).GetComponent(ComponentType.Sprite)
-        self.gizmoObjectID = self.workingObject.GetID()
-        gizmoSprite.targetID = self.gizmoObjectID
+        gizmoSprite.targetID = self.workingObject.GetID()
         gizmoSprite.gizmoVal = 0
         self.state = EditorState.Selected
         
     def PlaceObject(self):
+        self.workingScene.GameObjectWithID(self.gizmoObjectID).GetComponent(ComponentType.Sprite).targetID = None
         self.workingObject = None
         self.state = EditorState.Free
         
@@ -92,9 +92,9 @@ class Editor(Component.Component):
         if GlobalVars.mouseLeft:
             self.OnLeftClick()
         else:
-            self.workingScene.GameObjectWithID(self.gizmoObjectID).GetComponent(ComponentType.Sprite).gizmoVal = 0
             if self.state == EditorState.Move or self.state == EditorState.Rotate or self.state == EditorState.ScaleX or self.state == EditorState.ScaleY:
                 self.state = EditorState.Selected
+        #     self.workingScene.GameObjectWithID(self.gizmoObjectID).GetComponent(ComponentType.Sprite).gizmoVal = 0
         if GlobalVars.mouseMid:
             if self.startDrag is None:
                 self.startDrag = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen, self.workingScene.camera)
@@ -107,12 +107,12 @@ class Editor(Component.Component):
             
     def OnLeftClick(self):
         if GlobalVars.mouseChanged:
-            if self.state == EditorState.Free:
-                self.SelectObject()
-            elif self.state == EditorState.Selected:
+            if self.workingObject is not None:
                 if self.SelectGizmo():
                     return
                 self.PlaceObject()
+            if self.SelectObject():
+                return
             
     def MoveCamera(self): #function jiggles aroung the more zoomed out it is, probably because camera moves but is also used for screen to world transform
         drag = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen, self.workingScene.camera) - self.startDrag
@@ -146,10 +146,11 @@ class Editor(Component.Component):
         if intersection:
             self.workingObject = self.workingScene.GameObjectWithID(ID)
             gizmoSprite = self.workingScene.GameObjectWithID(self.gizmoObjectID).GetComponent(ComponentType.Sprite)
-            self.gizmoObjectID = self.workingObject.GetID()
-            gizmoSprite.targetID = self.gizmoObjectID
+            gizmoSprite.targetID = self.workingObject.GetID()
             gizmoSprite.gizmoVal = 0
             self.state = EditorState.Selected
+            return True
+        return False
             
     def SelectGizmo(self):
         gizmoSprite = self.workingScene.GameObjectWithID(self.gizmoObjectID).GetComponent(ComponentType.Sprite)

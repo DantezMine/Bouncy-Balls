@@ -5,7 +5,7 @@ import pygame
 def RunSetup(world):
     GlobalVars.debug = False
     GlobalVars.updateFrequency = 10
-    size = (1000,1000)
+    size = (800,800)
 
     '''pygame setup'''
     pygame.init()
