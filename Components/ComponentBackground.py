@@ -11,7 +11,7 @@ class BackgroundType(enum.Enum):
     
     def Decode(value):
         members = list(vars(BackgroundType).values())
-        members = members[8:len(members)-1]
+        members = members[12:len(members)-1]
         for member in members:
             if value == member.value:
                 return member

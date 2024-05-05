@@ -48,7 +48,11 @@ class Cannon(Component.Component):
         if self.mousePressed:
             if self.mouseLeft:
                 delta = mousePosWorld - self.initPos
-                self.rotation = math.atan(float(delta.y)/float(delta.x)) - 0.35
+                if delta.x != 0 and delta.y != 0:
+                    self.rotation = math.atan(float(delta.y)/float(delta.x)) - 0.35
+                else:
+                    print("congrats, you crashed the game")
+                    GlobalVars.running = False
                 if delta.x > 0:
                     self.rotation += math.pi
                 transform.rotation = self.rotation
