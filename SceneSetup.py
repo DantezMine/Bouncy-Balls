@@ -24,7 +24,7 @@ def SetupScene1(world):
     scene.AddGameObject(background)
     
     camera = GameObject.GameObject(scene)
-    camera.AddComponent(ComponentCamera.Camera(Vec2(0,0),1.0/3.0, Vec2(4,4)))
+    camera.AddComponent(ComponentCamera.Camera(Vec2(0,0),1.0/2.0, Vec2(12,12)))
     scene.AddGameObject(camera)
     
     struct1 = GameObject.GameObject(scene)

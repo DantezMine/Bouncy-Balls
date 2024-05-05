@@ -23,9 +23,11 @@ class Camera(Component.Component):
             if self.boundLen.y >= self.minimalBound.y:
                 self.scene = self.parent.GetParentScene()
                 balls = self.scene.GetObjectsWithComponent(ComponentType.Ball)
+                ballPosition = None
                 for ball in balls:
                     ballPosition = ball.GetComponent(ComponentType.Transform).position
-                self.MoveCamera(ballPosition)
+                if ballPosition is not None:
+                    self.MoveCamera(ballPosition)
         
     def EnforceBounds(self):
         def sign(x):
@@ -51,3 +53,6 @@ class Camera(Component.Component):
         super().Decode(obj)
         self.scale = obj["scale"]
         self.initPos = Vec2.FromList(obj["initPos"])
+        self.boundLen = Vec2.FromList(obj["boundLen"]) if isinstance(obj["boundLen"],list) else obj["boundLen"]
+        self.minimalBound = Vec2(2/self.scale,2/self.scale)
+        self.boundLen = self.minimalBound if self.boundLen is None else self.boundLen

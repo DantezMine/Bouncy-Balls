@@ -18,5 +18,5 @@ def RunSetup(world):
     GlobalVars.clock = pygame.time.Clock()
     GlobalVars.running = True
 
-    SceneSetup.SetupScene1(world)
+    SceneSetup.SetupLevelSelect(world)
     GlobalVars.frameCount = 0
