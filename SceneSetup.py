@@ -65,7 +65,7 @@ def SetupScene1(world):
     #scene.AddGameObject(slider1)
     
     lvlSelectButton1 = GameObject.GameObject(scene)
-    lvlSelectButton1.AddComponent(ComponentButton.ButtonLevel(nPoly=4,radius=0.5,position=Vec2(-2.5,2.5),scenePath="Levels/levelSelect.json"))
+    lvlSelectButton1.AddComponent(ComponentButton.ButtonScene(nPoly=4,radius=0.5,position=Vec2(-2.5,2.5),scenePath="Levels/levelSelect.json"))
     #scene.AddGameObject(lvlSelectButton1)
     
 def SetupLevelSelect(world):
@@ -81,22 +81,22 @@ def SetupLevelSelect(world):
     scene.AddGameObject(camera)
     
     # lvlButton1 = GameObject.GameObject(scene)
-    # lvlButton1.AddComponent(ComponentButton.ButtonLevel(nPoly=4,radius=0.2,position=Vec2(-0.7,0.7),scenePath="Levels/levelTest.json"))
+    # lvlButton1.AddComponent(ComponentButton.ButtonScene(nPoly=4,radius=0.2,position=Vec2(-0.7,0.7),scenePath="Levels/levelTest.json"))
     # scene.AddGameObject(lvlButton1)
     
-    x = 0
     i = 0
+    rows = 4
+    cols = 4
     lvlButtons = []
-    Levels = listdir("Bouncy-Balls\Levels")
-    for Level in Levels:
-        lvlButtons.append(f'lvlButton{x}')
-        lvlButtons[x] = GameObject.GameObject(scene)
-        lvlButtons[x].AddComponent(ComponentButton.ButtonScene(nPoly=4,radius=0.2,position=Vec2(-0.75+(x*0.5),0.75-(i*0.5)),scenePath="Levels/%s" % Level))
-        scene.AddGameObject(lvlButtons[x])
-        i += 1 if x == 3 else i
-        x = x + 1 if x != 3 else 0
-        if i == 4:
-            break
+    levels = listdir("Bouncy-Balls\Levels")
+    for i in range(len(levels)):
+        x = i % rows
+        y = i // cols
+        level = levels[i]
+        lvlButtons.append(f'lvlButton{i}')
+        lvlButtons[i] = GameObject.GameObject(scene)
+        lvlButtons[i].AddComponent(ComponentButton.ButtonScene(nPoly=4,radius=0.2,position=Vec2(-0.75+(x*0.5),0.75-(y*0.5)),scenePath="Levels/%s" %level))
+        scene.AddGameObject(lvlButtons[i])
 
 def SetupMainMenu(world):
     scene = Scene.Scene("mainMenu")
@@ -150,6 +150,6 @@ def SetupSettings(world):
     camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1,boundLen=Vec2(10,10)))
     scene.AddGameObject(camera)
     
-    exitButton = GameObject.GameObject(scene)
-    exitButton.AddComponent(ComponentButton.ButtonScene(nPoly=4, lenX=0.15, lenY=0.15, position=Vec2(-0.8,0.8), setupFunc=SetupMainMenu, sceneName="mainMenu", spritePath="data/ButtonLocked.png"))
-    scene.AddGameObject(exitButton)
+    returnButton = GameObject.GameObject(scene)
+    returnButton.AddComponent(ComponentButton.ButtonScene(nPoly=4, lenX=0.15, lenY=0.15, position=Vec2(-0.8,0.8), setupFunc=SetupMainMenu, sceneName="mainMenu", spritePath="data/ButtonLocked.png", onEscape=True))
+    scene.AddGameObject(returnButton)

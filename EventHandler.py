@@ -7,6 +7,7 @@ def HandleEvents():
     GlobalVars.mousePosScreen = Vec2.FromList(pygame.mouse.get_pos())
     GlobalVars.scrollEvent = None
     
+    GlobalVars.escapeKey = False
     GlobalVars.mouseChanged = False
     for event in GlobalVars.events:
         if event.type == pygame.QUIT:

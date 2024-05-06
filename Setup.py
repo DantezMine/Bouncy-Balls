@@ -27,6 +27,5 @@ def RunSetup(world):
     GlobalVars.running = True
 
     SceneSetup.SetupMainMenu(world)
-    # SceneSetup.SetupLevelSelect(world)
     # SceneSetup.SetupScene1(world)
     GlobalVars.frameCount = 0

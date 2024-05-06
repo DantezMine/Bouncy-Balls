@@ -24,7 +24,7 @@ class ButtonType(enum.Enum):
                 return member
 
 class Button(Component.Component):
-    def __init__(self, nPoly = 4, lenX = None, lenY = None, radius = 0.2, position = Vec2(0,0), spritePath="data/ButtonLocked.png", key = None):
+    def __init__(self, nPoly = 4, lenX = None, lenY = None, radius = 0.2, position = Vec2(0,0), spritePath="data/ButtonLocked.png", onEscape = False):
         '''If lenX and lenY aren't specified, 2*radius is chosen for both sidelengths'''
         self.name = ComponentType.Button
         
@@ -37,6 +37,7 @@ class Button(Component.Component):
         self.animate = False
         self.buttonType = ButtonType.Button
         self.spritePath = spritePath
+        self.onEscape = onEscape
         
     def Start(self):
         self.transform = self.parent.GetComponent(ComponentType.Transform)
@@ -53,9 +54,7 @@ class Button(Component.Component):
             self.Animate()
 
     def CheckClick(self):
-        print(GlobalVars.escapeKey)
-        if GlobalVars.escapeKey:
-            print("clicked")
+        if self.onEscape and GlobalVars.escapeKey:
             self.OnClick()
         if GlobalVars.mouseLeft:
             mousePosWorld = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen,self.parent.GetParentScene().camera)
@@ -124,11 +123,12 @@ class Button(Component.Component):
         self.animScale = obj["animScale"]
         self.initPos = Vec2.FromList(obj["initPos"])
         self.buttonType = ButtonType.Decode(obj["buttonType"])
+        self.onEscape = obj["onEscape"]
         
 class ButtonScene(Button):
-    def __init__(self, nPoly=4, lenX = None, lenY = None, radius = 0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", scenePath = None, setupFunc = None, sceneName = None, key = None):
+    def __init__(self, nPoly=4, lenX = None, lenY = None, radius = 0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", scenePath = None, setupFunc = None, sceneName = None, onEscape = False):
         '''Since the setup func cannot be saved, it can only be used on scenes that don't get saved, e.g. the main menu, the editor, level select. To return back to the editor, level select or main menu from a saved level, only the sceneName should be assigned.'''
-        super().__init__(nPoly, lenX, lenY, radius, position, spritePath, key)
+        super().__init__(nPoly, lenX, lenY, radius, position, spritePath, onEscape)
         self.scenePath = scenePath
         self.setupFunc = setupFunc
         self.sceneName = sceneName
@@ -156,8 +156,8 @@ class ButtonScene(Button):
         self.sceneName = obj["sceneName"]
         
 class ButtonSelectable(Button):
-    def __init__(self, nPoly=4, lenX=None, lenY=None, radius=0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", editor = None, componentInit = None, key = None):
-        super().__init__(nPoly, lenX, lenY, radius, position, spritePath, key)
+    def __init__(self, nPoly=4, lenX=None, lenY=None, radius=0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", editor = None, componentInit = None, onEscape = False):
+        super().__init__(nPoly, lenX, lenY, radius, position, spritePath, onEscape)
         self.buttonType = ButtonType.Selectable
         self.editor = editor
         self.componentInit = componentInit
