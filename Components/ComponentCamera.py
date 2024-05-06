@@ -27,7 +27,8 @@ class Camera(Component.Component):
                     balls = self.scene.GetObjectsWithComponent(ComponentType.Ball)
                     ballPosition = None
                     for ball in balls:
-                        ballPosition = ball.GetComponent(ComponentType.Transform).position
+                        if ball.GetComponent(ComponentType.Ball).state == "Released":
+                            ballPosition = ball.GetComponent(ComponentType.Transform).position
                     if ballPosition is not None:
                         self.MoveCamera(ballPosition)
         
