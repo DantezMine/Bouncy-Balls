@@ -62,7 +62,7 @@ class ComponentType(enum.Enum):
     
     def GetType(compType):
         members = list(vars(ComponentType).values())
-        members = members[8:len(members)-1]
+        members = members[12:len(members)-1]
         for ctype in members:
             if compType == ctype.value:
                 return ctype
