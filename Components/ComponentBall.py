@@ -75,7 +75,7 @@ class Ball(Component.Component):
                 physics.constraintPosition = False
                 physics.constraintRotation = False
                 physics.AddImpulse(impulse)
-       
+
     def ProjectPath(self, steps, impulse):
         path = self.GetPath(steps, impulse)
         camera = self.parent.GetParentScene().camera
