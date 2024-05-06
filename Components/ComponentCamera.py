@@ -23,10 +23,9 @@ class Camera(Component.Component):
             if self.boundLen.y >= self.minimalBound.y:
                 self.scene = self.parent.GetParentScene()
                 balls = self.scene.GetObjectsWithComponent(ComponentType.Ball)
-                ballPosition = None
-                for ball in balls:
-                    ballPosition = ball.GetComponent(ComponentType.Transform).position
-                if ballPosition is not None:
+                if balls != []:
+                    for ball in balls:
+                        ballPosition = ball.GetComponent(ComponentType.Transform).position
                     self.MoveCamera(ballPosition)
         
     def EnforceBounds(self):

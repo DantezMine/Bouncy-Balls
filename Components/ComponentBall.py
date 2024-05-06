@@ -15,7 +15,6 @@ class BallType(enum.Enum):
     Bouncy = enum.auto()
     Heavy = enum.auto()
 
-    
     def Decode(value):
         members = list(vars(BallType).values())
         members = members[GlobalVars.membersOffset:len(members)-1]

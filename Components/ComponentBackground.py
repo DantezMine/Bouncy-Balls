@@ -14,6 +14,7 @@ class BackgroundType(enum.Enum):
         members = list(vars(BackgroundType).values())
         members = members[GlobalVars.membersOffset:len(members)-1]
         for member in members:
+            print(member)
             if value == member.value:
                 return member
 
