@@ -169,8 +169,8 @@ class Scene:
             buttonType = component["buttonType"]
             if buttonType == ComponentButton.ButtonType.Button.value:
                 return ComponentButton.Button
-            if buttonType == ComponentButton.ButtonType.Level.value:
-                return ComponentButton.ButtonLevel
+            if buttonType == ComponentButton.ButtonType.Scene.value:
+                return ComponentButton.ButtonScene
             if buttonType == ComponentButton.ButtonType.Selectable.value:
                 return ComponentButton.ButtonSelectable
         if ctype == ComponentType.Camera.value:

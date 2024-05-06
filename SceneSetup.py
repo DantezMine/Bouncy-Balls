@@ -2,6 +2,7 @@ import Scene
 import GameObject
 from Vector import Vec2
 import GlobalVars
+from os import listdir
 from Components import ComponentStructure
 from Components import ComponentSlider
 from Components import ComponentBall
@@ -79,10 +80,23 @@ def SetupLevelSelect(world):
     camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1))
     scene.AddGameObject(camera)
     
-    lvlButton1 = GameObject.GameObject(scene)
-    lvlButton1.AddComponent(ComponentButton.ButtonLevel(nPoly=4,radius=0.2,position=Vec2(-0.7,0.7),scenePath="Levels/levelTest.json"))
-    scene.AddGameObject(lvlButton1)
+    # lvlButton1 = GameObject.GameObject(scene)
+    # lvlButton1.AddComponent(ComponentButton.ButtonLevel(nPoly=4,radius=0.2,position=Vec2(-0.7,0.7),scenePath="Levels/levelTest.json"))
+    # scene.AddGameObject(lvlButton1)
     
+    x = 0
+    i = 0
+    lvlButtons = []
+    Levels = listdir("Bouncy-Balls\Levels")
+    for Level in Levels:
+        lvlButtons.append(f'lvlButton{x}')
+        lvlButtons[x] = GameObject.GameObject(scene)
+        lvlButtons[x].AddComponent(ComponentButton.ButtonScene(nPoly=4,radius=0.2,position=Vec2(-0.75+(x*0.5),0.75-(i*0.5)),scenePath="Levels/%s" % Level))
+        scene.AddGameObject(lvlButtons[x])
+        i += 1 if x == 3 else i
+        x = x + 1 if x != 3 else 0
+        if i == 4:
+            break
 
 def SetupMainMenu(world):
     scene = Scene.Scene("mainMenu")
@@ -97,12 +111,16 @@ def SetupMainMenu(world):
     scene.AddGameObject(camera)
     
     levelSelectButton = GameObject.GameObject(scene)
-    levelSelectButton.AddComponent(ComponentButton.ButtonLevel(nPoly=4,lenX=0.5, lenY=0.15, position=Vec2(0,0.1), scenePath="Levels/levelSelect.json", spritePath="data/ButtonStart.png"))
+    levelSelectButton.AddComponent(ComponentButton.ButtonScene(nPoly=4,lenX=0.5, lenY=0.15, position=Vec2(0,0.1), setupFunc=SetupLevelSelect, sceneName="levelSelect", spritePath="data/ButtonStart.png"))
     scene.AddGameObject(levelSelectButton)
     
     levelEditorButton = GameObject.GameObject(scene)
-    levelEditorButton.AddComponent(ComponentButton.ButtonLevel(nPoly=4,lenX=0.5, lenY=0.15, position=Vec2(0,-0.1), setupFunc=SetupEditor, sceneName="editor", spritePath="data/ButtonEditor.png"))
+    levelEditorButton.AddComponent(ComponentButton.ButtonScene(nPoly=4,lenX=0.5, lenY=0.15, position=Vec2(0,-0.1), setupFunc=SetupEditor, sceneName="editor", spritePath="data/ButtonEditor.png"))
     scene.AddGameObject(levelEditorButton)
+    
+    settingsButton = GameObject.GameObject(scene)
+    settingsButton.AddComponent(ComponentButton.ButtonScene(nPoly=4,lenX=0.15, lenY=0.15, position=Vec2(0.8,0.8), setupFunc=SetupSettings, sceneName="settings", spritePath="data/ButtonLocked.png"))
+    scene.AddGameObject(settingsButton)
     
 def SetupEditor(world):
     scene = Scene.Scene("editor")
@@ -119,3 +137,19 @@ def SetupEditor(world):
     editor = GameObject.GameObject(scene)
     editor.AddComponent(ComponentEditor.Editor())
     scene.AddGameObject(editor)
+    
+def SetupSettings(world):
+    scene = Scene.Scene("settings")
+    world.AddScene(scene)
+    
+    background = GameObject.GameObject(scene)
+    background.AddComponent(ComponentBackground.BackgroundNature(position=Vec2(0,0),lenX=1,lenY=1))
+    scene.AddGameObject(background)
+    
+    camera = GameObject.GameObject(scene)
+    camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1,boundLen=Vec2(10,10)))
+    scene.AddGameObject(camera)
+    
+    exitButton = GameObject.GameObject(scene)
+    exitButton.AddComponent(ComponentButton.ButtonScene(nPoly=4, lenX=0.15, lenY=0.15, position=Vec2(-0.8,0.8), setupFunc=SetupMainMenu, sceneName="mainMenu", spritePath="data/ButtonLocked.png"))
+    scene.AddGameObject(exitButton)

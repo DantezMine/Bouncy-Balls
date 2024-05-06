@@ -11,9 +11,10 @@ import GlobalVars
 from Vector import Vec2
 
 class ButtonType(enum.Enum):
-    Level = enum.auto()
+    Scene = enum.auto()
     Button = enum.auto()
     Selectable = enum.auto()
+    Exit = enum.auto()
     
     def Decode(value):
         members = list(vars(ButtonType).values())
@@ -23,7 +24,7 @@ class ButtonType(enum.Enum):
                 return member
 
 class Button(Component.Component):
-    def __init__(self, nPoly = 4, lenX = None, lenY = None, radius = 0.2, position = Vec2(0,0), spritePath="data/ButtonLocked.png"):
+    def __init__(self, nPoly = 4, lenX = None, lenY = None, radius = 0.2, position = Vec2(0,0), spritePath="data/ButtonLocked.png", key = None):
         '''If lenX and lenY aren't specified, 2*radius is chosen for both sidelengths'''
         self.name = ComponentType.Button
         
@@ -52,6 +53,10 @@ class Button(Component.Component):
             self.Animate()
 
     def CheckClick(self):
+        print(GlobalVars.escapeKey)
+        if GlobalVars.escapeKey:
+            print("clicked")
+            self.OnClick()
         if GlobalVars.mouseLeft:
             mousePosWorld = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen,self.parent.GetParentScene().camera)
             if self.PointInPolygon(mousePosWorld):
@@ -119,14 +124,14 @@ class Button(Component.Component):
         self.initPos = Vec2.FromList(obj["initPos"])
         self.buttonType = ButtonType.Decode(obj["buttonType"])
         
-class ButtonLevel(Button):
-    def __init__(self, nPoly=4, lenX = None, lenY = None, radius = 0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", scenePath = None, setupFunc = None, sceneName = None):
+class ButtonScene(Button):
+    def __init__(self, nPoly=4, lenX = None, lenY = None, radius = 0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", scenePath = None, setupFunc = None, sceneName = None, key = None):
         '''Since the setup func cannot be saved, it can only be used on scenes that don't get saved, e.g. the main menu, the editor, level select. To return back to the editor, level select or main menu from a saved level, only the sceneName should be assigned.'''
-        super().__init__(nPoly, lenX, lenY, radius, position, spritePath)
+        super().__init__(nPoly, lenX, lenY, radius, position, spritePath, key)
         self.scenePath = scenePath
         self.setupFunc = setupFunc
         self.sceneName = sceneName
-        self.buttonType = ButtonType.Level
+        self.buttonType = ButtonType.Scene
         
     def EndOfClick(self):
         import Scene
@@ -150,8 +155,8 @@ class ButtonLevel(Button):
         self.sceneName = obj["sceneName"]
         
 class ButtonSelectable(Button):
-    def __init__(self, nPoly=4, lenX=None, lenY=None, radius=0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", editor = None, componentInit = None):
-        super().__init__(nPoly, lenX, lenY, radius, position, spritePath)
+    def __init__(self, nPoly=4, lenX=None, lenY=None, radius=0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", editor = None, componentInit = None, key = None):
+        super().__init__(nPoly, lenX, lenY, radius, position, spritePath, key)
         self.buttonType = ButtonType.Selectable
         self.editor = editor
         self.componentInit = componentInit

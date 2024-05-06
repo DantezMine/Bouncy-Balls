@@ -1,4 +1,5 @@
 import pygame
+import enum
 from Vector import Vec2
 
 membersOffset : int = 8
@@ -14,6 +15,7 @@ UILayer : pygame.Surface = None
 clock = None
 running : bool = False
 updateFrequency : int = 1
+escapeKey : bool = False
 
 mousePosScreen : Vec2 = None
 mouseChanged : bool = False
