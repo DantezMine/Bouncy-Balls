@@ -41,9 +41,9 @@ class Sprite(Component.Component):
         height = GlobalVars.screen.get_height()
         
         #World Space
-        topLeft = (Vec2(self.lenX,-self.lenY)*(parentTransform.scale/2.0)).Rotate(parentTransform.rotation)
-        botLeft = (Vec2(self.lenX, self.lenY)*(parentTransform.scale/2.0)).Rotate(parentTransform.rotation)
-        #get extrems of AABB
+        topLeft = (Vec2(self.lenX*parentTransform.scale.x,-self.lenY*parentTransform.scale.y)/2.0).Rotate(parentTransform.rotation)
+        botLeft = (Vec2(self.lenX*parentTransform.scale.x, self.lenY*parentTransform.scale.y)/2.0).Rotate(parentTransform.rotation)
+        #get extremes of AABB
         dx = max(abs(topLeft.x),abs(botLeft.x))
         dy = max(abs(topLeft.y),abs(botLeft.y))
         xWorld = parentTransform.position.x-dx
@@ -53,7 +53,7 @@ class Sprite(Component.Component):
         vScreen = ComponentTransform.Transform.WorldToScreenPos(Vec2(xWorld,yWorld), sceneCam)
         xScreen = vScreen.x
         yScreen = vScreen.y
-        screenScale = Vec2(self.lenX*width,self.lenY*height) * (parentTransform.scale * sceneCam.scale / 2.0)
+        screenScale = Vec2(self.lenX*width*parentTransform.scale.x,self.lenY*height*parentTransform.scale.y) * (sceneCam.scale / 2.0)
                 
         image = pygame.transform.scale(self.sprite,(screenScale.x,screenScale.y))
         image = pygame.transform.rotate(image,parentTransform.rotation*180.0/math.pi)

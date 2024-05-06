@@ -78,10 +78,11 @@ class Button(Component.Component):
         t = (time.time()-self.clickStart)/self.animDuration
         if t > 1:
             self.animate = False
-            self.transform.scale = 1
+            self.transform.scale.Normalize()
             self.EndOfClick()
             return
-        self.transform.scale = 1 + self.animScale * math.sin(math.pi * self.EaseOutQuint(t))
+        self.transform.scale.Normalize()
+        self.transform.scale *= 1 + self.animScale * math.sin(math.pi * self.EaseOutQuint(t))
         
     def PointInPolygon(self,point):
         inside = True
@@ -98,7 +99,7 @@ class Button(Component.Component):
         verts = list()
         deltaPhi = 2*math.pi/self.nPoly
         for i in range(self.nPoly):
-            verts.append(self.transform.position + Vec2(math.cos(deltaPhi*i+deltaPhi/2.0)*self.lenX/2.0, math.sin(deltaPhi*i+deltaPhi/2.0)*self.lenY/2.0))
+            verts.append(self.transform.position + Vec2(math.cos(deltaPhi*i+deltaPhi/2.0)*self.transform.scale.x*self.lenX/2.0, math.sin(deltaPhi*i+deltaPhi/2.0)*self.transform.scale.y*self.lenY/2.0))
         return verts
     
     def DisplayButtonOutline(self, color):

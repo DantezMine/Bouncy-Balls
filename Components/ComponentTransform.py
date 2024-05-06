@@ -19,7 +19,7 @@ class Transform(Component.Component):
         
         self.position = Vec2(0,0)
         self.rotation = 0 #in radians
-        self.scale = 1
+        self.scale = Vec2(1,1)
         self.up = Vec2(0,-1)
         self.forward = Vec2(1,0)
     
@@ -62,6 +62,6 @@ class Transform(Component.Component):
         super().Decode(obj)
         self.position = Vec2.FromList(obj["position"])
         self.rotation = obj["rotation"]
-        self.scale = obj["scale"]
+        self.scale = Vec2.FromList(obj["scale"])
         self.up = Vec2.FromList(obj["up"])
         self.forward = Vec2.FromList(obj["forward"])

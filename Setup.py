@@ -8,6 +8,7 @@ def RunSetup(world):
     GlobalVars.updateFrequency = 10
     size = (800,800)
     
+    #vars(object) behaves slightly differently in different python versions
     if sys.version_info[0] == 3:
         if sys.version_info[1] <= 9:
             GlobalVars.membersOffset = 8
@@ -26,4 +27,6 @@ def RunSetup(world):
     GlobalVars.running = True
 
     SceneSetup.SetupMainMenu(world)
+    # SceneSetup.SetupLevelSelect(world)
+    # SceneSetup.SetupScene1(world)
     GlobalVars.frameCount = 0

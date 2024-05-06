@@ -40,7 +40,7 @@ class Editor(Component.Component):
         self.CreateSelectables()
         self.workingScene = Scene.Scene("untitled scene")
         camera = GameObject.GameObject(self.workingScene)
-        camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1/1.0))
+        camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1/1.0,boundLen=Vec2(10,10)))
         self.workingScene.AddGameObject(camera)
         self.workingObject = None
         gizmoObject = GameObject.GameObject(self.workingScene)
@@ -116,7 +116,7 @@ class Editor(Component.Component):
             
     def MoveCamera(self): #function jiggles aroung the more zoomed out it is, probably because camera moves but is also used for screen to world transform
         drag = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen, self.workingScene.camera) - self.startDrag
-        self.workingScene.camera.MoveCamera(self.camStartPos - drag) #change to camera's internal move function
+        self.workingScene.camera.MoveCamera(self.camStartPos - drag)
     
     def ScrollCamera(self):
         scroll = GlobalVars.scrollEvent.y
@@ -207,10 +207,20 @@ class Editor(Component.Component):
         return False
     
     def HandleGizmo(self):
-        if self.state == EditorState.Move:
+        try:
             camera = self.workingScene.camera
+            mousePosWorld = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen, camera)
             objTransform = self.workingObject.GetComponent(ComponentType.Transform)
-            objTransform.position = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen, camera)
+        except:
+            pass
+        if self.state == EditorState.Move:
+            objTransform.position = mousePosWorld
+        if self.state == EditorState.ScaleX:
+            deltaMouse = mousePosWorld-self.mouseStart
+            objTransform.scale.x += (math.log(max(1,deltaMouse.x+0.98)) - math.log(-min(-1,deltaMouse.x-0.98))) * math.log(objTransform.scale.x+0.6,10)/20
+        if self.state == EditorState.ScaleY:
+            deltaMouse = mousePosWorld-self.mouseStart
+            objTransform.scale.y += (math.log(max(1,deltaMouse.y+0.98)) - math.log(-min(-1,deltaMouse.y-0.98))) * math.log(objTransform.scale.y+0.6,10)/20
     
     def CheckIntersection(self, point, comp):
         verts = list()

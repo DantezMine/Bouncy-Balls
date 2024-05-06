@@ -113,7 +113,7 @@ def SetupEditor(world):
     scene.AddGameObject(background)
     
     camera = GameObject.GameObject(scene)
-    camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1,boundLen=Vec2(10,10)))
+    camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1,boundLen=Vec2(10,10),free=True))
     scene.AddGameObject(camera)
     
     editor = GameObject.GameObject(scene)

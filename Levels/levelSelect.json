@@ -10,7 +10,10 @@
                     0
                 ],
                 "rotation": 0,
-                "scale": 1,
+                "scale": [
+                    1,
+                    1
+                ],
                 "up": [
                     0,
                     -1
@@ -50,7 +53,10 @@
                     0
                 ],
                 "rotation": 0,
-                "scale": 1,
+                "scale": [
+                    1,
+                    1
+                ],
                 "up": [
                     0,
                     -1
@@ -68,9 +74,13 @@
                     0
                 ],
                 "scale": 1,
+                "minimalBound": [
+                    2.0,
+                    2.0
+                ],
                 "boundLen": [
-                    5,
-                    5
+                    2.0,
+                    2.0
                 ]
             }
         },
@@ -83,7 +93,10 @@
                     0.7
                 ],
                 "rotation": 0,
-                "scale": 1,
+                "scale": [
+                    1,
+                    1
+                ],
                 "up": [
                     0,
                     -1
@@ -120,7 +133,7 @@
                 "parent": 3,
                 "lenX": 0.4,
                 "lenY": 0.4,
-                "spriteType": 1,
+                "spriteType": 3,
                 "sprite": null
             }
         }

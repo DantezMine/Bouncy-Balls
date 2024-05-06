@@ -10,7 +10,10 @@
                     0
                 ],
                 "rotation": 0,
-                "scale": 1,
+                "scale": [
+                    1,
+                    1
+                ],
                 "up": [
                     0,
                     -1
@@ -50,7 +53,10 @@
                     0
                 ],
                 "rotation": 0,
-                "scale": 1,
+                "scale": [
+                    1,
+                    1
+                ],
                 "up": [
                     0,
                     -1
@@ -73,8 +79,8 @@
                     4.0
                 ],
                 "boundLen": [
-                    6,
-                    6
+                    12,
+                    12
                 ]
             }
         },
@@ -87,7 +93,10 @@
                     1
                 ],
                 "rotation": 0,
-                "scale": 1,
+                "scale": [
+                    1,
+                    1
+                ],
                 "up": [
                     0,
                     -1
@@ -124,7 +133,10 @@
                     0
                 ],
                 "localRotation": 0,
-                "localScale": 1,
+                "localScale": [
+                    1,
+                    1
+                ],
                 "lenX": 0.25,
                 "lenY": 1.0,
                 "sqRadius": 0.265625,
@@ -197,7 +209,10 @@
                     0
                 ],
                 "rotation": 1.57075,
-                "scale": 1,
+                "scale": [
+                    1,
+                    1
+                ],
                 "up": [
                     0,
                     -1
@@ -234,7 +249,10 @@
                     0
                 ],
                 "localRotation": 0,
-                "localScale": 1,
+                "localScale": [
+                    1,
+                    1
+                ],
                 "lenX": 0.25,
                 "lenY": 1.0,
                 "sqRadius": 0.265625,
@@ -307,7 +325,10 @@
                     -2.5
                 ],
                 "rotation": 0.0,
-                "scale": 1,
+                "scale": [
+                    1,
+                    1
+                ],
                 "up": [
                     0,
                     -1
@@ -389,7 +410,10 @@
                     0
                 ],
                 "localRotation": 0,
-                "localScale": 1,
+                "localScale": [
+                    1,
+                    1
+                ],
                 "lenX": 6.0,
                 "lenY": 1.0,
                 "sqRadius": 9.25,
@@ -416,7 +440,10 @@
                     -1.25
                 ],
                 "rotation": 0,
-                "scale": 1,
+                "scale": [
+                    1,
+                    1
+                ],
                 "up": [
                     0,
                     -1
@@ -454,7 +481,10 @@
                     -1
                 ],
                 "rotation": 0,
-                "scale": 1,
+                "scale": [
+                    1,
+                    1
+                ],
                 "up": [
                     0,
                     -1
@@ -495,7 +525,10 @@
                     0
                 ],
                 "rotation": 0,
-                "scale": 1,
+                "scale": [
+                    1,
+                    1
+                ],
                 "up": [
                     0,
                     -1
@@ -529,7 +562,10 @@
                     0
                 ],
                 "localRotation": 0,
-                "localScale": 1,
+                "localScale": [
+                    1,
+                    1
+                ],
                 "radius": 0.15,
                 "sqRadius": 0.0225
             },
