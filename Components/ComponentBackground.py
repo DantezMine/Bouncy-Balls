@@ -1,6 +1,7 @@
 from Components import ComponentSprite
 from Components import Component
 from Components.Component import ComponentType
+import GlobalVars
 from Vector import Vec2
 import enum
 
@@ -11,7 +12,7 @@ class BackgroundType(enum.Enum):
     
     def Decode(value):
         members = list(vars(BackgroundType).values())
-        members = members[12:len(members)-1]
+        members = members[GlobalVars.membersOffset:len(members)-1]
         for member in members:
             if value == member.value:
                 return member

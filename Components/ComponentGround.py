@@ -4,6 +4,7 @@ from Components import Component
 from Components import ComponentCollider
 from Components import ComponentPhysics
 from Components import ComponentSprite
+import GlobalVars
 import enum
 
 class GroundType(enum.Enum):
@@ -11,7 +12,7 @@ class GroundType(enum.Enum):
     
     def Decode(value):
         members = list(vars(GroundType).values())
-        members = members[12:len(members)-1]
+        members = members[GlobalVars.membersOffset:len(members)-1]
         for member in members:
             if value == member.value:
                 return member

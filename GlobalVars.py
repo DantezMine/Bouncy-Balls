@@ -1,6 +1,7 @@
 import pygame
 from Vector import Vec2
 
+membersOffset : int = 8
 update : bool = True
 step : bool = True
 keyReleased : bool = True

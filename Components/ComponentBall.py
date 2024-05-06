@@ -18,7 +18,7 @@ class BallType(enum.Enum):
     
     def Decode(value):
         members = list(vars(BallType).values())
-        members = members[12:len(members)-1]
+        members = members[GlobalVars.membersOffset:len(members)-1]
         for member in members:
             if value == member.value:
                 return member
