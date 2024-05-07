@@ -103,7 +103,7 @@ def SetupMainMenu(world):
     world.AddScene(scene)
     
     background = GameObject.GameObject(scene)
-    background.AddComponent(ComponentBackground.BackgroundNature(position=Vec2(0,0),lenX=1,lenY=1))
+    background.AddComponent(ComponentBackground.Background(position=Vec2(0,0),lenX=1,lenY=1, spritePath="data/BackgroundMainMenu.png"))
     scene.AddGameObject(background)
     
     camera = GameObject.GameObject(scene)
@@ -111,15 +111,15 @@ def SetupMainMenu(world):
     scene.AddGameObject(camera)
     
     levelSelectButton = GameObject.GameObject(scene)
-    levelSelectButton.AddComponent(ComponentButton.ButtonScene(nPoly=4,lenX=0.5, lenY=0.15, position=Vec2(0,0.1), setupFunc=SetupLevelSelect, sceneName="levelSelect", spritePath="data/ButtonStart.png"))
+    levelSelectButton.AddComponent(ComponentButton.ButtonScene(nPoly=4,lenX=0.8, lenY=0.15, position=Vec2(0,-0.2), setupFunc=SetupLevelSelect, sceneName="levelSelect", spritePath="data/ButtonStart.png"))
     scene.AddGameObject(levelSelectButton)
     
     levelEditorButton = GameObject.GameObject(scene)
-    levelEditorButton.AddComponent(ComponentButton.ButtonScene(nPoly=4,lenX=0.5, lenY=0.15, position=Vec2(0,-0.1), setupFunc=SetupEditor, sceneName="editor", spritePath="data/ButtonEditor.png"))
+    levelEditorButton.AddComponent(ComponentButton.ButtonScene(nPoly=4,lenX=0.8, lenY=0.15, position=Vec2(0,-0.4), setupFunc=SetupEditor, sceneName="editor", spritePath="data/ButtonEditor.png"))
     scene.AddGameObject(levelEditorButton)
     
     settingsButton = GameObject.GameObject(scene)
-    settingsButton.AddComponent(ComponentButton.ButtonScene(nPoly=4,lenX=0.15, lenY=0.15, position=Vec2(0.8,0.8), setupFunc=SetupSettings, sceneName="settings", spritePath="data/ButtonLocked.png"))
+    settingsButton.AddComponent(ComponentButton.ButtonScene(nPoly=4,lenX=0.15, lenY=0.15, position=Vec2(0.8,0.8), setupFunc=SetupSettings, sceneName="settings", spritePath="data/ButtonSettings-1.png"))
     scene.AddGameObject(settingsButton)
     
 def SetupEditor(world):
