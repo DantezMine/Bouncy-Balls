@@ -24,7 +24,7 @@ class ButtonType(enum.Enum):
                 return member
 
 class Button(Component.Component):
-    def __init__(self, nPoly = 4, lenX = None, lenY = None, radius = 0.2, position = Vec2(0,0), spritePath="data/ButtonLocked.png", onEscape = False):
+    def __init__(self, nPoly = 4, lenX = None, lenY = None, radius = 0.2, position = Vec2(0,0), spritePath="data/ButtonLocked.png", onEscape = False, function = None):
         '''If lenX and lenY aren't specified, 2*radius is chosen for both sidelengths'''
         self.name = ComponentType.Button
         
@@ -38,6 +38,7 @@ class Button(Component.Component):
         self.buttonType = ButtonType.Button
         self.spritePath = spritePath
         self.onEscape = onEscape
+        self.function = function
         
     def Start(self):
         self.transform = self.parent.GetComponent(ComponentType.Transform)
@@ -65,6 +66,8 @@ class Button(Component.Component):
         '''To use animation, super() this function'''
         self.clickStart = time.time()
         self.animate = True
+        if self.function is not None:
+            self.function()
         
     def EndOfClick(self):
         pass
@@ -82,7 +85,7 @@ class Button(Component.Component):
         t = (time.time()-self.clickStart)/self.animDuration
         if t > 1:
             self.animate = False
-            self.transform.scale.Normalize()
+            self.transform.scale = Vec2(1,1)
             self.EndOfClick()
             return
         self.transform.scale.Normalize()

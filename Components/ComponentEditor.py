@@ -22,6 +22,7 @@ class EditorState(enum.Enum):
     ScaleY = enum.auto()
     Rotate = enum.auto()
     EditingObject = enum.auto()
+    Saving = enum.auto()
 
 class Editor(Component.Component):
     def __init__(self):
@@ -42,14 +43,35 @@ class Editor(Component.Component):
         camera = GameObject.GameObject(self.workingScene)
         camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1/1.0,boundLen=Vec2(10,10)))
         self.workingScene.AddGameObject(camera)
+        
         self.workingObject = None
         self.workingComp = None
+        
         gizmoObject = GameObject.GameObject(self.workingScene)
         gizmoObject.AddComponent(ComponentSprite.SpriteGizmo(diameter=self.gizmoSize*math.sqrt(2),targetID=None))
         self.workingScene.AddGameObject(gizmoObject)
         self.gizmoObjectID = gizmoObject.GetID()
         
+        saveButton = GameObject.GameObject(self.parent.GetParentScene())
+        saveButton.AddComponent(ComponentButton.Button(nPoly=4,lenX=0.2,lenY=0.2,position=Vec2(0.87,0.87),function=self.SaveScene))
+        self.parent.GetParentScene().AddGameObject(saveButton)
+        
     def Update(self, deltaTime):
+        if self.state == EditorState.Saving:
+            if self.saveNow == True:
+                sceneName = self.workingScene.name
+                with open("Bouncy-Balls/Levels/scene%s.json"%sceneName,"w") as fp:
+                    self.workingScene.WriteJSON(fp)
+            else:
+                self.saveNow = True
+                
+            gizmoObject = GameObject.GameObject(self.workingScene)
+            gizmoObject.AddComponent(ComponentSprite.SpriteGizmo(diameter=self.gizmoSize*math.sqrt(2),targetID=None))
+            self.workingScene.AddGameObject(gizmoObject)
+            self.gizmoObjectID = gizmoObject.GetID()
+            
+            self.state = EditorState.Free
+            
         self.HandleGizmo()
         
         self.workingScene.HandleAddQueue()
@@ -78,6 +100,7 @@ class Editor(Component.Component):
         self.workingObject.AddComponent(componentInit())
         self.workingObject.GetComponent(ComponentType.Transform).position = ComponentTransform.Transform.ScreenToWorldPos(Vec2(GlobalVars.foreground.get_width()/2.0,GlobalVars.foreground.get_height()/2.0),self.workingScene.camera)
         self.workingScene.AddGameObject(self.workingObject)
+        self.CreateDeleteButton()
         self.workingComp = self.GetWorkingComponent()
         self.objectIDs.append(self.workingObject.GetID())
         gizmoSprite = self.workingScene.GameObjectWithID(self.gizmoObjectID).GetComponent(ComponentType.Sprite)
@@ -85,8 +108,17 @@ class Editor(Component.Component):
         gizmoSprite.gizmoVal = 0
         self.state = EditorState.Selected
         
+    def CreateDeleteButton(self):
+        deleteButton = GameObject.GameObject(self.parent.GetParentScene())
+        deleteButton.AddComponent(ComponentButton.Button(nPoly=4,lenX=0.2,lenY=0.2,position=Vec2(0,-0.77),function=self.DeleteObject))
+        self.parent.GetParentScene().AddGameObject(deleteButton)
+        self.deleteButtonID = deleteButton.GetID()
+        
     def PlaceObject(self):
         self.workingScene.GameObjectWithID(self.gizmoObjectID).GetComponent(ComponentType.Sprite).targetID = None
+        self.parent.GetParentScene().RemoveGameObjectID(self.deleteButtonID)
+        self.deleteButtonID = None
+        self.prevObjID = self.workingObject.GetID()
         self.workingObject = None
         self.workingComp = None
         self.state = EditorState.Free
@@ -115,6 +147,7 @@ class Editor(Component.Component):
                     return
                 self.PlaceObject()
             if self.SelectObject():
+                self.CreateDeleteButton()
                 return
             
     def MoveCamera(self): #function jiggles aroung the more zoomed out it is, probably because camera moves but is also used for screen to world transform
@@ -155,7 +188,18 @@ class Editor(Component.Component):
             self.state = EditorState.Selected
             return True
         return False
+    
+    def DeleteObject(self):
+        if self.state == EditorState.Free:
+            self.workingScene.RemoveGameObjectID(self.prevObjID)
+            self.objectIDs.remove(self.prevObjID)
             
+    def SaveScene(self):
+        self.workingScene.RemoveGameObjectID(self.gizmoObjectID)
+        
+        self.state = EditorState.Saving
+        self.saveNow = False
+                    
     def SelectGizmo(self):
         gizmoSprite = self.workingScene.GameObjectWithID(self.gizmoObjectID).GetComponent(ComponentType.Sprite)
         targetTransform = self.workingObject.GetComponent(ComponentType.Transform)

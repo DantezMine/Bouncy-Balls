@@ -1,0 +1,196 @@
+{
+    "name": "untitled scene",
+    "__gameObjects": {
+        "1": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 1,
+                "position": [
+                    0,
+                    0
+                ],
+                "rotation": 0,
+                "scale": [
+                    1,
+                    1
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Camera": {
+                "name": 9,
+                "parent": 1,
+                "initPos": [
+                    0,
+                    0
+                ],
+                "scale": 0.6155467735034376,
+                "minimalBound": [
+                    2.0,
+                    2.0
+                ],
+                "boundLen": [
+                    10,
+                    10
+                ],
+                "free": false
+            }
+        },
+        "3": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 3,
+                "position": [
+                    -0.08122859570105571,
+                    -0.7757330889450814
+                ],
+                "rotation": 0.0,
+                "scale": [
+                    1,
+                    1
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Ground": {
+                "name": 7,
+                "parent": 3,
+                "initPos": [
+                    0,
+                    0
+                ],
+                "initRot": 0.0,
+                "lenX": 2,
+                "lenY": 1,
+                "groundType": 1,
+                "sprite": true
+            },
+            "ComponentType.Physics": {
+                "name": 2,
+                "parent": 3,
+                "mass": 1.0,
+                "momentOfInertia": 5,
+                "restitution": 0.1,
+                "velDamping": 0.999,
+                "rotDamping": 0.99,
+                "forceMargin": 0,
+                "torqueMargin": 0,
+                "velMargin": 0,
+                "rotMargin": 0,
+                "posMargin": 0,
+                "prevPosition": [
+                    0,
+                    0
+                ],
+                "velocity": [
+                    0,
+                    0
+                ],
+                "acceleration": [
+                    0,
+                    0
+                ],
+                "netForce": [
+                    0,
+                    0
+                ],
+                "deltaV": [
+                    0,
+                    0
+                ],
+                "angularSpeed": 0,
+                "angularAcc": 0,
+                "netTorque": 0,
+                "deltaW": 0,
+                "deltaPhi": 0,
+                "constraintPosition": true,
+                "constraintRotation": true,
+                "gravity": true,
+                "gravAcc": [
+                    0,
+                    -9.8
+                ]
+            },
+            "ComponentType.Collider": {
+                "name": 4,
+                "parent": 3,
+                "colliderType": 2,
+                "tags": null,
+                "collisions": null,
+                "_safetyMargin": 10,
+                "_edgeAlignmentMargin": 0.01,
+                "localPosition": [
+                    0,
+                    0
+                ],
+                "localRotation": 0,
+                "localScale": [
+                    1,
+                    1
+                ],
+                "lenX": 2,
+                "lenY": 1,
+                "sqRadius": 1.25,
+                "mags": null,
+                "verts": null,
+                "norms": null
+            },
+            "ComponentType.Sprite": {
+                "name": 3,
+                "spritePath": "data/GroundDirt.png",
+                "parent": 3,
+                "lenX": 2,
+                "lenY": 1,
+                "spriteType": 1,
+                "sprite": null
+            }
+        },
+        "6": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 6,
+                "position": [
+                    0,
+                    0
+                ],
+                "rotation": 0,
+                "scale": [
+                    1,
+                    1
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Sprite": {
+                "name": 3,
+                "spritePath": null,
+                "parent": 6,
+                "lenX": 0.6000000000000001,
+                "lenY": 0.6000000000000001,
+                "spriteType": 4,
+                "gizmoVal": 0,
+                "targetID": null,
+                "spritePaths": null,
+                "sprites": null
+            }
+        }
+    }
+}

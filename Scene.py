@@ -31,6 +31,10 @@ class Scene:
     def RemoveGameObject(self,gameObject):
         self.removeQueue.append(gameObject)
         
+    def RemoveGameObjectID(self, id):
+        if self.__gameObjects.__contains__(int(id)):
+            self.removeQueue.append(self.__gameObjects[int(id)])
+        
     def CreateID(self):
         self.ID += 1
         return self.ID
@@ -139,6 +143,8 @@ class Scene:
             gameObject = GameObject.GameObject(self, gameObjectID)
             for componentObj in gameObjects[str(gameObjectID)].values():
                 componentConstr = self.GetComponent(componentObj)
+                if componentConstr is None:
+                    pass
                 component = componentConstr()
                 component.Decode(componentObj)
                 gameObject.AddComponent(component)

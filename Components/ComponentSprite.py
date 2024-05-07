@@ -11,6 +11,7 @@ class SpriteType(enum.Enum):
     Sprite = enum.auto()
     Background = enum.auto()
     UI = enum.auto()
+    Gizmo = enum.auto()
     
     def Decode(value):
         members = list(vars(SpriteType).values())
@@ -93,6 +94,7 @@ class SpriteGizmo(Sprite):
         super().__init__(None, lenX, lenY, diameter)
         self.gizmoVal = 0
         self.targetID = targetID
+        self.spriteType = SpriteType.Gizmo
         self.spritePaths = ("data/GizmoEditor.png","data/GizmoEditorSquare.png","data/GizmoEditorCircle.png","data/GizmoEditorArrowX.png","data/GizmoEditorArrowY.png")
         
     def Start(self):
