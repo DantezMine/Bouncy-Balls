@@ -109,8 +109,8 @@ class SpriteGizmo(Sprite):
         height = GlobalVars.screen.get_height()
         
         #World Space
-        topLeft = (Vec2(self.lenX,-self.lenY)/(sceneCam.scale*2.0)).Rotate(targetTransform.rotation)
-        botLeft = (Vec2(self.lenX, self.lenY)/(sceneCam.scale*2.0)).Rotate(targetTransform.rotation)
+        topLeft = (Vec2(self.lenX,-self.lenY)/(sceneCam.scale*2.0))
+        botLeft = (Vec2(self.lenX, self.lenY)/(sceneCam.scale*2.0))
         #get extremes of AABB
         dx = max(abs(topLeft.x),abs(botLeft.x))
         dy = max(abs(topLeft.y),abs(botLeft.y))

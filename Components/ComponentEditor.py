@@ -43,6 +43,7 @@ class Editor(Component.Component):
         camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1/1.0,boundLen=Vec2(10,10)))
         self.workingScene.AddGameObject(camera)
         self.workingObject = None
+        self.workingComp = None
         gizmoObject = GameObject.GameObject(self.workingScene)
         gizmoObject.AddComponent(ComponentSprite.SpriteGizmo(diameter=self.gizmoSize*math.sqrt(2),targetID=None))
         self.workingScene.AddGameObject(gizmoObject)
@@ -77,6 +78,7 @@ class Editor(Component.Component):
         self.workingObject.AddComponent(componentInit())
         self.workingObject.GetComponent(ComponentType.Transform).position = ComponentTransform.Transform.ScreenToWorldPos(Vec2(GlobalVars.foreground.get_width()/2.0,GlobalVars.foreground.get_height()/2.0),self.workingScene.camera)
         self.workingScene.AddGameObject(self.workingObject)
+        self.workingComp = self.GetWorkingComponent()
         self.objectIDs.append(self.workingObject.GetID())
         gizmoSprite = self.workingScene.GameObjectWithID(self.gizmoObjectID).GetComponent(ComponentType.Sprite)
         gizmoSprite.targetID = self.workingObject.GetID()
@@ -86,6 +88,7 @@ class Editor(Component.Component):
     def PlaceObject(self):
         self.workingScene.GameObjectWithID(self.gizmoObjectID).GetComponent(ComponentType.Sprite).targetID = None
         self.workingObject = None
+        self.workingComp = None
         self.state = EditorState.Free
         
     def CheckMouse(self):
@@ -145,6 +148,7 @@ class Editor(Component.Component):
         
         if intersection:
             self.workingObject = self.workingScene.GameObjectWithID(ID)
+            self.workingComp = self.GetWorkingComponent()
             gizmoSprite = self.workingScene.GameObjectWithID(self.gizmoObjectID).GetComponent(ComponentType.Sprite)
             gizmoSprite.targetID = self.workingObject.GetID()
             gizmoSprite.gizmoVal = 0
@@ -158,8 +162,8 @@ class Editor(Component.Component):
         sceneCam = self.workingScene.camera
         
         #World Space
-        topLeft = (Vec2(gizmoSprite.lenX,-gizmoSprite.lenY)/(sceneCam.scale*2.0)).Rotate(targetTransform.rotation)
-        botLeft = (Vec2(gizmoSprite.lenX, gizmoSprite.lenY)/(sceneCam.scale*2.0)).Rotate(targetTransform.rotation)
+        topLeft = (Vec2(gizmoSprite.lenX,-gizmoSprite.lenY)/(sceneCam.scale*2.0))
+        botLeft = (Vec2(gizmoSprite.lenX, gizmoSprite.lenY)/(sceneCam.scale*2.0))
         #get extremes of AABB
         dx = max(abs(topLeft.x),abs(botLeft.x))
         dy = max(abs(topLeft.y),abs(botLeft.y))
@@ -181,12 +185,14 @@ class Editor(Component.Component):
         deltaPhi = math.pi/2
         for i in range(4):
             vertsArrowX.append(targetTransform.position + Vec2(23/10.0,0)*s + Vec2(math.cos(deltaPhi*i+deltaPhi/2.0)*sY, math.sin(deltaPhi*i+deltaPhi/2.0)*sX))
-            
+        
+        #distanceOuter and distanceInner for outside circle intersection
         dO = dx
         dI = dx*0.9
         
         mousePosWorld = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen,self.workingScene.camera)
         self.mouseStart = mousePosWorld
+        self.rotStart = None
         if self.PointInPolygon(mousePosWorld,vertsSquare):
             gizmoSprite.gizmoVal = 1
             self.state = EditorState.Move
@@ -194,6 +200,7 @@ class Editor(Component.Component):
         if (mousePosWorld-targetTransform.position).SqMag() < dO**2 and (mousePosWorld-targetTransform.position).SqMag() > dI**2:
             gizmoSprite.gizmoVal = 2
             self.state = EditorState.Rotate
+            self.rotStart = targetTransform.rotation
             return True
         if self.PointInPolygon(mousePosWorld,vertsArrowX):
             gizmoSprite.gizmoVal = 3
@@ -221,13 +228,31 @@ class Editor(Component.Component):
         if self.state == EditorState.ScaleY:
             deltaMouse = mousePosWorld-self.mouseStart
             objTransform.scale.y += (math.log(max(1,deltaMouse.y+0.98)) - math.log(-min(-1,deltaMouse.y-0.98))) * math.log(objTransform.scale.y+0.6,10)/20
+        if self.state == EditorState.Rotate:
+            deltaM = self.mouseStart-objTransform.position
+            deltaA = mousePosWorld-objTransform.position
+            mouseStartAngle = math.atan(deltaM.y/deltaM.x) if deltaM.x != 0 else math.pi/2
+            mouseAngle = math.atan(deltaA.y/deltaA.x) if deltaA.x != 0 else math.pi/2
+            mouseStartAngle += math.pi if deltaM.x > 0 else 0
+            mouseAngle += math.pi if deltaA.x > 0 else 0
+            deltaAngle = mouseAngle-mouseStartAngle
+            deltaAngle = deltaAngle - (deltaAngle % (math.pi/12))
+            objTransform.Rotate(deltaAngle-objTransform.rotation)
+            
     
     def CheckIntersection(self, point, comp):
         verts = list()
         deltaPhi = math.pi/2
+        compTransform = comp.parent.GetComponent(ComponentType.Transform)
         for i in range(4):
-            verts.append(comp.parent.GetComponent(ComponentType.Transform).position + Vec2(math.cos(deltaPhi*i+deltaPhi/2.0)*comp.lenX/2.0, math.sin(deltaPhi*i+deltaPhi/2.0)*comp.lenY/2.0))
+            verts.append(compTransform.position + Vec2(math.cos(deltaPhi*i+deltaPhi/2.0)*compTransform.scale.x*comp.lenX/2.0, math.sin(deltaPhi*i+deltaPhi/2.0)*compTransform.scale.y*comp.lenY/2.0))
         return self.PointInPolygon(point, verts)
+    
+    def GetWorkingComponent(self):
+        if self.workingObject.HasComponent(ComponentType.Structure):
+            return self.workingObject.GetComponent(ComponentType.Structure)
+        if self.workingObject.HasComponent(ComponentType.Ground):
+            return self.workingObject.GetComponent(ComponentType.Ground)
             
     def PointInPolygon(self,point,verts):
         inside = True
