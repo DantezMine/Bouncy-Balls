@@ -8,6 +8,8 @@ from Components import ComponentButton
 from Components import ComponentCamera
 from Components import ComponentGround
 from Components import ComponentSprite
+from Components import ComponentBackground
+from Components import ComponentCannon
 from Components import Component
 import GameObject
 import Scene
@@ -44,6 +46,11 @@ class Editor(Component.Component):
         camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1/1.0,boundLen=Vec2(10,10)))
         self.workingScene.AddGameObject(camera)
         
+        background = GameObject.GameObject(self.workingScene)
+        background.AddComponent(ComponentBackground.BackgroundNature(position=Vec2(0,0),lenX=2,lenY=2))
+        self.workingScene.AddGameObject(background)
+        self.objectIDs.append(background.GetID())
+        
         self.workingObject = None
         self.workingComp = None
         
@@ -53,17 +60,14 @@ class Editor(Component.Component):
         self.gizmoObjectID = gizmoObject.GetID()
         
         saveButton = GameObject.GameObject(self.parent.GetParentScene())
-        saveButton.AddComponent(ComponentButton.Button(nPoly=4,lenX=0.2,lenY=0.2,position=Vec2(0.87,0.87),function=self.SaveScene))
+        saveButton.AddComponent(ComponentButton.Button(nPoly=4,lenX=0.2,lenY=0.2,position=Vec2(-0.87,-0.87),function=self.SaveScene, spritePath="data/Save.png"))
         self.parent.GetParentScene().AddGameObject(saveButton)
         
     def Update(self, deltaTime):
-        if self.state == EditorState.Saving:
-            if self.saveNow == True:
-                sceneName = self.workingScene.name
-                with open("Bouncy-Balls/Levels/scene%s.json"%sceneName,"w") as fp:
-                    self.workingScene.WriteJSON(fp)
-            else:
-                self.saveNow = True
+        if self.state == EditorState.Saving and self.workingScene.GameObjectWithID(self.gizmoObjectID) is None:
+            sceneName = self.workingScene.name
+            with open("Bouncy-Balls/Levels/scene%s.json"%sceneName,"w") as fp:
+                self.workingScene.WriteJSON(fp)
                 
             gizmoObject = GameObject.GameObject(self.workingScene)
             gizmoObject.AddComponent(ComponentSprite.SpriteGizmo(diameter=self.gizmoSize*math.sqrt(2),targetID=None))
@@ -72,6 +76,7 @@ class Editor(Component.Component):
             
             self.state = EditorState.Free
             
+            
         self.HandleGizmo()
         
         self.workingScene.HandleAddQueue()
@@ -79,6 +84,9 @@ class Editor(Component.Component):
         self.workingScene.ShowScene(deltaTime)
         self.CheckMouse()
         
+        baseList = self.workingScene.GetComponents(ComponentType.Base)
+        if len(baseList) > 0:
+            baseList[0].UpdatePosition()
         
     def CreateSelectables(self):
         parentScene = self.parent.GetParentScene()
@@ -87,7 +95,10 @@ class Editor(Component.Component):
         selectables = (
             ("data/WoodStructure.png", ComponentStructure.StructureWood),
             ("data/StructureMetal.png", ComponentStructure.StructureMetal),
-            ("data/GroundDirt.png", ComponentGround.GroundDirt)
+            ("data/GroundDirt.png", ComponentGround.GroundDirt),
+            ("data/Barrel.png", ComponentCannon.Cannon),
+            ("data/BackgroundSkyline-Sky.png", ComponentBackground.BackgroundSkyline),
+            ("data/BackgroundNature-Sky.png", ComponentBackground.BackgroundNature)
         )
         
         for i in range(len(selectables)):
@@ -100,6 +111,13 @@ class Editor(Component.Component):
         self.workingObject.AddComponent(componentInit())
         self.workingObject.GetComponent(ComponentType.Transform).position = ComponentTransform.Transform.ScreenToWorldPos(Vec2(GlobalVars.foreground.get_width()/2.0,GlobalVars.foreground.get_height()/2.0),self.workingScene.camera)
         self.workingScene.AddGameObject(self.workingObject)
+        
+        if self.workingObject.HasComponent(ComponentType.Background):
+            backgroundList = self.workingScene.GetObjectsWithComponent(ComponentType.Background)
+            if len(backgroundList) > 0:
+                self.workingScene.RemoveGameObject(backgroundList[0])
+                self.objectIDs.remove(backgroundList[0].GetID())
+        
         self.CreateDeleteButton()
         self.workingComp = self.GetWorkingComponent()
         self.objectIDs.append(self.workingObject.GetID())
@@ -110,7 +128,7 @@ class Editor(Component.Component):
         
     def CreateDeleteButton(self):
         deleteButton = GameObject.GameObject(self.parent.GetParentScene())
-        deleteButton.AddComponent(ComponentButton.Button(nPoly=4,lenX=0.2,lenY=0.2,position=Vec2(0,-0.77),function=self.DeleteObject))
+        deleteButton.AddComponent(ComponentButton.Button(nPoly=4,lenX=0.2,lenY=0.2,position=Vec2(0,-0.77),function=self.DeleteObject, spritePath="data/Delete.png"))
         self.parent.GetParentScene().AddGameObject(deleteButton)
         self.deleteButtonID = deleteButton.GetID()
         
@@ -124,6 +142,8 @@ class Editor(Component.Component):
         self.state = EditorState.Free
         
     def CheckMouse(self):
+        if self.state == EditorState.Saving:
+            return
         if GlobalVars.mouseLeft:
             self.OnLeftClick()
         else:
@@ -178,6 +198,11 @@ class Editor(Component.Component):
                     intersection = True
                     ID = id
                     break
+            if obj.HasComponent(ComponentType.Cannon):
+                if self.CheckIntersection(mousePosWorld, obj.GetComponent(ComponentType.Cannon)):
+                    intersection = True
+                    ID = id
+                    break
         
         if intersection:
             self.workingObject = self.workingScene.GameObjectWithID(ID)
@@ -191,14 +216,16 @@ class Editor(Component.Component):
     
     def DeleteObject(self):
         if self.state == EditorState.Free:
+            if self.workingScene.GameObjectWithID(self.prevObjID).HasComponent(ComponentType.Cannon):
+                self.workingScene.RemoveGameObject(self.workingScene.GetObjectsWithComponent(ComponentType.Base)[0])
             self.workingScene.RemoveGameObjectID(self.prevObjID)
             self.objectIDs.remove(self.prevObjID)
-            
+                
+        
     def SaveScene(self):
         self.workingScene.RemoveGameObjectID(self.gizmoObjectID)
         
         self.state = EditorState.Saving
-        self.saveNow = False
                     
     def SelectGizmo(self):
         gizmoSprite = self.workingScene.GameObjectWithID(self.gizmoObjectID).GetComponent(ComponentType.Sprite)

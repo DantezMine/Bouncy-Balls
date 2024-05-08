@@ -9,7 +9,7 @@ import pygame
 import math
 
 class Cannon(Component.Component):
-    def __init__(self, position = Vec2(0,0), cannonScale = 1, rotation = 0):
+    def __init__(self, position = None, cannonScale = 1, rotation = None):
         self.name = ComponentType.Cannon
         self.parent = None
         self.initPos = position
@@ -17,10 +17,12 @@ class Cannon(Component.Component):
         self.mousePressed = False
         self.mouseLeft = False
         self.cannonScale = 2
+        self.lenX = self.cannonScale*0.580
+        self.lenY = self.cannonScale*0.402
         
     def Start(self):
         transform = self.parent.GetComponent(ComponentType.Transform)
-        transform.position = self.initPos
+        transform.position = self.initPos if self.initPos is not None else transform.position
         self.parent.AddComponent(ComponentSprite.Sprite("data/Barrel.png", self.cannonScale*0.580, self.cannonScale*0.402))
         # self.parent.AddComponent(Base(self.initPos + self.baseOffset))
         
@@ -28,7 +30,7 @@ class Cannon(Component.Component):
         #only create base if it doesn't exist in the scene yet
         if len(scene.GetComponents(ComponentType.Base)) == 0:
             cannonBase = GameObject.GameObject(scene)
-            cannonBase.AddComponent(Base(Vec2(-1,-0.95)))
+            cannonBase.AddComponent(Base(Vec2(-0.4,-0.3)))
             scene.AddGameObject(cannonBase)
     
     def Update(self, deltaTime):
@@ -59,10 +61,10 @@ class Cannon(Component.Component):
                 
     def Decode(self, obj):
         super().Decode(obj)
-        self.rotation = obj["rotation"]
         self.mousePressed = obj["mousePressed"]
         self.mouseLeft = obj["mouseLeft"]
         self.cannonScale = obj["cannonScale"]
+        self.rotation = obj["rotation"]
         self.initPos = Vec2.FromList(obj["initPos"])
     
 class Base(Component.Component):
@@ -73,10 +75,16 @@ class Base(Component.Component):
         self.baseScale = 2
         
     def Start(self):
-        self.initPos += Vec2(self.baseScale*-0.1, self.baseScale*-0.15)
-        transform = self.parent.GetComponent(ComponentType.Transform)
-        transform.position = self.initPos
+        # self.initPos += Vec2(self.baseScale*-0.1, self.baseScale*-0.15)
+        # transform = self.parent.GetComponent(ComponentType.Transform)
+        # transform.position = self.initPos
         self.parent.AddComponent(ComponentSprite.Sprite("data/Base.png", self.baseScale*0.615, self.baseScale*0.345))
+        
+    def Update(self, deltaTime):
+        self.UpdatePosition()    
+    
+    def UpdatePosition(self):
+        self.parent.GetComponent(ComponentType.Transform).position = self.parent.GetParentScene().GetObjectsWithComponent(ComponentType.Cannon)[0].GetComponent(ComponentType.Transform).position + Vec2(-0.4,-0.3)
         
     def Decode(self, obj):
         super().Decode(obj)

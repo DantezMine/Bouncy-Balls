@@ -73,12 +73,16 @@ def SetupLevelSelect(world):
     world.AddScene(scene)
     
     background = GameObject.GameObject(scene)
-    background.AddComponent(ComponentBackground.Background(position=Vec2(0,0),lenX=1,lenY=1,spritePath="data/LevelSelect.png"))
+    background.AddComponent(ComponentBackground.Background(position=Vec2(0,0),lenX=1,lenY=1,spritePath="data/LevelSelectSquare.png"))
     scene.AddGameObject(background)
     
     camera = GameObject.GameObject(scene)
     camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1))
     scene.AddGameObject(camera)
+    
+    settingsButton = GameObject.GameObject(scene)
+    settingsButton.AddComponent(ComponentButton.ButtonScene(nPoly=4,lenX=0.15, lenY=0.15, position=Vec2(0.9,0.9), setupFunc=SetupSettings, sceneName="settings", spritePath="data/ButtonSettings-1.png"))
+    scene.AddGameObject(settingsButton)
     
     i = 0
     rows = 4
@@ -93,6 +97,7 @@ def SetupLevelSelect(world):
         lvlButtons[i] = GameObject.GameObject(scene)
         lvlButtons[i].AddComponent(ComponentButton.ButtonScene(nPoly=4,radius=0.1,position=Vec2(-0.5+(x*0.25),0.4-(y*0.25)),scenePath="Levels/%s" %level))
         scene.AddGameObject(lvlButtons[i])
+        
 
 def SetupMainMenu(world):
     scene = Scene.Scene("mainMenu")
@@ -122,9 +127,9 @@ def SetupEditor(world):
     scene = Scene.Scene("editor")
     world.AddScene(scene)
     
-    background = GameObject.GameObject(scene)
-    background.AddComponent(ComponentBackground.BackgroundNature(position=Vec2(0,0),lenX=1,lenY=1))
-    scene.AddGameObject(background)
+    # background = GameObject.GameObject(scene)
+    # background.AddComponent(ComponentBackground.BackgroundNature(position=Vec2(0,0),lenX=1,lenY=1))
+    # scene.AddGameObject(background)
     
     camera = GameObject.GameObject(scene)
     camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1,boundLen=Vec2(10,10),free=True))
@@ -133,6 +138,10 @@ def SetupEditor(world):
     editor = GameObject.GameObject(scene)
     editor.AddComponent(ComponentEditor.Editor())
     scene.AddGameObject(editor)
+    
+    settingsButton = GameObject.GameObject(scene)
+    settingsButton.AddComponent(ComponentButton.ButtonScene(nPoly=4,lenX=0.15, lenY=0.15, position=Vec2(0.9,0.9), setupFunc=SetupSettings, sceneName="settings", spritePath="data/ButtonSettings-1.png"))
+    scene.AddGameObject(settingsButton)
     
 def SetupSettings(world):
     scene = Scene.Scene("settings")

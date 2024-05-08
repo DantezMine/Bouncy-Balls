@@ -40,7 +40,9 @@ class Scene:
         return self.ID
     
     def GameObjectWithID(self,id):
-        return self.__gameObjects[int(id)]
+        if self.__gameObjects.__contains__(int(id)):
+            return self.__gameObjects[int(id)]
+        return None
     
     def GetObjectsWithComponent(self,compName):
         outList = list()

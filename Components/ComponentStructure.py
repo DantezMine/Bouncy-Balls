@@ -24,7 +24,7 @@ class StructureType(enum.Enum):
                 return member
 
 class Structure(Component.Component):
-    def __init__(self, position = Vec2(0,0), lenX = 0.25, lenY = 1, rotation = 0):
+    def __init__(self, position = None, lenX = 0.25, lenY = 1, rotation = None):
         self.name = ComponentType.Structure
         self.parent = None
         self.initPos = position
@@ -36,8 +36,8 @@ class Structure(Component.Component):
 
     def Start(self):
         transform = self.parent.GetComponent(ComponentType.Transform)
-        transform.position = self.initPos
-        transform.rotation = self.initRot
+        transform.position = self.initPos if self.initPos is not None else transform.position
+        transform.rotation = self.initRot if self.initRot is not None else transform.rotation
         if self.destroyed:
             self.parent.RemoveComponent(ComponentType.Collider)
             self.destroyed = True

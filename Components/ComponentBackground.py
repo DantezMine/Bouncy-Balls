@@ -18,7 +18,7 @@ class BackgroundType(enum.Enum):
                 return member
 
 class Background(Component.Component):
-    def __init__(self, position = Vec2(0,0),lenX=50,lenY=50, spritePath = "data/BackgroundNature-Sky.png"):
+    def __init__(self, position = None,lenX=50,lenY=50, spritePath = "data/BackgroundNature-Sky.png"):
         self.name = ComponentType.Background
         self.parent = None
         
@@ -29,7 +29,8 @@ class Background(Component.Component):
         self.spritePath = spritePath
         
     def Start(self):
-        self.parent.GetComponent(ComponentType.Transform).position = self.initPos
+        self.transform = self.parent.GetComponent(ComponentType.Transform)
+        self.transform.position = self.initPos if self.initPos is not None else self.transform.position
         self.parent.AddComponent(ComponentSprite.SpriteBackground(self.spritePath,self.lenX,self.lenY))
     
     def Decode(self, obj):
@@ -43,9 +44,11 @@ class Background(Component.Component):
 class BackgroundNature(Background):
     def __init__(self, position=Vec2(0, 0), lenX=50, lenY=50):
         super().__init__(position, lenX, lenY, "data/BackgroundNature-Sky.png")
+        self.spritePath = "data/BackgroundNature-Sky.png"
         self.backgroundType = BackgroundType.Nature
 
 class BackgroundSkyline(Background):
     def __init__(self, position=Vec2(0, 0), lenX=50, lenY=50):
         super().__init__(position, lenX, lenY, "data/BackgroundSkyline-Sky.png")
+        self.spritePath = "data/BackgroundSkyline-Sky.png"
         self.backgroundType = BackgroundType.Skyline

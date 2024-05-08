@@ -24,7 +24,7 @@ class ButtonType(enum.Enum):
                 return member
 
 class Button(Component.Component):
-    def __init__(self, nPoly = 4, lenX = None, lenY = None, radius = 0.2, position = Vec2(0,0), spritePath="data/ButtonLocked.png", onEscape = False, function = None):
+    def __init__(self, nPoly = 4, lenX = None, lenY = None, radius = 0.2, position = None, spritePath="data/ButtonLocked.png", onEscape = False, function = None):
         '''If lenX and lenY aren't specified, 2*radius is chosen for both sidelengths'''
         self.name = ComponentType.Button
         
@@ -42,7 +42,7 @@ class Button(Component.Component):
         
     def Start(self):
         self.transform = self.parent.GetComponent(ComponentType.Transform)
-        self.transform.position = self.initPos
+        self.transform.position = self.initPos if self.initPos is not None else self.transform.position
         self.verts = self.GetVertices()
         
         self.parent.AddComponent(ComponentSprite.SpriteUI(self.spritePath, lenX=self.lenX, lenY=self.lenY))

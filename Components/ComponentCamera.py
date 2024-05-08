@@ -6,7 +6,7 @@ import math
 import math
 
 class Camera(Component.Component):
-    def __init__(self, position = Vec2(0,0), scale = 1, boundLen = None, free = False):
+    def __init__(self, position = None, scale = 1, boundLen = None, free = False):
         self.name = Component.ComponentType.Camera
         self.parent = None
         self.initPos = position
@@ -17,7 +17,9 @@ class Camera(Component.Component):
         
         
     def Start(self):
-        self.parent.GetComponent(ComponentType.Transform).position = self.initPos
+        transform = self.parent.GetComponent(ComponentType.Transform).position
+        transform.position = self.initPos if self.initPos is not None else transform.position
+        pass
         
     def Update(self, deltaTime):
         if not self.free:

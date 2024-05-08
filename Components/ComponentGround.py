@@ -18,7 +18,7 @@ class GroundType(enum.Enum):
                 return member
 
 class Ground(Component.Component):
-    def __init__(self, position = Vec2(0,0), lenX = 1, lenY = 1, rotation = 0.0):
+    def __init__(self, position = None, lenX = 1, lenY = 1, rotation = None):
         self.name = ComponentType.Ground
         self.parent = None
 
@@ -29,8 +29,8 @@ class Ground(Component.Component):
     
     def Start(self):
         transform = self.parent.GetComponent(ComponentType.Transform)
-        transform.position = self.initPos
-        transform.rotation = self.initRot
+        transform.position = self.initPos if self.initPos is not None else transform.position
+        transform.rotation = self.initRot if self.initRot is not None else transform.rotation
         
         physics = ComponentPhysics.Physics()
         physics.constraintPosition = True
@@ -54,4 +54,4 @@ class GroundDirt(Ground):
     
     def Start(self):
         super().Start()
-        self.sprite = self.parent.AddComponent(ComponentSprite.Sprite("data/GroundDirt.png",self.lenX,self.lenY))
+        self.parent.AddComponent(ComponentSprite.Sprite("data/GroundDirt.png",self.lenX,self.lenY))

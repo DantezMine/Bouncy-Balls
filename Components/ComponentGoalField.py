@@ -4,7 +4,7 @@ from Vector import Vec2
 from Components import ComponentCollider
 
 class GoalField(Component.Component):
-    def __init__(self, position = Vec2(0,0), lenX = 50, lenY = 50, rotation = 0.0):
+    def __init__(self, position = None, lenX = 50, lenY = 50, rotation = None):
         self.name = ComponentType.GoalField
         self.parent = None
         self.initPos = position
@@ -15,8 +15,8 @@ class GoalField(Component.Component):
 
     def Start(self):
         transform = self.parent.GetComponent(ComponentType.Transform)
-        transform.position = self.initPos
-        transform.rotation = self.initRot
+        transform.position = self.initPos if self.initPos is not None else transform.position
+        transform.rotation = self.initRot if self.initRot is not None else transform.rotation
                
         self.parent.AddComponent(ComponentCollider.ColliderRect(lenX = self.lenX, lenY = self.lenY))
         self.parent.GetComponent(ComponentType.Collider).tags = ["NoCollisionsResponse","GoalField"]
