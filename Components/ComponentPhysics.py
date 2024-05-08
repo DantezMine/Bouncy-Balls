@@ -146,6 +146,9 @@ class Physics(Component.Component):
             rotateB = 0
         if self.constraintRotation: #self is nonrotatable
             rotateA = 0
+            
+        if not moveA and not moveB:
+            return
         
         collisionPointA = collisionInfo.collisionPoint
         collisionPointB = collisionInfo.otherCollisionPoint

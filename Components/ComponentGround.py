@@ -48,7 +48,7 @@ class Ground(Component.Component):
         self.initRot = obj["initRot"]
         
 class GroundDirt(Ground):
-    def __init__(self, position=Vec2(0, 0), lenX=2, lenY=1, rotation=0.0):
+    def __init__(self, position=None, lenX=2, lenY=1, rotation=None):
         super().__init__(position, lenX, lenY, rotation)
         self.groundType = GroundType.Dirt
     

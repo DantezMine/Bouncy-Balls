@@ -84,6 +84,8 @@ class Vec2:
         return p * w_p + q * w_q
     
     def FromList(other):
+        if other is None:
+            return None
         return Vec2(other[0],other[1])
     
     def FromDict(other):

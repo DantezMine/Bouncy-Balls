@@ -120,7 +120,7 @@ class Structure(Component.Component):
 
 class StructureWood(Structure):
     '''type : "Wood"'''
-    def __init__(self, position = Vec2(0,0), lenX=0.3, lenY=0.8, rotation = 0):
+    def __init__(self, position = None, lenX=0.3, lenY=0.8, rotation = None):
         super().__init__(position, lenX, lenY, rotation)
         self.structureType = StructureType.Wood
 
@@ -134,7 +134,7 @@ class StructureWood(Structure):
 
 class StructureMetal(Structure):
     '''type : "Metal"'''
-    def __init__(self, position = Vec2(0,0), lenX=0.25, lenY=1.0, rotation = 0):
+    def __init__(self, position = None, lenX=0.25, lenY=1.0, rotation = None):
         super().__init__(position, lenX, lenY, rotation)
         self.structureType = StructureType.Metal
 
