@@ -26,8 +26,8 @@ class Cannon(Component.Component):
         self.ballType = ComponentBall.BallType.Bouncy
         
         self.ballData = {
-            ComponentBall.BallType.Bouncy : 0,
-            ComponentBall.BallType.Heavy : 0
+            ComponentBall.BallType.Bouncy : 2,
+            ComponentBall.BallType.Heavy : 2
         }
         
         self.ballConstructors = {
@@ -35,10 +35,7 @@ class Cannon(Component.Component):
             ComponentBall.BallType.Heavy : ComponentBall.BallBowling
         }
         
-        self.ballData = {
-            ComponentBall.BallType.Bouncy : 0,
-            ComponentBall.BallType.Heavy : 0
-        }
+        self.ballCounterIDs = dict()
         
     def Start(self):
         transform = self.parent.GetComponent(ComponentType.Transform)
@@ -56,12 +53,26 @@ class Cannon(Component.Component):
         
         if self.ballData[ComponentBall.BallType.Bouncy] == 0:
             self.ballType = ComponentBall.BallType.Heavy
+            self.ballData[ComponentBall.BallType.Heavy] -= 1
         else:
             self.ballType = ComponentBall.BallType.Bouncy
+            self.ballData[ComponentBall.BallType.Bouncy] -= 1
         
         ball = GameObject.GameObject(self.parent.GetParentScene())
         ball.AddComponent(self.ballConstructors[self.ballType](self.parent))
         self.parent.GetParentScene().AddGameObject(ball)
+        
+        ballBouncyCounter = GameObject.GameObject(self.parent.GetParentScene())
+        ballBouncyCounter.AddComponent(ComponentSprite.SpriteUI(spritePath="data/WoodStructure.png", lenX=self.size, lenY=self.size, number=self.ballData[ComponentBall.BallType.Bouncy]))
+        ballBouncyCounter.GetComponent(ComponentType.Transform).position = Vec2(-1 + self.size * 2.0/3 + self.size, 1 - self.size * (2.0/3 + 0 * 7.0/6))
+        self.parent.GetParentScene().AddGameObject(ballBouncyCounter)
+        self.ballCounterIDs[ComponentBall.BallType.Bouncy] = ballBouncyCounter.GetID()
+        
+        ballHeavyCounter = GameObject.GameObject(self.parent.GetParentScene())
+        ballHeavyCounter.AddComponent(ComponentSprite.SpriteUI(spritePath="data/WoodStructure.png", lenX=self.size, lenY=self.size, number=self.ballData[ComponentBall.BallType.Heavy]))
+        ballHeavyCounter.GetComponent(ComponentType.Transform).position = Vec2(-1 + self.size * 2.0/3 + self.size, 1 - self.size * (2.0/3 + 1 * 7.0/6))
+        self.parent.GetParentScene().AddGameObject(ballHeavyCounter)
+        self.ballCounterIDs[ComponentBall.BallType.Heavy] = ballHeavyCounter.GetID()
         
         scene = self.parent.GetParentScene()
         #only create base if it doesn't exist in the scene yet
@@ -90,11 +101,18 @@ class Cannon(Component.Component):
                 transform.rotation = self.rotation
                 
     def SelectBall(self, ballType):
-        self.ballData[self.ballType] -= 1
-        self.ballType = ballType
-        self.ballData[self.ballType] += 1
-        ball = self.parent.GetParentScene().GetObjectsWithComponent(ComponentType.Ball)
-        ball[0].AddComponent(self.ballConstructors[self.ballType](self.parent))
+        ball = self.parent.GetParentScene().GetObjectsWithComponent(ComponentType.Ball)[0]
+        ball = ball.GetComponent(ComponentType.Ball)
+        if ball.state == "Origin":
+            self.ballData[self.ballType] += 1
+            ballCounter = self.parent.GetParentScene().GameObjectWithID(self.ballCounterIDs[self.ballType])
+            ballCounter.GetComponent(ComponentType.Sprite).number = self.ballData[self.ballType]
+        if self.ballData[ballType] > 0:
+            self.ballType = ballType
+            self.ballData[self.ballType] -= 1
+            ballCounter = self.parent.GetParentScene().GameObjectWithID(self.ballCounterIDs[self.ballType])
+            ballCounter.GetComponent(ComponentType.Sprite).number = self.ballData[self.ballType]
+            ball.parent.AddComponent(self.ballConstructors[self.ballType](self.parent))
         
     def Decode(self, obj):
         super().Decode(obj)

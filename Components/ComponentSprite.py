@@ -28,9 +28,12 @@ class Sprite(Component.Component):
         self.spritePath = spritePath
         self.lenX = diameter*math.sqrt(2) if diameter is not None else lenX
         self.lenY = diameter*math.sqrt(2) if diameter is not None else lenY
+        self.draw = True
+        self.sprite = None
         
     def Start(self):
-        self.sprite = pygame.image.load("Bouncy-Balls/"+self.spritePath)
+        if self.spritePath is not None:
+            self.sprite = pygame.image.load("Bouncy-Balls/"+self.spritePath)
         
     def Update(self,deltaTime):
         self.DisplayImg()
@@ -89,15 +92,16 @@ class SpriteUI(Sprite):
         self.numbers = pygame.image.load("Bouncy-Balls/data/NumberImages.png") if number is not None else None
 
     def BlitImage(self, image, coord):
-        GlobalVars.UILayer.blit(image, coord)
-        if self.number is not None:
-            sceneCam = self.parent.GetParentScene().camera
-            parentTransform = self.parent.GetComponent(ComponentType.Transform)
-            width = GlobalVars.screen.get_width()
-            height = GlobalVars.screen.get_height()
-            screenScale = Vec2(self.lenX*10*width*parentTransform.scale.x,self.lenY*height*parentTransform.scale.y) * (sceneCam.scale / 2.0)
-            self.numbers = pygame.transform.scale(self.numbers,(screenScale.x,screenScale.y))
-            GlobalVars.UILayer.blit(self.numbers, coord, area=pygame.Rect(self.number * screenScale.x * parentTransform.scale.x / 10, 0, screenScale.x * parentTransform.scale.x / 10, screenScale.y * parentTransform.scale.y))
+        if self.draw:
+            GlobalVars.UILayer.blit(image, coord)
+            if self.number is not None:
+                sceneCam = self.parent.GetParentScene().camera
+                parentTransform = self.parent.GetComponent(ComponentType.Transform)
+                width = GlobalVars.screen.get_width()
+                height = GlobalVars.screen.get_height()
+                screenScale = Vec2(self.lenX*10*width*parentTransform.scale.x,self.lenY*height*parentTransform.scale.y) * (sceneCam.scale / 2.0)
+                self.numbers = pygame.transform.scale(self.numbers,(screenScale.x,screenScale.y))
+                GlobalVars.UILayer.blit(self.numbers, coord, area=pygame.Rect(self.number * screenScale.x * parentTransform.scale.x / 10, 0, screenScale.x * parentTransform.scale.x / 10, screenScale.y * parentTransform.scale.y))
         
 class SpriteGizmo(Sprite):
     def __init__(self, lenX=0.5, lenY=0.5, diameter=None, targetID = None):
