@@ -27,6 +27,7 @@ class Cannon(Component.Component):
         self.ballType = ComponentBall.BallType.Bouncy
         self.state = "Selecting"
         self.slingD = 10
+        self.ballID = None
         
         self.ballData = {
             ComponentBall.BallType.Bouncy : 2,

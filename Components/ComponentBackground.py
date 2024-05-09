@@ -27,7 +27,7 @@ class Background(Component.Component):
         self.lenX = lenX
         self.lenY = lenY
         self.spritePath = spritePath
-        self.scale = 1.5
+        self.scale = 3
         
     def Start(self):
         self.transform = self.parent.GetComponent(ComponentType.Transform)
