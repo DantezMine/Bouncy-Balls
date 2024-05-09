@@ -27,11 +27,12 @@ class Background(Component.Component):
         self.lenX = lenX
         self.lenY = lenY
         self.spritePath = spritePath
+        self.scale = 1.5
         
     def Start(self):
         self.transform = self.parent.GetComponent(ComponentType.Transform)
         self.transform.position = self.initPos if self.initPos is not None else self.transform.position
-        self.parent.AddComponent(ComponentSprite.SpriteBackground(self.spritePath,self.lenX,self.lenY))
+        self.parent.AddComponent(ComponentSprite.SpriteBackground(self.spritePath,self.lenX,self.lenY,scale=self.scale))        
     
     def Decode(self, obj):
         super().Decode(obj)

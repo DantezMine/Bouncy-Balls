@@ -74,15 +74,23 @@ class Sprite(Component.Component):
         self.lenY = obj["lenY"]
     
 class SpriteBackground(Sprite):
-    def __init__(self, spritePath=None, lenX=0.5, lenY=0.5, diameter=None):
+    def __init__(self, spritePath=None, lenX=0.5, lenY=0.5, diameter=None, scale = 1):
         super().__init__(spritePath, lenX, lenY, diameter)
         self.spriteType = SpriteType.Background
+        self.scale = scale
     
-    def DisplayImg(self):
-        width = GlobalVars.background.get_width()
-        height = GlobalVars.background.get_height()
+    def Update(self, deltaTime):
+        if self.parent.GetParentScene().GetObjectsWithComponent(ComponentType.Cannon) == []:
+            self.scale = 1
+        camera = self.parent.GetParentScene().camera
+        pos = self.parent.GetComponent(ComponentType.Background).initPos + camera.parent.GetComponent(ComponentType.Transform).position * 30
+        self.DisplayImg(pos)
+    
+    def DisplayImg(self, pos):
+        width = GlobalVars.background.get_width() * self.scale
+        height = GlobalVars.background.get_height() * self.scale
         image = pygame.transform.scale(self.sprite,(width,height))
-        GlobalVars.background.blit(image,(0,0))
+        GlobalVars.background.blit(image,(-pos.x-width*(self.scale-1)/2,pos.y-height*(self.scale-1)/2))
         
 class SpriteUI(Sprite):
     def __init__(self, spritePath=None, lenX=0.5, lenY=0.5, diameter = None, number = None):
