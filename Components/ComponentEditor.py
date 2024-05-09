@@ -10,6 +10,7 @@ from Components import ComponentGround
 from Components import ComponentSprite
 from Components import ComponentBackground
 from Components import ComponentCannon
+from Components import ComponentBall
 from Components import Component
 import GameObject
 import Scene
@@ -38,6 +39,7 @@ class Editor(Component.Component):
         self.objectIDs = list()
         self.gizmoSize = 0.3
         self.mouseStart = None
+        self.size = 0.2
                 
     def Start(self):
         self.CreateSelectables()
@@ -65,6 +67,9 @@ class Editor(Component.Component):
         
     def Update(self, deltaTime):
         if self.state == EditorState.Saving and self.workingScene.GameObjectWithID(self.gizmoObjectID) is None:
+            ball = GameObject.GameObject(self.workingScene)
+            ball.AddComponent(ComponentBall.BallBouncy)
+            self.workingScene.AddGameObject(ball)
             sceneName = self.workingScene.name
             with open("Bouncy-Balls/Levels/scene%s.json"%sceneName,"w") as fp:
                 self.workingScene.WriteJSON(fp)
@@ -90,7 +95,7 @@ class Editor(Component.Component):
         
     def CreateSelectables(self):
         parentScene = self.parent.GetParentScene()
-        size = 0.2
+        
         
         selectables = (
             ("data/WoodStructure.png", ComponentStructure.StructureWood),
@@ -103,7 +108,7 @@ class Editor(Component.Component):
         
         for i in range(len(selectables)):
             button = GameObject.GameObject(parentScene)
-            button.AddComponent(ComponentButton.ButtonSelectable(nPoly=4, lenX=size, lenY=size, position=Vec2(-1 + size * (2.0/3 + i * 7.0/6), 1 - size * 2.0/3), spritePath=selectables[i][0], editor=self, componentInit=selectables[i][1]))
+            button.AddComponent(ComponentButton.ButtonSelectable(nPoly=4, lenX=self.size, lenY=self.size, position=Vec2(-1 + self.size * (2.0/3 + i * 7.0/6), 1 - self.size * 2.0/3), spritePath=selectables[i][0], editor=self, componentInit=selectables[i][1]))
             parentScene.AddGameObject(button)
     
     def SelectType(self, componentInit):

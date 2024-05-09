@@ -1,6 +1,6 @@
 from Components import Component
 from Components.Component import ComponentType
-from Components.Component import ComponentType
+from Components import ComponentButton
 from Vector import Vec2
 import math
 import math
@@ -33,7 +33,7 @@ class Camera(Component.Component):
                             ballPosition = ball.GetComponent(ComponentType.Transform).position
                     if ballPosition is not None:
                         self.MoveCamera(ballPosition)
-        
+            
     def EnforceBounds(self):
         def sign(x):
             if x == 0:

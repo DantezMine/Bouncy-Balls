@@ -89,9 +89,15 @@ class SpriteUI(Sprite):
         self.numbers = pygame.image.load("Bouncy-Balls/data/NumberImages.png")
         
     def BlitImage(self, image, coord):
+        sceneCam = self.parent.GetParentScene().camera
+        parentTransform = self.parent.GetComponent(ComponentType.Transform)
+        width = GlobalVars.screen.get_width()
+        height = GlobalVars.screen.get_height()
+        screenScale = Vec2(self.lenX*10*width*parentTransform.scale.x,self.lenY*height*parentTransform.scale.y) * (sceneCam.scale / 2.0)
+        self.numbers = pygame.transform.scale(self.numbers,(screenScale.x,screenScale.y))
         GlobalVars.UILayer.blit(image, coord)
         if self.number is not None:
-            GlobalVars.UILayer.blit(self.numbers, coord, area=pygame.Rect(self.number * 100, 0, 100, 120))
+            GlobalVars.UILayer.blit(self.numbers, coord, area=pygame.Rect(self.number * screenScale.x * parentTransform.scale.x / 10, 0, screenScale.x * parentTransform.scale.x / 10, screenScale.y * parentTransform.scale.y))
         
 class SpriteGizmo(Sprite):
     def __init__(self, lenX=0.5, lenY=0.5, diameter=None, targetID = None):

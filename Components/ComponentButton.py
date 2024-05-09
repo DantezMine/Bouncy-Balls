@@ -6,6 +6,7 @@ import enum
 from Components import Component
 from Components import ComponentTransform
 from Components import ComponentSprite
+from Components import ComponentCannon
 from Components.Component import ComponentType
 import GlobalVars
 from Vector import Vec2
@@ -53,6 +54,9 @@ class Button(Component.Component):
         self.CheckClick()
         if self.animate:
             self.Animate()
+        # camera = self.parent.GetParentScene().camera
+        # self.cameraScale = camera.scale
+        # self.parent.GetComponent(ComponentType.Transform).position = self.parent.GetComponent(ComponentType.Transform).position / self.cameraScale
 
     def CheckClick(self):
         if self.onEscape and GlobalVars.escapeKey:
@@ -209,3 +213,23 @@ class ButtonSelectable(Button):
         img.save("Bouncy-Balls/data/" + self.spritePath[:-4] + "Button.png",'PNG')
         
         self.parent.AddComponent(ComponentSprite.SpriteUI("data/" + self.spritePath[:-4] + "Button.png", lenX=self.lenX, lenY=self.lenY))
+        
+class ButtonBall(Button):
+    def __init__(self, nPoly=4, lenX=None, lenY=None, radius=0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", onEscape = False, ballType = None):
+        super().__init__(nPoly, lenX, lenY, radius, position, spritePath, onEscape)
+        self.buttonType = ButtonType.Selectable
+        self.ballType = ballType
+        
+    def Start(self):
+        super().Start()
+        self.parent.AddComponent(ComponentSprite.SpriteUI(self.spritePath, lenX=self.lenX, lenY=self.lenY))
+        
+    def EndOfClick(self):
+        cannon = self.parent.GetParentScene().GetObjectsWithComponent(ComponentType.Cannon)[0]
+        cannon.GetComponent(ComponentType.Cannon).SelectBall(self.ballType)
+        # ball = self.parent.GetParentScene().GetObjectsWithComponent(ComponentType.Ball)
+        # ball.AddComponent()
+        
+    def Decode(self, obj):
+        super().Decode(obj)
+        self.editorID = obj["editor"]

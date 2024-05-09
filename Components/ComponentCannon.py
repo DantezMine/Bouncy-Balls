@@ -2,6 +2,8 @@ from Components.Component import ComponentType
 from Components import ComponentTransform
 from Components import ComponentSprite
 from Components import Component
+from Components import ComponentButton
+from Components import ComponentBall
 import GameObject
 from Vector import Vec2
 import GlobalVars
@@ -19,12 +21,41 @@ class Cannon(Component.Component):
         self.cannonScale = 2
         self.lenX = self.cannonScale*0.580
         self.lenY = self.cannonScale*0.402
+        self.size = 0.4
+        self.ballType = ComponentBall.BallType.Bouncy
+        
+        self.ballData = {
+            ComponentBall.BallType.Bouncy : 0,
+            ComponentBall.BallType.Heavy : 0
+        }
+        
+        self.ballConstructors = {
+            ComponentBall.BallType.Bouncy : ComponentBall.BallBouncy,
+            ComponentBall.BallType.Heavy : ComponentBall.BallBowling
+        }
         
     def Start(self):
         transform = self.parent.GetComponent(ComponentType.Transform)
         transform.position = self.initPos if self.initPos is not None else transform.position
         self.parent.AddComponent(ComponentSprite.Sprite("data/Barrel.png", self.cannonScale*0.580, self.cannonScale*0.402))
         # self.parent.AddComponent(Base(self.initPos + self.baseOffset))
+        
+        ballBouncyButton = GameObject.GameObject(self.parent.GetParentScene())
+        ballBouncyButton.AddComponent(ComponentButton.ButtonBall(nPoly=4,lenX=self.size,lenY=self.size,position= Vec2(-1 + self.size * 2.0/3, 1 - self.size * (2.0/3 + 0 * 7.0/6)),spritePath="data/TennisBall.png", ballType = ComponentBall.BallType.Bouncy))
+        self.parent.GetParentScene().AddGameObject(ballBouncyButton)
+        
+        ballHeavyButton = GameObject.GameObject(self.parent.GetParentScene())
+        ballHeavyButton.AddComponent(ComponentButton.ButtonBall(nPoly=4,lenX=self.size,lenY=self.size,position= Vec2(-1 + self.size * 2.0/3, 1 - self.size * (2.0/3 + 1 * 7.0/6)),spritePath="data/BowlingBall.png", ballType = ComponentBall.BallType.Heavy))
+        self.parent.GetParentScene().AddGameObject(ballHeavyButton)
+        
+        if self.ballData[ComponentBall.BallType.Bouncy] == 0:
+            self.ballType = ComponentBall.BallType.Heavy
+        else:
+            self.ballType = ComponentBall.BallType.Bouncy
+        
+        ball = GameObject.GameObject(self.parent.GetParentScene())
+        ball.AddComponent(self.ballConstructors[self.ballType](self))
+        self.parent.GetParentScene().AddGameObject(ball)
         
         scene = self.parent.GetParentScene()
         #only create base if it doesn't exist in the scene yet
@@ -38,18 +69,11 @@ class Cannon(Component.Component):
         mousePos = pygame.mouse.get_pos()
         mousePos = Vec2(mousePos[0],mousePos[1])
         mousePosWorld = ComponentTransform.Transform.ScreenToWorldPos(mousePos, self.parent.GetParentScene().camera)
-        for event in GlobalVars.events:
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                self.mousePressed = True
-                if event.button == 1:
-                    self.mouseLeft = True
-            elif event.type == pygame.MOUSEBUTTONUP:
-                self.mousePressed = False
-                self.mouseLeft = False
+        self.mousePressed = GlobalVars.mousePressed
                     
         if self.mousePressed:
             if self.mouseLeft:
-                delta = mousePosWorld - self.initPos
+                delta = mousePosWorld - transform.position
                 if delta.x != 0 and delta.y != 0:
                     self.rotation = math.atan(float(delta.y)/float(delta.x)) - 0.35
                 else:
@@ -59,6 +83,13 @@ class Cannon(Component.Component):
                     self.rotation += math.pi
                 transform.rotation = self.rotation
                 
+    def SelectBall(self, ballType):
+        self.ballData[self.ballType] -= 1
+        self.ballType = ballType
+        self.ballData[self.ballType] += 1
+        ball = self.parent.GetParentScene().GetObjectsWithComponent(ComponentType.Ball)
+        ball[0].AddComponent(self.ballConstructors[self.ballType](self))
+        
     def Decode(self, obj):
         super().Decode(obj)
         self.mousePressed = obj["mousePressed"]
