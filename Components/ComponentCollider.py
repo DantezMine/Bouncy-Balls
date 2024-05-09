@@ -48,13 +48,14 @@ class Collider(Component.Component):
         self.localRotation = localRotation
         self.localScale = localScale
         
-    def Recalculate(self,temp):
+    def Recalculate(self, temp):
         pass
 
     def DisplayCollider(self):
         pass
     
     def Update(self,deltaTime,colliders,updateOnCollision=True):
+        self.Recalculate(False)
         self.collisions = []
         self.CheckCollision(colliders)
         if updateOnCollision:
@@ -127,8 +128,8 @@ class ColliderRect(Collider):
             #check if the objects are inside each others circumcircles
             posA = self.parent.GetComponent(ComponentType.Transform).position
             posB = collider.parent.GetComponent(ComponentType.Transform).position
-            if (posA-posB).SqMag() > self.sqRadius+collider.sqRadius + 0.1:
-                continue
+            # if (posA-posB).SqMag() > self.sqRadius+collider.sqRadius + 0.1:
+            #     continue
             
             if collider.colliderType == ColliderType.Rect:
                 collVerts = collider.verts

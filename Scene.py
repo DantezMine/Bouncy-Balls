@@ -225,6 +225,8 @@ class Scene:
                 return ComponentStructure.StructureMetal
             elif structureType == ComponentStructure.StructureType.Wood.value:
                 return ComponentStructure.StructureWood
+            elif structureType == ComponentStructure.StructureType.Goal.value:
+                return ComponentStructure.StructureGoal
         if ctype == ComponentType.Editor.value:
             return ComponentEditor.Editor
         if ctype == ComponentType.Manager.value:
