@@ -25,6 +25,12 @@ class Scene:
         self.removeQueue = list()
         self.addQueue = list()
         self.hasStarted = False
+        self.CreateDefaultCamera()
+        
+    def CreateDefaultCamera(self):
+        defaultCamObj = GameObject.GameObject(self)
+        defaultCamObj.AddComponent(ComponentCamera.Camera())
+        self.defaultCam = defaultCamObj.GetComponent(ComponentType.Camera)
         
     def AddGameObject(self,gameObject):
         self.addQueue.append(gameObject)

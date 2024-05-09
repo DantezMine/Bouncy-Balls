@@ -72,19 +72,23 @@ class Editor(Component.Component):
         saveButton.AddComponent(ComponentButton.Button(nPoly=4,lenX=0.2,lenY=0.2,position=Vec2(-0.87,-0.87),function=self.SaveScene, spritePath="data/Save.png"))
         self.parent.GetParentScene().AddGameObject(saveButton)
         
+        cannon = GameObject.GameObject(self.workingScene)
+        cannon.AddComponent(ComponentCannon.Cannon(gameStart=False))
+        self.workingScene.AddGameObject(cannon)
+        self.objectIDs.append(cannon.GetID())
+        
         self.workingScene.StartScene()
         
     def Update(self, deltaTime):
         if self.state == EditorState.Saving and self.workingScene.GameObjectWithID(self.gizmoObjectID) is None:
-            ball = GameObject.GameObject(self.workingScene)
-            ball.AddComponent(ComponentBall.BallBouncy)
-            self.workingScene.AddGameObject(ball)
             sceneName = self.workingScene.name
             cannons = self.workingScene.GetObjectsWithComponent(ComponentType.Cannon)
+            self.workingScene.camera.free = False
             if len(cannons) > 0:
                 cannons[0].ballData = self.ballData
             with open("Bouncy-Balls/Levels/scene%s.json"%sceneName,"w") as fp:
                 self.workingScene.WriteJSON(fp)
+            self.workingScene.camera.free = True
                 
             gizmoObject = GameObject.GameObject(self.workingScene)
             gizmoObject.AddComponent(ComponentSprite.SpriteGizmo(diameter=self.gizmoSize*math.sqrt(2),targetID=None))
@@ -108,13 +112,13 @@ class Editor(Component.Component):
         
     def CreateSelectables(self):
         parentScene = self.parent.GetParentScene()
-        
+        self.size = 0.2
         
         selectables = (
             ("data/WoodStructure.png", ComponentStructure.StructureWood),
             ("data/StructureMetal.png", ComponentStructure.StructureMetal),
             ("data/GroundDirt.png", ComponentGround.GroundDirt),
-            ("data/Barrel.png", ComponentCannon.Cannon),
+            #("data/Barrel.png", ComponentCannon.Cannon),
             ("data/BackgroundSkyline-Sky.png", ComponentBackground.BackgroundSkyline),
             ("data/BackgroundNature-Sky.png", ComponentBackground.BackgroundNature)
         )

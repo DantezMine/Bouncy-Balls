@@ -1,8 +1,6 @@
 from Components import Component
 from Components.Component import ComponentType
-from Components import ComponentButton
 from Vector import Vec2
-import math
 import math
 
 class Camera(Component.Component):
@@ -14,7 +12,6 @@ class Camera(Component.Component):
         self.minimalBound = Vec2(2/scale,2/scale)
         self.boundLen = self.minimalBound if boundLen is None else boundLen
         self.free = free
-        
         
     def Start(self):
         transform = self.parent.GetComponent(ComponentType.Transform).position
@@ -29,8 +26,8 @@ class Camera(Component.Component):
                     balls = self.scene.GetObjectsWithComponent(ComponentType.Ball)
                     ballPosition = None
                     for ball in balls:
-                        if ball.GetComponent(ComponentType.Ball).state == "Released":
-                            ballPosition = ball.GetComponent(ComponentType.Transform).position
+                        #if self.parent.GetParentScene().GetComponents(ComponentType.Cannon)[0].state == "Released":
+                        ballPosition = ball.GetComponent(ComponentType.Transform).position
                     if ballPosition is not None:
                         self.MoveCamera(ballPosition)
             

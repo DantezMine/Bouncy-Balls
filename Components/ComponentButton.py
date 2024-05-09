@@ -25,7 +25,7 @@ class ButtonType(enum.Enum):
                 return member
 
 class Button(Component.Component):
-    def __init__(self, nPoly = 4, lenX = None, lenY = None, radius = 0.2, position = None, spritePath="data/ButtonLocked.png", onEscape = False, function = None):
+    def __init__(self, nPoly = 4, lenX = None, lenY = None, radius = 0.2, position = None, spritePath="data/ButtonLocked.png", onEscape = False, function = None, atStart = True):
         '''If lenX and lenY aren't specified, 2*radius is chosen for both sidelengths'''
         self.name = ComponentType.Button
         
@@ -40,6 +40,7 @@ class Button(Component.Component):
         self.spritePath = spritePath
         self.onEscape = onEscape
         self.function = function
+        self.atStart = atStart
         
     def Start(self):
         self.transform = self.parent.GetComponent(ComponentType.Transform)
@@ -50,31 +51,28 @@ class Button(Component.Component):
         
     def Update(self, deltaTime):
         self.verts = self.GetVertices()
-        # self.DisplayButtonOutline((220,20,220))
         self.CheckClick()
         if self.animate:
             self.Animate()
-        # camera = self.parent.GetParentScene().camera
-        # self.cameraScale = camera.scale
-        # self.parent.GetComponent(ComponentType.Transform).position = self.parent.GetComponent(ComponentType.Transform).position / self.cameraScale
 
     def CheckClick(self):
         if self.onEscape and GlobalVars.escapeKey:
             self.OnClick()
         if GlobalVars.mouseLeft:
-            mousePosWorld = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen,self.parent.GetParentScene().camera)
-            if self.PointInPolygon(mousePosWorld):
+            mousePosUI = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen,self.parent.GetParentScene().defaultCam)
+            if self.PointInPolygon(mousePosUI):
                 self.OnClick()
     
     def OnClick(self):
         '''To use animation, super() this function'''
         self.clickStart = time.time()
         self.animate = True
-        if self.function is not None:
+        if self.function is not None and self.atStart:
             self.function()
         
     def EndOfClick(self):
-        pass
+        if not self.atStart:
+            self.function()
     
     def CubicEase(self,x):
         return 4*math.pow(x,3) if x < 0.5 else 1 - math.pow(-2 * x + 2, 3)/2.0
@@ -116,7 +114,7 @@ class Button(Component.Component):
     def DisplayButtonOutline(self, color):
         vertices = []
         for v in self.verts:
-            vertScreen = ComponentTransform.Transform.WorldToScreenPos(v,self.parent.GetParentScene().camera)
+            vertScreen = v#ComponentTransform.Transform.WorldToScreenPos(v,self.parent.GetParentScene().camera)
             vertices.append((vertScreen.x,vertScreen.y))
         pygame.draw.polygon(GlobalVars.UILayer,color,vertices,1)
     
@@ -187,7 +185,6 @@ class ButtonSelectable(Button):
         
     def Decode(self, obj):
         super().Decode(obj)
-        self.editorID = obj["editor"]
         
     def CreateButtonSprite(self):
         canvas = pygame.Surface((150,150), pygame.SRCALPHA, 32)

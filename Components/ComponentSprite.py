@@ -87,6 +87,30 @@ class SpriteUI(Sprite):
         self.spriteType = SpriteType.UI
         self.number = number
         self.numbers = pygame.image.load("Bouncy-Balls/data/NumberImages.png") if number is not None else None
+        
+    def DisplayImg(self):
+        parentTransform = self.parent.GetComponent(ComponentType.Transform)
+        width = GlobalVars.screen.get_width()
+        height = GlobalVars.screen.get_height()
+        
+        #World Space
+        topLeft = (Vec2(self.lenX*parentTransform.scale.x,-self.lenY*parentTransform.scale.y)/2.0).Rotate(parentTransform.rotation)
+        botLeft = (Vec2(self.lenX*parentTransform.scale.x, self.lenY*parentTransform.scale.y)/2.0).Rotate(parentTransform.rotation)
+        #get extremes of AABB
+        dx = max(abs(topLeft.x),abs(botLeft.x))
+        dy = max(abs(topLeft.y),abs(botLeft.y))
+        xWorld = parentTransform.position.x-dx
+        yWorld = parentTransform.position.y+dy
+
+        #Screen Space
+        vScreen = ComponentTransform.Transform.WorldToScreenPos(Vec2(xWorld,yWorld), self.parent.GetParentScene().defaultCam)
+        xScreen = vScreen.x
+        yScreen = vScreen.y
+        screenScale = Vec2(self.lenX*width*parentTransform.scale.x,self.lenY*height*parentTransform.scale.y) * (1 / 2.0)
+
+        image = pygame.transform.scale(self.sprite,(screenScale.x,screenScale.y))
+        image = pygame.transform.rotate(image,parentTransform.rotation*180.0/math.pi)
+        self.BlitImage(image,(xScreen,yScreen))
 
     def BlitImage(self, image, coord):
         GlobalVars.UILayer.blit(image, coord)
