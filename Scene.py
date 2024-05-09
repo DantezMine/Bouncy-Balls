@@ -24,6 +24,7 @@ class Scene:
         self.world = None
         self.removeQueue = list()
         self.addQueue = list()
+        self.hasStarted = False
         
     def AddGameObject(self,gameObject):
         self.addQueue.append(gameObject)
@@ -110,7 +111,7 @@ class Scene:
     def StartScene(self):
         self.HandleAddQueue()
         self.HandleRemoveQueue()
-        # deprecated
+        self.hasStarted = True
         for go in self.__gameObjects.values():
             go.Start()
             

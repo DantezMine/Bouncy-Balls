@@ -39,10 +39,17 @@ class Editor(Component.Component):
         self.objectIDs = list()
         self.gizmoSize = 0.3
         self.mouseStart = None
-        self.size = 0.2
+        
+        self.ballData = {
+            ComponentBall.BallType.Bouncy : 0,
+            ComponentBall.BallType.Heavy : 0
+        }
+        
+        self.ballNumbers = {}
                 
     def Start(self):
         self.CreateSelectables()
+        self.CreateBallSelections()
         self.workingScene = Scene.Scene("untitled scene")
         camera = GameObject.GameObject(self.workingScene)
         camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1/1.0,boundLen=Vec2(10,10)))
@@ -65,12 +72,17 @@ class Editor(Component.Component):
         saveButton.AddComponent(ComponentButton.Button(nPoly=4,lenX=0.2,lenY=0.2,position=Vec2(-0.87,-0.87),function=self.SaveScene, spritePath="data/Save.png"))
         self.parent.GetParentScene().AddGameObject(saveButton)
         
+        self.workingScene.StartScene()
+        
     def Update(self, deltaTime):
         if self.state == EditorState.Saving and self.workingScene.GameObjectWithID(self.gizmoObjectID) is None:
             ball = GameObject.GameObject(self.workingScene)
             ball.AddComponent(ComponentBall.BallBouncy)
             self.workingScene.AddGameObject(ball)
             sceneName = self.workingScene.name
+            cannons = self.workingScene.GetObjectsWithComponent(ComponentType.Cannon)
+            if len(cannons) > 0:
+                cannons[0].ballData = self.ballData
             with open("Bouncy-Balls/Levels/scene%s.json"%sceneName,"w") as fp:
                 self.workingScene.WriteJSON(fp)
                 
@@ -88,6 +100,7 @@ class Editor(Component.Component):
         self.workingScene.HandleRemoveQueue()
         self.workingScene.ShowScene(deltaTime)
         self.CheckMouse()
+        self.workingScene.StartScene()
         
         baseList = self.workingScene.GetComponents(ComponentType.Base)
         if len(baseList) > 0:
@@ -110,6 +123,38 @@ class Editor(Component.Component):
             button = GameObject.GameObject(parentScene)
             button.AddComponent(ComponentButton.ButtonSelectable(nPoly=4, lenX=self.size, lenY=self.size, position=Vec2(-1 + self.size * (2.0/3 + i * 7.0/6), 1 - self.size * 2.0/3), spritePath=selectables[i][0], editor=self, componentInit=selectables[i][1]))
             parentScene.AddGameObject(button)
+    
+    def CreateBallSelections(self):
+        parentScene = self.parent.GetParentScene()
+        size = 0.15
+        balls = (
+            ("data/BowlingBall.PNG",ComponentBall.BallType.Heavy),
+            ("data/TennisBall.png", ComponentBall.BallType.Bouncy)
+        )
+        
+        for i in range(len(balls)):
+            display = GameObject.GameObject(parentScene)
+            display.AddComponent(ComponentSprite.SpriteUI(spritePath=balls[i][0],lenX=size,lenY=size))
+            display.GetComponent(ComponentType.Transform).position = Vec2(-1 + size * 2.0/3, 0.7 - size * (2.0/3 + i * 8/6))
+            parentScene.AddGameObject(display)
+            
+            arrowUp = GameObject.GameObject(parentScene)
+            arrowUp.AddComponent(ComponentButton.ButtonBallArrow(lenX=size/3,lenY=size/2,position=Vec2(-0.7 + size * 2.0/3, 0.7 - size * (2.0/3 - 0.3 + i * 8/6)),function=self.ButtonArrow,ballType=balls[i][1],weight=1))
+            parentScene.AddGameObject(arrowUp)
+            arrowDown = GameObject.GameObject(parentScene)
+            arrowDown.AddComponent(ComponentButton.ButtonBallArrow(lenX=size/3,lenY=size/2,position=Vec2(-0.7 + size * 2.0/3, 0.7 - size * (2.0/3 + 0.3 + i * 8/6)),function=self.ButtonArrow,ballType=balls[i][1],weight=-1))
+            parentScene.AddGameObject(arrowDown)
+            
+            number = GameObject.GameObject(parentScene)
+            number.AddComponent(ComponentSprite.SpriteUI(spritePath="data/WoodStructure.png",lenX=size,lenY=size,number=0))
+            number.GetComponent(ComponentType.Transform).position = Vec2(-0.83 + size * 2.0/3, 0.7 - size * (2.0/3 + i * 8/6))
+            parentScene.AddGameObject(number)
+            
+            self.ballNumbers[balls[i][1]] = number.GetComponent(ComponentType.Sprite)
+                        
+    def ButtonArrow(self, ballType, weight):
+        self.ballData[ballType] += weight if self.ballData[ballType] + weight >= -1 and self.ballData[ballType] + weight <= 9 else 0
+        self.ballNumbers[ballType].number += weight if self.ballData[ballType] + weight >= -1 and self.ballData[ballType] + weight <= 9 else 0
     
     def SelectType(self, componentInit):
         self.workingObject = GameObject.GameObject(self.workingScene)

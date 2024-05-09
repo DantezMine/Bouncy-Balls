@@ -171,11 +171,12 @@ class ButtonScene(Button):
         self.sceneName = obj["sceneName"]
         
 class ButtonSelectable(Button):
-    def __init__(self, nPoly=4, lenX=None, lenY=None, radius=0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", editor = None, componentInit = None, onEscape = False):
+    def __init__(self, nPoly=4, lenX=None, lenY=None, radius=0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", backgroundPath = "Bouncy-Balls/data/ButtonSelectableBackground.png", editor = None, componentInit = None, onEscape = False):
         super().__init__(nPoly, lenX, lenY, radius, position, spritePath, onEscape)
         self.buttonType = ButtonType.Selectable
         self.editor = editor
         self.componentInit = componentInit
+        self.backgroundPath = backgroundPath
         
     def Start(self):
         super().Start()
@@ -196,7 +197,7 @@ class ButtonSelectable(Button):
         height = canvas.get_height()
         imgScale = 0.8
         
-        image = pygame.transform.scale(pygame.image.load("Bouncy-Balls/data/ButtonSelectableBackground.png"), (width,height))
+        image = pygame.transform.scale(pygame.image.load(self.backgroundPath), (width,height))
         canvas.blit(image, (0,0))
         
         if self.componentInit is not None:
@@ -213,6 +214,21 @@ class ButtonSelectable(Button):
         img.save("Bouncy-Balls/data/" + self.spritePath[:-4] + "Button.png",'PNG')
         
         self.parent.AddComponent(ComponentSprite.SpriteUI("data/" + self.spritePath[:-4] + "Button.png", lenX=self.lenX, lenY=self.lenY))
+        
+
+class ButtonBallArrow(Button):
+    def __init__(self, nPoly=4, lenX=None, lenY=None, radius=0.2, position=None, spritePath="data/GizmoArrowUp.png", onEscape=False, function=None, ballType = None, weight = 1):
+        spritePath = "data/GizmoArrowUp.png" if weight == 1 else "data/GizmoArrowDown.png"
+        super().__init__(nPoly, lenX, lenY, radius, position, spritePath, onEscape, function)
+        self.ballType = ballType
+        self.weight = weight
+        
+    def OnClick(self):
+        self.clickStart = time.time()
+        self.animate = True
+    
+    def EndOfClick(self):
+        self.function(self.ballType, self.weight)
         
 class ButtonBall(Button):
     def __init__(self, nPoly=4, lenX=None, lenY=None, radius=0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", onEscape = False, ballType = None):

@@ -1,6 +1,7 @@
 from Components.Component import ComponentType
 from Components import ComponentTransform
 from Components import ComponentSprite
+from Components import ComponentBall
 from Components import Component
 from Components import ComponentButton
 from Components import ComponentBall
@@ -34,6 +35,11 @@ class Cannon(Component.Component):
             ComponentBall.BallType.Heavy : ComponentBall.BallBowling
         }
         
+        self.ballData = {
+            ComponentBall.BallType.Bouncy : 0,
+            ComponentBall.BallType.Heavy : 0
+        }
+        
     def Start(self):
         transform = self.parent.GetComponent(ComponentType.Transform)
         transform.position = self.initPos if self.initPos is not None else transform.position
@@ -54,7 +60,7 @@ class Cannon(Component.Component):
             self.ballType = ComponentBall.BallType.Bouncy
         
         ball = GameObject.GameObject(self.parent.GetParentScene())
-        ball.AddComponent(self.ballConstructors[self.ballType](self))
+        ball.AddComponent(self.ballConstructors[self.ballType](self.parent))
         self.parent.GetParentScene().AddGameObject(ball)
         
         scene = self.parent.GetParentScene()
@@ -88,7 +94,7 @@ class Cannon(Component.Component):
         self.ballType = ballType
         self.ballData[self.ballType] += 1
         ball = self.parent.GetParentScene().GetObjectsWithComponent(ComponentType.Ball)
-        ball[0].AddComponent(self.ballConstructors[self.ballType](self))
+        ball[0].AddComponent(self.ballConstructors[self.ballType](self.parent))
         
     def Decode(self, obj):
         super().Decode(obj)

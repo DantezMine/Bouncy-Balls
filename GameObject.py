@@ -9,13 +9,16 @@ class GameObject(object):
         self.__components = {key: value for key, value in []} #initialize an empty dictionary using dictionary comprehension
         self.__parentScene = parentScene
         self.__isBackground = False
-        
+        self.startQueue = list()        
         self.AddComponent(ComponentTransform.Transform())
         
     def AddComponent(self, component):
         self.__components[component.name] = component
         self.__components[component.name].parent = self
-        component.Start()
+        if self.__parentScene.hasStarted:
+            component.Start()
+        else:
+            self.startQueue.append(component)
         if component.name == ComponentType.Background:
             self.__isBackground = True
         return True
@@ -52,13 +55,21 @@ class GameObject(object):
     def GetParentScene(self):
         return self.__parentScene
     
+    def HandleStartQueue(self):
+        for component in self.startQueue:
+            component.Start()
+        self.startQueue = list()
+    
     def Start(self):
+        self.HandleStartQueue()
         pass
         # keysCopy = list(self.__components.keys()).copy()
         # for key in keysCopy:
         #     self.__components[key].Start()
     
     def Update(self,deltaTime):
+        self.HandleStartQueue()
+        
         keysCopy = self.__components.keys()
         for key in keysCopy:
             if key != ComponentType.Sprite and key != ComponentType.Collider and key != ComponentType.Physics:
