@@ -49,20 +49,20 @@ class Sprite(Component.Component):
         dy = max(abs(topLeft.y),abs(botLeft.y))
         xWorld = parentTransform.position.x-dx
         yWorld = parentTransform.position.y+dy
-        
+
         #Screen Space
         vScreen = ComponentTransform.Transform.WorldToScreenPos(Vec2(xWorld,yWorld), sceneCam)
         xScreen = vScreen.x
         yScreen = vScreen.y
         screenScale = Vec2(self.lenX*width*parentTransform.scale.x,self.lenY*height*parentTransform.scale.y) * (sceneCam.scale / 2.0)
-                
+
         image = pygame.transform.scale(self.sprite,(screenScale.x,screenScale.y))
         image = pygame.transform.rotate(image,parentTransform.rotation*180.0/math.pi)
         self.BlitImage(image,(xScreen,yScreen))
         
     def BlitImage(self, image, coord):
         GlobalVars.foreground.blit(image, coord)
-    
+
     def Decode(self, obj):
         super().Decode(obj)
         self.spritePath = obj["spritePath"]

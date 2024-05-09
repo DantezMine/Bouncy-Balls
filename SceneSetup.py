@@ -95,7 +95,7 @@ def SetupLevelSelect(world):
         level = levels[i]
         lvlButtons.append(f'lvlButton{i}')
         lvlButtons[i] = GameObject.GameObject(scene)
-        lvlButtons[i].AddComponent(ComponentButton.ButtonScene(nPoly=4,radius=0.1,position=Vec2(-0.5+(x*0.25),0.4-(y*0.25)),scenePath="Levels/%s" %level))
+        lvlButtons[i].AddComponent(ComponentButton.ButtonScene(nPoly=4,radius=0.2,position=Vec2(-0.75+(x*0.5),0.75-(y*0.5)),spritePath="data/GizmoSquare.png",scenePath="Levels/%s" %level, number=i+1))
         scene.AddGameObject(lvlButtons[i])
         
 
