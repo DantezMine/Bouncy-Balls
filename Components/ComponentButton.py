@@ -129,14 +129,22 @@ class Button(Component.Component):
         self.onEscape = obj["onEscape"]
         
 class ButtonScene(Button):
-    def __init__(self, nPoly=4, lenX = None, lenY = None, radius = 0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", scenePath = None, setupFunc = None, sceneName = None, onEscape = False):
+    def __init__(self, nPoly=4, lenX = None, lenY = None, radius = 0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", scenePath = None, setupFunc = None, sceneName = None, onEscape = False, number = None):
         '''Since the setup func cannot be saved, it can only be used on scenes that don't get saved, e.g. the main menu, the editor, level select. To return back to the editor, level select or main menu from a saved level, only the sceneName should be assigned.'''
         super().__init__(nPoly, lenX, lenY, radius, position, spritePath, onEscape)
         self.scenePath = scenePath
         self.setupFunc = setupFunc
         self.sceneName = sceneName
         self.buttonType = ButtonType.Scene
+        self.number = number
         
+    def Start(self):
+        self.transform = self.parent.GetComponent(ComponentType.Transform)
+        self.transform.position = self.initPos
+        self.verts = self.GetVertices()
+        
+        self.parent.AddComponent(ComponentSprite.SpriteUI(self.spritePath, lenX=self.lenX, lenY=self.lenY, number=self.number))
+    
     def EndOfClick(self):
         import Scene
         scene = Scene.Scene()

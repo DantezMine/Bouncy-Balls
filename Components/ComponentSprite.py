@@ -49,20 +49,20 @@ class Sprite(Component.Component):
         dy = max(abs(topLeft.y),abs(botLeft.y))
         xWorld = parentTransform.position.x-dx
         yWorld = parentTransform.position.y+dy
-        
+
         #Screen Space
         vScreen = ComponentTransform.Transform.WorldToScreenPos(Vec2(xWorld,yWorld), sceneCam)
         xScreen = vScreen.x
         yScreen = vScreen.y
         screenScale = Vec2(self.lenX*width*parentTransform.scale.x,self.lenY*height*parentTransform.scale.y) * (sceneCam.scale / 2.0)
-                
+
         image = pygame.transform.scale(self.sprite,(screenScale.x,screenScale.y))
         image = pygame.transform.rotate(image,parentTransform.rotation*180.0/math.pi)
         self.BlitImage(image,(xScreen,yScreen))
         
     def BlitImage(self, image, coord):
         GlobalVars.foreground.blit(image, coord)
-    
+
     def Decode(self, obj):
         super().Decode(obj)
         self.spritePath = obj["spritePath"]
@@ -82,12 +82,16 @@ class SpriteBackground(Sprite):
         GlobalVars.background.blit(image,(0,0))
         
 class SpriteUI(Sprite):
-    def __init__(self, spritePath=None, lenX=0.5, lenY=0.5, diameter=None):
+    def __init__(self, spritePath=None, lenX=0.5, lenY=0.5, diameter=None, number = None):
         super().__init__(spritePath, lenX, lenY, diameter)
         self.spriteType = SpriteType.UI
+        self.number = number
+        self.numbers = pygame.image.load("Bouncy-Balls/data/NumberImages.png")
         
     def BlitImage(self, image, coord):
         GlobalVars.UILayer.blit(image, coord)
+        if self.number is not None:
+            GlobalVars.UILayer.blit(self.numbers, coord, area=pygame.Rect(self.number * 100, 0, 100, 120))
         
 class SpriteGizmo(Sprite):
     def __init__(self, lenX=0.5, lenY=0.5, diameter=None, targetID = None):
