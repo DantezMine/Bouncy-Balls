@@ -15,6 +15,7 @@ import random
 class StructureType(enum.Enum):
     Wood = enum.auto()
     Metal = enum.auto()
+    Goal = enum.auto()
     
     def Decode(value):
         members = list(vars(StructureType).values())
@@ -78,7 +79,7 @@ class Structure(Component.Component):
         self.destroyed = True
         
         manager = self.parent.GetParentScene().GetComponents(ComponentType.Manager)[0]
-        manager.score += 100
+        manager.AddScore(100)
         
         scene = self.parent.GetParentScene()
         self.parent.RemoveFromScene()
@@ -143,8 +144,23 @@ class StructureMetal(Structure):
 
     def Start(self):
         super().Start()
-        self.destructionMomentum = 35
+        self.destructionMomentum = 5
         mass = 10
         self.parent.GetComponent(ComponentType.Physics).mass = mass
         self.parent.GetComponent(ComponentType.Physics).momentOfInertia = self.CalculateMomentOfInertia(mass)
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/StructureMetal.png",lenX = self.lenX, lenY = self.lenY))
+        
+class StructureGoal(Structure):
+    '''type : "Goal"'''
+    def __init__(self, position = None, lenX=0.25, lenY=1.0, rotation = None):
+        super().__init__(position, lenX, lenY, rotation)
+        self.structureType = StructureType.Goal
+
+    def Start(self):
+        super().Start()
+        self.parent.AddComponent(ComponentCollider.ColliderRect(lenX = self.lenX, lenY = self.lenY,tags=["GoalStructure"]))
+        self.destructionMomentum = 100000
+        mass = 10
+        self.parent.GetComponent(ComponentType.Physics).mass = mass
+        self.parent.GetComponent(ComponentType.Physics).momentOfInertia = self.CalculateMomentOfInertia(mass)
+        self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/StructureGoal.png",lenX = self.lenX, lenY = self.lenY))

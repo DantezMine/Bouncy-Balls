@@ -127,6 +127,7 @@ class Editor(Component.Component):
         selectables = (
             ("data/WoodStructure.png", ComponentStructure.StructureWood),
             ("data/StructureMetal.png", ComponentStructure.StructureMetal),
+            ("data/StructureGoal.png", ComponentStructure.StructureGoal),
             ("data/GroundDirt.png", ComponentGround.GroundDirt),
             #("data/Barrel.png", ComponentCannon.Cannon),
             ("data/BackgroundSkyline-Sky.png", ComponentBackground.BackgroundSkyline),

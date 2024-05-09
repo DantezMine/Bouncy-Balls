@@ -34,7 +34,7 @@ class Physics(Component.Component):
         self.rotMargin = 0
         self.posMargin = 0
         
-        self.friction = 0.005
+        self.friction = 0.001
         
         self.prevPosition = Vec2(0,0)
         self.velocity = Vec2(0,0)
@@ -131,7 +131,7 @@ class Physics(Component.Component):
         
         coll = self.parent.GetComponent(ComponentType.Collider)
         if coll is not None:
-            coll.Recalculate(temp=False)
+            coll.Recalculate(temp=False) 
     
     #Fully dynamic collision response as per Chris Hecker: http://www.chrishecker.com/images/e/e7/Gdmphys3.pdf with own modificiations
     def CollisionResponseDynamic(self,collisionInfo : ComponentCollider.CollisionInfo, collisionCounts, collisionIndex):
