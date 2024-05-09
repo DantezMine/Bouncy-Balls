@@ -15,6 +15,7 @@ from Components import ComponentSprite
 from Components import ComponentStructure
 from Components import ComponentTransform
 from Components import ComponentEditor
+from Components import ComponentManager
 
 class Scene:
     def __init__(self, name = ""):
@@ -226,3 +227,5 @@ class Scene:
                 return ComponentStructure.StructureWood
         if ctype == ComponentType.Editor.value:
             return ComponentEditor.Editor
+        if ctype == ComponentType.Manager.value:
+            return ComponentManager.Manager

@@ -12,6 +12,7 @@ class Camera(Component.Component):
         self.minimalBound = Vec2(2/scale,2/scale)
         self.boundLen = self.minimalBound if boundLen is None else boundLen
         self.free = free
+        self.maxZoom = 1.0
         
     def Start(self):
         transform = self.parent.GetComponent(ComponentType.Transform).position
@@ -22,20 +23,22 @@ class Camera(Component.Component):
         if not self.free:
             if self.boundLen.x >= self.minimalBound.x:
                 if self.boundLen.y >= self.minimalBound.y:
-                    self.scene = self.parent.GetParentScene()
-                    balls = self.scene.GetObjectsWithComponent(ComponentType.Ball)
-                    ballPosition = None
-                    for ball in balls:
-                        #if self.parent.GetParentScene().GetComponents(ComponentType.Cannon)[0].state == "Released":
-                        ballPosition = ball.GetComponent(ComponentType.Transform).position
-                    if ballPosition is not None:
-                        self.MoveCamera(ballPosition)
+                    pass
+            self.scene = self.parent.GetParentScene()
+            balls = self.scene.GetObjectsWithComponent(ComponentType.Ball)
+            ballPosition = None
+            for ball in balls:
+                #if self.parent.GetParentScene().GetComponents(ComponentType.Cannon)[0].state == "Released":
+                ballPosition = ball.GetComponent(ComponentType.Transform).position
+            if ballPosition is not None:
+                self.MoveCamera(ballPosition)
             
     def EnforceBounds(self):
         def sign(x):
             if x == 0:
                 return 0
-            return -1 if x < 0 else 1      
+            return -1 if x < 0 else 1
+        
         transform = self.parent.GetComponent(ComponentType.Transform)
         signedDist = Vec2(1,1)/self.scale - self.boundLen/2.0 + abs(transform.position)
         signedDist.x = max(0,signedDist.x) * sign(transform.position.x)
@@ -47,6 +50,8 @@ class Camera(Component.Component):
         self.EnforceBounds()
         
     def ScaleCamera(self, scale):
+        self.minZoom = 2.0/max(self.boundLen.y,self.boundLen.x)
+        scale = min(self.maxZoom, max(self.minZoom, scale))
         self.scale = scale
         self.EnforceBounds()
         

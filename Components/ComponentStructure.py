@@ -77,6 +77,9 @@ class Structure(Component.Component):
     def Destruct(self):
         self.destroyed = True
         
+        manager = self.parent.GetParentScene().GetComponents(ComponentType.Manager)[0]
+        manager.score += 100
+        
         scene = self.parent.GetParentScene()
         self.parent.RemoveFromScene()
         

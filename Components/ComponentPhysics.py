@@ -34,6 +34,8 @@ class Physics(Component.Component):
         self.rotMargin = 0
         self.posMargin = 0
         
+        self.friction = 0.005
+        
         self.prevPosition = Vec2(0,0)
         self.velocity = Vec2(0,0)
         self.acceleration = Vec2(0,0)
@@ -135,7 +137,8 @@ class Physics(Component.Component):
     def CollisionResponseDynamic(self,collisionInfo : ComponentCollider.CollisionInfo, collisionCounts, collisionIndex):
         physicsB = collisionInfo.objectB.GetComponent(ComponentType.Physics)
         transfA = self.parent.GetComponent(ComponentType.Transform)
-        transfB = physicsB.parent.GetComponent(ComponentType.Transform)
+        if physicsB is not None:
+            transfB = physicsB.parent.GetComponent(ComponentType.Transform)
         
         moveA, moveB, rotateA, rotateB = 1,1,1,1
         if physicsB is None or physicsB.constraintPosition: #objectB is immovable
@@ -186,8 +189,8 @@ class Physics(Component.Component):
         if physicsB.gravity:
             forceNormalB = -accNormal * (physicsB.mass / collisionCounts[collisionIndex])
                 
-        deltaVA = normal * (deltaP/self.mass) * moveA
-        deltaVB = normal * (-deltaP/physicsB.mass) * moveB
+        deltaVA = normal * (deltaP/self.mass) * moveA - self.velocity * self.friction
+        deltaVB = normal * (-deltaP/physicsB.mass) * moveB - physicsB.velocity * physicsB.friction
         deltaWA = rAP_.Dot(normal*deltaP)/self.momentOfInertia * rotateA
         deltaWB = rBP_.Dot(normal*-deltaP)/physicsB.momentOfInertia * rotateB
         

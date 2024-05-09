@@ -1,5 +1,6 @@
 from Vector import Vec2
 from Components.Component import ComponentType
+from Components import ComponentTransform
 from Components import Component
 import GlobalVars
 import enum
@@ -352,7 +353,7 @@ class ColliderRect(Collider):
         for i in range(len(verts)):
             AB = verts[(i+1)%len(verts)] - verts[i]
             mags.append(AB.Mag())
-        return mags       
+        return mags
     
     def GetVertices(self, temp=False):#CCW starting top left if not rotated
         physics = self.parent.GetComponent(ComponentType.Physics)
@@ -381,7 +382,7 @@ class ColliderRect(Collider):
         verts = self.verts
         vertices = []
         for v in verts:
-            vertScreen = self.parent.GetComponent(ComponentType.Transform).WorldToScreenPos(v,self.parent.GetParentScene().camera)
+            vertScreen = ComponentTransform.Transform.WorldToScreenPos(v,self.parent.GetParentScene().camera)
             vertices.append((vertScreen.x,vertScreen.y))
         pygame.draw.polygon(GlobalVars.UILayer,(220,20,20),vertices,1)
     

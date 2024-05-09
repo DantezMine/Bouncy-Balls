@@ -11,6 +11,8 @@ from Components import ComponentSprite
 from Components import ComponentBackground
 from Components import ComponentCannon
 from Components import ComponentBall
+from Components import ComponentManager
+from Components import ComponentGoalField
 from Components import Component
 import GameObject
 import Scene
@@ -33,8 +35,6 @@ class Editor(Component.Component):
         self.parent = None
         
         self.state = EditorState.Free
-        self.minZoom = 1.0/15
-        self.maxZoom = 1.0
         self.startDrag = None
         self.objectIDs = list()
         self.gizmoSize = 0.3
@@ -52,13 +52,17 @@ class Editor(Component.Component):
         self.CreateBallSelections()
         self.workingScene = Scene.Scene("untitled scene")
         camera = GameObject.GameObject(self.workingScene)
-        camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1/1.0,boundLen=Vec2(10,10)))
+        camera.AddComponent(ComponentCamera.Camera(position=Vec2(0,0),scale=1/1.0,boundLen=Vec2(30,20)))
         self.workingScene.AddGameObject(camera)
         
         background = GameObject.GameObject(self.workingScene)
         background.AddComponent(ComponentBackground.BackgroundNature(position=Vec2(0,0),lenX=2,lenY=2))
         self.workingScene.AddGameObject(background)
         self.objectIDs.append(background.GetID())
+        
+        manager = GameObject.GameObject(self.workingScene)
+        manager.AddComponent(ComponentManager.Manager(inEditor=True))
+        self.workingScene.AddGameObject(manager)
         
         self.workingObject = None
         self.workingComp = None
@@ -73,9 +77,15 @@ class Editor(Component.Component):
         self.parent.GetParentScene().AddGameObject(saveButton)
         
         cannon = GameObject.GameObject(self.workingScene)
-        cannon.AddComponent(ComponentCannon.Cannon(gameStart=False))
+        cannon.AddComponent(ComponentCannon.Cannon())
         self.workingScene.AddGameObject(cannon)
         self.objectIDs.append(cannon.GetID())
+        
+        goalField = GameObject.GameObject(self.workingScene)
+        goalField.AddComponent(ComponentGoalField.GoalField())
+        # goalField.GetComponent(ComponentType.Transform).position = Vec2(0.5,0.5)
+        self.workingScene.AddGameObject(goalField)
+        self.objectIDs.append(goalField.GetID())
         
         self.workingScene.StartScene()
         
@@ -231,9 +241,7 @@ class Editor(Component.Component):
     def ScrollCamera(self):
         scroll = GlobalVars.scrollEvent.y
         camera = self.workingScene.camera
-        self.minZoom = 2.0/(camera.boundLen.y)
         scale = camera.scale + scroll * (math.log(1.0/camera.scale)/30 + 0.1) / 5
-        scale = min(self.maxZoom, max(self.minZoom, scale))
         camera.ScaleCamera(scale)
         
     def SelectObject(self):
@@ -254,6 +262,11 @@ class Editor(Component.Component):
                     break
             if obj.HasComponent(ComponentType.Cannon):
                 if self.CheckIntersection(mousePosWorld, obj.GetComponent(ComponentType.Cannon)):
+                    intersection = True
+                    ID = id
+                    break
+            if obj.HasComponent(ComponentType.GoalField):
+                if self.CheckIntersection(mousePosWorld, obj.GetComponent(ComponentType.GoalField)):
                     intersection = True
                     ID = id
                     break

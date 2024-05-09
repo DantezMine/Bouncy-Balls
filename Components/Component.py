@@ -59,6 +59,7 @@ class ComponentType(enum.Enum):
     Slider = enum.auto()
     Base = enum.auto()
     Editor = enum.auto()
+    Manager = enum.auto()
     
     def GetType(compType):
         members = list(vars(ComponentType).values())

@@ -12,7 +12,7 @@ import pygame
 import math
 
 class Cannon(Component.Component):
-    def __init__(self, position = None, rotation = None, gameStart = True):
+    def __init__(self, position = None, rotation = None):
         self.name = ComponentType.Cannon
         self.parent = None
         self.initPos = position
@@ -26,11 +26,10 @@ class Cannon(Component.Component):
         self.ballType = ComponentBall.BallType.Bouncy
         self.state = "Selecting"
         self.slingD = 10
-        self.gameStart = gameStart
         
         self.ballData = {
-            ComponentBall.BallType.Bouncy : 0,
-            ComponentBall.BallType.Heavy : 0
+            ComponentBall.BallType.Bouncy : 2,
+            ComponentBall.BallType.Heavy : 2
         }
         
         self.ballConstructors = {
@@ -38,11 +37,12 @@ class Cannon(Component.Component):
             ComponentBall.BallType.Heavy : ComponentBall.BallBowling
         }
         
+        self.ballCounterIDs = dict()
+        
     def Start(self):
         transform = self.parent.GetComponent(ComponentType.Transform)
         transform.position = self.initPos if self.initPos is not None else transform.position
         self.parent.AddComponent(ComponentSprite.Sprite("data/Barrel.png", self.cannonScale*0.580, self.cannonScale*0.402))
-        # self.parent.AddComponent(Base(self.initPos + self.baseOffset))
         
         scene = self.parent.GetParentScene()
         #only create base if it doesn't exist in the scene yet
@@ -51,37 +51,63 @@ class Cannon(Component.Component):
             cannonBase.AddComponent(Base(Vec2(-0.4,-0.3)))
             scene.AddGameObject(cannonBase)
         
-        if self.gameStart:
-            ballBouncyButton = GameObject.GameObject(scene)
-            ballBouncyButton.AddComponent(ComponentButton.ButtonBall(nPoly=4,lenX=self.buttonSize,lenY=self.buttonSize,position= Vec2(-1 + self.buttonSize * 2.0/3, 1 - self.buttonSize * (2.0/3 + 0 * 7.0/6)),spritePath="data/TennisBall.png", ballType = ComponentBall.BallType.Bouncy))
-            scene.AddGameObject(ballBouncyButton)
-            
-            ballHeavyButton = GameObject.GameObject(scene)
-            ballHeavyButton.AddComponent(ComponentButton.ButtonBall(nPoly=4,lenX=self.buttonSize,lenY=self.buttonSize,position= Vec2(-1 + self.buttonSize * 2.0/3, 1 - self.buttonSize * (2.0/3 + 1 * 7.0/6)),spritePath="data/BowlingBall.png", ballType = ComponentBall.BallType.Heavy))
-            scene.AddGameObject(ballHeavyButton)
-            
-            loadCannonButton = GameObject.GameObject(scene)
-            loadCannonButton.AddComponent(ComponentButton.Button(lenX=self.buttonSize,lenY=self.buttonSize,position=Vec2(-1 + self.buttonSize * 2.0/3, -1 + self.buttonSize * 2.0/3),function=self.LoadBall,atStart=False))
-            scene.AddGameObject(loadCannonButton)
-            
-            for key in self.ballData.keys():
-                if self.ballData[key] > 0:
-                    self.ballType = key
-            
-            ball = GameObject.GameObject(scene)
-            ball.AddComponent(self.ballConstructors[self.ballType]())
-            scene.AddGameObject(ball)
-            self.ballID = ball.GetID()     
+    
+    def StartGame(self):
+        scene = self.parent.GetParentScene()
+        
+        ballBouncyButton = GameObject.GameObject(scene)
+        ballBouncyButton.AddComponent(ComponentButton.ButtonBall(nPoly=4,lenX=self.buttonSize,lenY=self.buttonSize,position= Vec2(-1 + self.buttonSize * 2.0/3, 1 - self.buttonSize * (2.0/3 + 0 * 7.0/6)),spritePath="data/TennisBall.png", ballType = ComponentBall.BallType.Bouncy))
+        scene.AddGameObject(ballBouncyButton)
+        
+        ballHeavyButton = GameObject.GameObject(scene)
+        ballHeavyButton.AddComponent(ComponentButton.ButtonBall(nPoly=4,lenX=self.buttonSize,lenY=self.buttonSize,position= Vec2(-1 + self.buttonSize * 2.0/3, 1 - self.buttonSize * (2.0/3 + 1 * 7.0/6)),spritePath="data/BowlingBall.png", ballType = ComponentBall.BallType.Heavy))
+        scene.AddGameObject(ballHeavyButton)
+        
+        loadCannonButton = GameObject.GameObject(scene)
+        loadCannonButton.AddComponent(ComponentButton.Button(spritePath="data/LoadCannon.png",lenX=self.buttonSize,lenY=self.buttonSize,position=Vec2(-1 + self.buttonSize * 2.0/3, -1 + self.buttonSize * 2.0/3),function=self.LoadBall,atStart=False))
+        scene.AddGameObject(loadCannonButton)
+        
+        for key in self.ballData.keys():
+            if self.ballData[key] > 0:
+                self.ballType = key
+        
+        ball = GameObject.GameObject(scene)
+        ball.AddComponent(self.ballConstructors[self.ballType]())
+        scene.AddGameObject(ball)
+        self.ballID = ball.GetID()
+        
+        if self.ballData[ComponentBall.BallType.Bouncy] == 0:
+            self.ballType = ComponentBall.BallType.Heavy
+            self.ballData[ComponentBall.BallType.Heavy] -= 1
+        else:
+            self.ballType = ComponentBall.BallType.Bouncy
+            self.ballData[ComponentBall.BallType.Bouncy] -= 1
+        
+        ballBouncyCounter = GameObject.GameObject(self.parent.GetParentScene())
+        ballBouncyCounter.AddComponent(ComponentSprite.SpriteUI(spritePath="data/WoodStructure.png", lenX=self.buttonSize, lenY=self.buttonSize, number=self.ballData[ComponentBall.BallType.Bouncy]))
+        ballBouncyCounter.GetComponent(ComponentType.Transform).position = Vec2(-1 + self.buttonSize * 2.0/3 + self.buttonSize, 1 - self.buttonSize * (2.0/3 + 0 * 7.0/6))
+        self.parent.GetParentScene().AddGameObject(ballBouncyCounter)
+        self.ballCounterIDs[ComponentBall.BallType.Bouncy] = ballBouncyCounter.GetID()
+        
+        ballHeavyCounter = GameObject.GameObject(self.parent.GetParentScene())
+        ballHeavyCounter.AddComponent(ComponentSprite.SpriteUI(spritePath="data/WoodStructure.png", lenX=self.buttonSize, lenY=self.buttonSize, number=self.ballData[ComponentBall.BallType.Heavy]))
+        ballHeavyCounter.GetComponent(ComponentType.Transform).position = Vec2(-1 + self.buttonSize * 2.0/3 + self.buttonSize, 1 - self.buttonSize * (2.0/3 + 1 * 7.0/6))
+        self.parent.GetParentScene().AddGameObject(ballHeavyCounter)
+        self.ballCounterIDs[ComponentBall.BallType.Heavy] = ballHeavyCounter.GetID()
+        
+        self.parent.GetParentScene().camera.ScaleCamera(1/6.0)
     
     def Update(self, deltaTime):
+        ball = self.parent.GetParentScene().GameObjectWithID(self.ballID)
+        if ball is None:
+            return
+        
+        ballTransform = ball.GetComponent(ComponentType.Transform)
         transform = self.parent.GetComponent(ComponentType.Transform)
         mousePos = pygame.mouse.get_pos()
         mousePos = Vec2(mousePos[0],mousePos[1])
         mousePosWorld = ComponentTransform.Transform.ScreenToWorldPos(mousePos, self.parent.GetParentScene().camera)
                 
-        ball = self.parent.GetParentScene().GameObjectWithID(self.ballID)
-        transform = self.parent.GetComponent(ComponentType.Transform)
-        ballTransform = ball.GetComponent(ComponentType.Transform)
         
         if self.state == "Selecting" or self.state == "Loaded":
             ballTransform.position = transform.position
@@ -136,11 +162,18 @@ class Cannon(Component.Component):
         self.SelectBall(ballType)
                 
     def SelectBall(self, ballType):
-        self.ballData[self.ballType] -= 1
-        self.ballType = ballType
-        self.ballData[self.ballType] += 1
-        ball = self.parent.GetParentScene().GetObjectsWithComponent(ComponentType.Ball)
-        ball[0].AddComponent(self.ballConstructors[self.ballType]())
+        ball = self.parent.GetParentScene().GetObjectsWithComponent(ComponentType.Ball)[0]
+        ball = ball.GetComponent(ComponentType.Ball)
+        if self.state == "Selecting":
+            self.ballData[self.ballType] += 1
+            ballCounter = self.parent.GetParentScene().GameObjectWithID(self.ballCounterIDs[self.ballType])
+            ballCounter.GetComponent(ComponentType.Sprite).number = self.ballData[self.ballType]
+        if self.ballData[ballType] > 0:
+            self.ballType = ballType
+            self.ballData[self.ballType] -= 1
+            ballCounter = self.parent.GetParentScene().GameObjectWithID(self.ballCounterIDs[self.ballType])
+            ballCounter.GetComponent(ComponentType.Sprite).number = self.ballData[self.ballType]
+            ball.parent.AddComponent(self.ballConstructors[self.ballType]())
         
     def Decode(self, obj):
         super().Decode(obj)
