@@ -1,10 +1,11 @@
 from Components.Component import ComponentType
 from Components import ComponentTransform
+from Components import ComponentManager
 from Components import ComponentSprite
-from Components import ComponentBall
-from Components import Component
 from Components import ComponentButton
 from Components import ComponentBall
+from Components import ComponentBall
+from Components import Component
 import GameObject
 from Vector import Vec2
 import GlobalVars
@@ -154,26 +155,33 @@ class Cannon(Component.Component):
         self.state = "Loaded"
         
     def NextBall(self):
-        self.state = "Selecting"
+        self.state = "Next"
         ballType = ComponentBall.BallType.Bouncy
+        ballsRemaining = 0
         for key in self.ballData.keys():
             if self.ballData[key] > 0:
                 ballType = key
+            ballsRemaining += self.ballData[key]
+        if ballsRemaining > 0:
+            self.parent.GetParentScene().GetComponents(ComponentType.Manager)[0].state = ComponentManager.GameState.Fail
         self.SelectBall(ballType)
                 
     def SelectBall(self, ballType):
         ball = self.parent.GetParentScene().GetObjectsWithComponent(ComponentType.Ball)[0]
         ball = ball.GetComponent(ComponentType.Ball)
-        if self.state == "Selecting":
-            self.ballData[self.ballType] += 1
-            ballCounter = self.parent.GetParentScene().GameObjectWithID(self.ballCounterIDs[self.ballType])
-            ballCounter.GetComponent(ComponentType.Sprite).number = self.ballData[self.ballType]
         if self.ballData[ballType] > 0:
+            if self.state == "Selecting":
+                self.ballData[self.ballType] += 1
+                ballCounter = self.parent.GetParentScene().GameObjectWithID(self.ballCounterIDs[self.ballType])
+                ballCounter.GetComponent(ComponentType.Sprite).number = self.ballData[self.ballType]
+            
             self.ballType = ballType
-            self.ballData[self.ballType] -= 1
+            self.ballData[ballType] -= 1
             ballCounter = self.parent.GetParentScene().GameObjectWithID(self.ballCounterIDs[self.ballType])
             ballCounter.GetComponent(ComponentType.Sprite).number = self.ballData[self.ballType]
             ball.parent.AddComponent(self.ballConstructors[self.ballType]())
+            self.state = "Selecting"
+            
         
     def Decode(self, obj):
         super().Decode(obj)

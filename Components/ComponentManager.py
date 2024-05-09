@@ -9,6 +9,7 @@ class GameState(enum.Enum):
     Start = enum.auto()
     Playing = enum.auto()
     Success = enum.auto()
+    Fail = enum.auto()
 
 class Manager(Component.Component):
     def __init__(self, inEditor = False):
