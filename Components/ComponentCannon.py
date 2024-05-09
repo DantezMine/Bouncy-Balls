@@ -1,6 +1,7 @@
 from Components.Component import ComponentType
 from Components import ComponentTransform
 from Components import ComponentSprite
+from Components import ComponentBall
 from Components import Component
 import GameObject
 from Vector import Vec2
@@ -19,6 +20,11 @@ class Cannon(Component.Component):
         self.cannonScale = 2
         self.lenX = self.cannonScale*0.580
         self.lenY = self.cannonScale*0.402
+        
+        self.ballData = {
+            ComponentBall.BallType.Bouncy : 0,
+            ComponentBall.BallType.Heavy : 0
+        }
         
     def Start(self):
         transform = self.parent.GetComponent(ComponentType.Transform)

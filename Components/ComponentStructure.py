@@ -91,7 +91,7 @@ class Structure(Component.Component):
         fragment2 = GameObject.GameObject(scene)
         fragment2.AddComponent(ComponentStructure.StructureWood(transform.position-offset,self.lenX,self.lenY/2.0,transform.rotation))
         scene.AddGameObject(fragment2)
-        
+                
         fragment1.RemoveComponent(ComponentType.Collider)
         fragment2.RemoveComponent(ComponentType.Collider)
         
