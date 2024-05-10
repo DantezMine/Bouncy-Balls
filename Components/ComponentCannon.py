@@ -163,8 +163,9 @@ class Cannon(Component.Component):
             if self.ballData[key] > 0:
                 ballType = key
             ballsRemaining += self.ballData[key]
-        if ballsRemaining > 0:
+        if ballsRemaining == 0:
             self.parent.GetParentScene().GetComponents(ComponentType.Manager)[0].state = ComponentManager.GameState.Fail
+            return
         self.SelectBall(ballType)
                 
     def SelectBall(self, ballType):

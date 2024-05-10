@@ -130,7 +130,7 @@ class StructureWood(Structure):
 
     def Start(self):
         super().Start()
-        self.destructionMomentum = 25
+        self.destructionMomentum = 5
         mass = 5
         self.parent.GetComponent(ComponentType.Physics).mass = mass
         self.parent.GetComponent(ComponentType.Physics).momentOfInertia = self.CalculateMomentOfInertia(mass)
@@ -144,7 +144,7 @@ class StructureMetal(Structure):
 
     def Start(self):
         super().Start()
-        self.destructionMomentum = 5
+        self.destructionMomentum = 15
         mass = 10
         self.parent.GetComponent(ComponentType.Physics).mass = mass
         self.parent.GetComponent(ComponentType.Physics).momentOfInertia = self.CalculateMomentOfInertia(mass)
@@ -164,3 +164,6 @@ class StructureGoal(Structure):
         self.parent.GetComponent(ComponentType.Physics).mass = mass
         self.parent.GetComponent(ComponentType.Physics).momentOfInertia = self.CalculateMomentOfInertia(mass)
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/StructureGoal.png",lenX = self.lenX, lenY = self.lenY))
+        
+    def OnCollision(self, collider):
+        return

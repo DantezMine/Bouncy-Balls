@@ -31,15 +31,24 @@ class Manager(Component.Component):
         if self.state == GameState.Start:
             self.cannon.StartGame()
             self.state = GameState.Playing
+            
         if self.state == GameState.Playing:
             if self.goalField.success:
                 self.state = GameState.Success
+            
+            if self.cannon.state == "Released":
+                ball = self.parent.GetParentScene().GameObjectWithID(self.cannon.ballID)
+                if ball is not None:
+                    if ball.GetComponent(ComponentType.Physics).velocity.SqMag() < 0.01:
+                        self.cannon.NextBall()
                 
     def AddScore(self, score):
         self.score += score
         
-        for i in range(self.digits):
-            number = self.score % (10**(i+1))
+        intermediate = self.score
+        for i in range(self.digits-1,-1,-1):
+            number = intermediate // (10**i)
+            intermediate -= number * 10**i
             self.displays[i].number = number
                 
     def CreateScoreDisplay(self):
@@ -50,7 +59,7 @@ class Manager(Component.Component):
         for i in range(self.digits):
             display = GameObject.GameObject(scene)
             display.AddComponent(ComponentSprite.SpriteUI(spritePath="data/WoodStructure.png",lenX=size,lenY=size,number=0))
-            display.GetComponent(ComponentType.Transform).position = Vec2((i+1-self.digits/2.0) * size * 4.0/3,1- size * 2.0/3)
+            display.GetComponent(ComponentType.Transform).position = Vec2((self.digits-i-self.digits/2.0) * size * 4.0/3,1- size * 2.0/3)
             scene.AddGameObject(display)
             self.displays[i] = display.GetComponent(ComponentType.Sprite)
             
