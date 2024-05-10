@@ -96,7 +96,7 @@ class Editor(Component.Component):
             cannons = self.workingScene.GetObjectsWithComponent(ComponentType.Cannon)
             
             levelSelectButton = GameObject.GameObject(self.workingScene)
-            levelSelectButton.AddComponent(ComponentButton.ButtonScene(lenX=0.2,lenY=0.2,setupFunc=SceneSetup.SetupLevelSelect, sceneName="levelSelect", position=Vec2(0.9,0.9)))
+            levelSelectButton.AddComponent(ComponentButton.ButtonScene(lenX=0.2,lenY=0.2,setupFunc=SceneSetup.SetupLevelSelect, sceneName="levelSelect", spritePath="data/Return.png", position=Vec2(0.9,0.9)))
             self.workingScene.AddGameObject(levelSelectButton)
             
             self.workingScene.camera.free = False

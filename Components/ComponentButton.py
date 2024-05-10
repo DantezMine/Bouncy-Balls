@@ -129,6 +129,7 @@ class Button(Component.Component):
         self.initPos = Vec2.FromList(obj["initPos"])
         self.buttonType = ButtonType.Decode(obj["buttonType"])
         self.onEscape = obj["onEscape"]
+        self.spritePath = obj["spritePath"]
         
 class ButtonScene(Button):
     def __init__(self, nPoly=4, lenX = None, lenY = None, radius = 0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", scenePath = None, setupFunc = None, sceneName = None, onEscape = False, number = None):

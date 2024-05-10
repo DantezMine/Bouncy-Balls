@@ -94,16 +94,16 @@ class Manager(Component.Component):
         scene.AddGameObject(camera)
         
         levelSelectButton = GameObject.GameObject(scene)
-        levelSelectButton.AddComponent(ComponentButton.ButtonScene(lenX=size,lenY=size,setupFunc=SceneSetup.SetupLevelSelect, sceneName="levelSelect", position=Vec2(0,-0.6)))
+        levelSelectButton.AddComponent(ComponentButton.ButtonScene(lenX=size,lenY=size,setupFunc=SceneSetup.SetupLevelSelect, spritePath="data/Return.png", sceneName="levelSelect", position=Vec2(0,-0.6)))
         scene.AddGameObject(levelSelectButton)
         
-        size = 0.2
+        size = 0.178
         self.digits = 4
         displays = [None] * self.digits
         for i in range(self.digits):
             display = GameObject.GameObject(scene)
-            display.AddComponent(ComponentSprite.SpriteUI(spritePath="data/WoodStructure.png",lenX=size,lenY=size,number=0))
-            display.GetComponent(ComponentType.Transform).position = Vec2((i-(self.digits-1)/2.0) * size * 3.2/3, -size/3.0)
+            display.AddComponent(ComponentSprite.SpriteUI(spritePath="data/GizmoSquare.png",lenX=size,lenY=size,number=0))
+            display.GetComponent(ComponentType.Transform).position = Vec2((i-(self.digits-1)/2.0) * size * 3.2/3, -0.11-size/3.0)
             scene.AddGameObject(display)
             displays[i] = display.GetComponent(ComponentType.Sprite)
             
@@ -134,17 +134,17 @@ class Manager(Component.Component):
         scene.AddGameObject(camera)
         
         levelSelectButton = GameObject.GameObject(scene)
-        levelSelectButton.AddComponent(ComponentButton.ButtonScene(lenX=size,lenY=size,setupFunc=SceneSetup.SetupLevelSelect, position=Vec2(0,-0.6)))
+        levelSelectButton.AddComponent(ComponentButton.ButtonScene(lenX=size,lenY=size,setupFunc=SceneSetup.SetupLevelSelect, spritePath="data/Return.png", position=Vec2(0,-0.6)))
         levelSelectButton.GetComponent(ComponentType.Button).sceneName = "levelSelect"
         scene.AddGameObject(levelSelectButton)
         
-        size = 0.2
+        size = 0.178
         self.digits = 4
         displays = [None] * self.digits
         for i in range(self.digits):
             display = GameObject.GameObject(scene)
-            display.AddComponent(ComponentSprite.SpriteUI(spritePath="data/WoodStructure.png",lenX=size,lenY=size,number=0))
-            display.GetComponent(ComponentType.Transform).position = Vec2((i-(self.digits-1)/2.0) * size * 3.2/3, -size/3.0)
+            display.AddComponent(ComponentSprite.SpriteUI(spritePath="data/GizmoSquare.png",lenX=size,lenY=size,number=0))
+            display.GetComponent(ComponentType.Transform).position = Vec2((i-(self.digits-1)/2.0) * size * 3.2/3, -0.11-size/3.0)
             scene.AddGameObject(display)
             displays[i] = display.GetComponent(ComponentType.Sprite)
             

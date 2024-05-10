@@ -156,5 +156,5 @@ def SetupSettings(world):
     scene.AddGameObject(camera)
     
     returnButton = GameObject.GameObject(scene)
-    returnButton.AddComponent(ComponentButton.ButtonScene(nPoly=4, lenX=0.15, lenY=0.15, position=Vec2(-0.8,0.8), setupFunc=SetupMainMenu, sceneName="mainMenu", spritePath="data/ButtonLocked.png", onEscape=True))
+    returnButton.AddComponent(ComponentButton.ButtonScene(nPoly=4, lenX=0.15, lenY=0.15, position=Vec2(-0.8,0.8), setupFunc=SetupMainMenu, sceneName="mainMenu", spritePath="data/Return.png", onEscape=True))
     scene.AddGameObject(returnButton)
