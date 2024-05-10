@@ -1,0 +1,1640 @@
+{
+    "name": "untitled scene",
+    "__gameObjects": {
+        "2": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 2,
+                "position": [
+                    -2.039160256553794,
+                    -1.8459711755926131
+                ],
+                "rotation": 0,
+                "scale": [
+                    1,
+                    1
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Camera": {
+                "name": 9,
+                "parent": 2,
+                "initPos": [
+                    0,
+                    0
+                ],
+                "scale": 0.13976341441729237,
+                "minimalBound": [
+                    2.0,
+                    2.0
+                ],
+                "boundLen": [
+                    30,
+                    20
+                ],
+                "free": false,
+                "maxZoom": 1.0,
+                "minZoom": 0.06666666666666667
+            }
+        },
+        "4": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 4,
+                "position": [
+                    0,
+                    0
+                ],
+                "rotation": 0,
+                "scale": [
+                    1,
+                    1
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Manager": {
+                "name": 16,
+                "parent": 4,
+                "inEditor": true,
+                "score": 0,
+                "tourDuration": 7,
+                "state": 1
+            }
+        },
+        "6": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 6,
+                "position": [
+                    -5.867057580260036,
+                    -4.600626259007386
+                ],
+                "rotation": 0,
+                "scale": [
+                    1,
+                    1
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Cannon": {
+                "name": 10,
+                "parent": 6,
+                "initPos": null,
+                "rotation": null,
+                "mousePressed": false,
+                "mouseLeft": false,
+                "cannonScale": 2,
+                "lenX": 1.16,
+                "lenY": 0.804,
+                "buttonSize": 0.2,
+                "ballType": 1,
+                "state": "Selecting",
+                "slingD": 10,
+                "ballID": null,
+                "ballData": null,
+                "ballConstructors": null,
+                "ballCounterIDs": null
+            },
+            "ComponentType.Sprite": {
+                "name": 3,
+                "parent": 6,
+                "spriteType": 1,
+                "spritePath": "data/Barrel.png",
+                "lenX": 1.16,
+                "lenY": 0.804,
+                "draw": true,
+                "sprite": null
+            }
+        },
+        "7": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 7,
+                "position": [
+                    8.489625231171967,
+                    -4.972870589473217
+                ],
+                "rotation": 0,
+                "scale": [
+                    1,
+                    1
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.GoalField": {
+                "name": 11,
+                "parent": 7,
+                "initPos": null,
+                "initRot": null,
+                "lenX": 0.5,
+                "lenY": 0.5,
+                "success": false
+            },
+            "ComponentType.Collider": {
+                "name": 4,
+                "parent": 7,
+                "colliderType": 2,
+                "tags": [
+                    "NoCollisionResponse",
+                    "GoalField"
+                ],
+                "collisions": [],
+                "_safetyMargin": 10,
+                "_edgeAlignmentMargin": 0.01,
+                "localPosition": [
+                    0,
+                    0
+                ],
+                "localRotation": 0,
+                "localScale": [
+                    1,
+                    1
+                ],
+                "lenX": 0.5,
+                "lenY": 0.5,
+                "sqRadius": 0.125,
+                "mags": [
+                    0.5,
+                    0.5,
+                    0.5,
+                    0.5
+                ],
+                "verts": [
+                    [
+                        -0.25,
+                        -0.25
+                    ],
+                    [
+                        -0.25,
+                        0.25
+                    ],
+                    [
+                        0.25,
+                        0.25
+                    ],
+                    [
+                        0.25,
+                        -0.25
+                    ]
+                ],
+                "norms": [
+                    [
+                        -1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        1.0
+                    ],
+                    [
+                        1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        -1.0
+                    ]
+                ]
+            },
+            "ComponentType.Sprite": {
+                "name": 3,
+                "parent": 7,
+                "spriteType": 1,
+                "spritePath": "data/GoalField.png",
+                "lenX": 0.5,
+                "lenY": 0.5,
+                "draw": true,
+                "sprite": null
+            }
+        },
+        "8": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 8,
+                "position": [
+                    -6.267057580260037,
+                    -4.900626259007386
+                ],
+                "rotation": 0,
+                "scale": [
+                    1,
+                    1
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Base": {
+                "name": 14,
+                "parent": 8,
+                "initPos": [
+                    -0.4,
+                    -0.3
+                ],
+                "baseScale": 2
+            },
+            "ComponentType.Sprite": {
+                "name": 3,
+                "parent": 8,
+                "spriteType": 1,
+                "spritePath": "data/Base.png",
+                "lenX": 1.23,
+                "lenY": 0.69,
+                "draw": true,
+                "sprite": null
+            }
+        },
+        "9": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 9,
+                "position": [
+                    0.37499999999999867,
+                    -5.750000000000001
+                ],
+                "rotation": 0,
+                "scale": [
+                    23.200839067271787,
+                    1
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Ground": {
+                "name": 7,
+                "parent": 9,
+                "initPos": null,
+                "initRot": null,
+                "lenX": 2,
+                "lenY": 1,
+                "groundType": 1
+            },
+            "ComponentType.Physics": {
+                "name": 2,
+                "parent": 9,
+                "mass": 1.0,
+                "momentOfInertia": 5,
+                "restitution": 0.1,
+                "velDamping": 0.999,
+                "rotDamping": 0.99,
+                "forceMargin": 0,
+                "torqueMargin": 0,
+                "velMargin": 0,
+                "rotMargin": 0,
+                "posMargin": 0,
+                "friction": 0.001,
+                "prevPosition": [
+                    0,
+                    0
+                ],
+                "velocity": [
+                    0,
+                    0
+                ],
+                "acceleration": [
+                    0,
+                    0
+                ],
+                "netForce": [
+                    0,
+                    0
+                ],
+                "deltaV": [
+                    0,
+                    0
+                ],
+                "angularSpeed": 0,
+                "angularAcc": 0,
+                "netTorque": 0,
+                "deltaW": 0,
+                "deltaPhi": 0,
+                "constraintPosition": true,
+                "constraintRotation": true,
+                "gravity": true,
+                "gravAcc": [
+                    0,
+                    -9.8
+                ]
+            },
+            "ComponentType.Collider": {
+                "name": 4,
+                "parent": 9,
+                "colliderType": 2,
+                "tags": [
+                    "Ground"
+                ],
+                "collisions": [],
+                "_safetyMargin": 10,
+                "_edgeAlignmentMargin": 0.01,
+                "localPosition": [
+                    0,
+                    0
+                ],
+                "localRotation": 0,
+                "localScale": [
+                    1,
+                    1
+                ],
+                "lenX": 2,
+                "lenY": 1,
+                "sqRadius": 1.25,
+                "mags": [
+                    1.0,
+                    2.0,
+                    1.0,
+                    2.0
+                ],
+                "verts": [
+                    [
+                        -1.0,
+                        -0.5
+                    ],
+                    [
+                        -1.0,
+                        0.5
+                    ],
+                    [
+                        1.0,
+                        0.5
+                    ],
+                    [
+                        1.0,
+                        -0.5
+                    ]
+                ],
+                "norms": [
+                    [
+                        -1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        1.0
+                    ],
+                    [
+                        1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        -1.0
+                    ]
+                ]
+            },
+            "ComponentType.Sprite": {
+                "name": 3,
+                "parent": 9,
+                "spriteType": 1,
+                "spritePath": "data/GroundDirt.png",
+                "lenX": 2,
+                "lenY": 1,
+                "draw": true,
+                "sprite": null
+            }
+        },
+        "10": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 10,
+                "position": [
+                    0.22499999999999853,
+                    -10.175
+                ],
+                "rotation": -3.141592653589793,
+                "scale": [
+                    20.8856351453802,
+                    8.023062642919415
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Ground": {
+                "name": 7,
+                "parent": 10,
+                "initPos": null,
+                "initRot": null,
+                "lenX": 2,
+                "lenY": 1,
+                "groundType": 1
+            },
+            "ComponentType.Physics": {
+                "name": 2,
+                "parent": 10,
+                "mass": 1.0,
+                "momentOfInertia": 5,
+                "restitution": 0.1,
+                "velDamping": 0.999,
+                "rotDamping": 0.99,
+                "forceMargin": 0,
+                "torqueMargin": 0,
+                "velMargin": 0,
+                "rotMargin": 0,
+                "posMargin": 0,
+                "friction": 0.001,
+                "prevPosition": [
+                    0,
+                    0
+                ],
+                "velocity": [
+                    0,
+                    0
+                ],
+                "acceleration": [
+                    0,
+                    0
+                ],
+                "netForce": [
+                    0,
+                    0
+                ],
+                "deltaV": [
+                    0,
+                    0
+                ],
+                "angularSpeed": 0,
+                "angularAcc": 0,
+                "netTorque": 0,
+                "deltaW": 0,
+                "deltaPhi": 0,
+                "constraintPosition": true,
+                "constraintRotation": true,
+                "gravity": true,
+                "gravAcc": [
+                    0,
+                    -9.8
+                ]
+            },
+            "ComponentType.Collider": {
+                "name": 4,
+                "parent": 10,
+                "colliderType": 2,
+                "tags": [
+                    "Ground"
+                ],
+                "collisions": [],
+                "_safetyMargin": 10,
+                "_edgeAlignmentMargin": 0.01,
+                "localPosition": [
+                    0,
+                    0
+                ],
+                "localRotation": 0,
+                "localScale": [
+                    1,
+                    1
+                ],
+                "lenX": 2,
+                "lenY": 1,
+                "sqRadius": 1.25,
+                "mags": [
+                    1.0,
+                    2.0,
+                    1.0,
+                    2.0
+                ],
+                "verts": [
+                    [
+                        -1.0,
+                        -0.5
+                    ],
+                    [
+                        -1.0,
+                        0.5
+                    ],
+                    [
+                        1.0,
+                        0.5
+                    ],
+                    [
+                        1.0,
+                        -0.5
+                    ]
+                ],
+                "norms": [
+                    [
+                        -1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        1.0
+                    ],
+                    [
+                        1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        -1.0
+                    ]
+                ]
+            },
+            "ComponentType.Sprite": {
+                "name": 3,
+                "parent": 10,
+                "spriteType": 1,
+                "spritePath": "data/GroundDirt.png",
+                "lenX": 2,
+                "lenY": 1,
+                "draw": true,
+                "sprite": null
+            }
+        },
+        "11": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 11,
+                "position": [
+                    14.641903359870513,
+                    -1.2146957621566068
+                ],
+                "rotation": -4.974188368183839,
+                "scale": [
+                    4.712332233979326,
+                    3.5847955798518187
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Ground": {
+                "name": 7,
+                "parent": 11,
+                "initPos": null,
+                "initRot": null,
+                "lenX": 2,
+                "lenY": 1,
+                "groundType": 1
+            },
+            "ComponentType.Physics": {
+                "name": 2,
+                "parent": 11,
+                "mass": 1.0,
+                "momentOfInertia": 5,
+                "restitution": 0.1,
+                "velDamping": 0.999,
+                "rotDamping": 0.99,
+                "forceMargin": 0,
+                "torqueMargin": 0,
+                "velMargin": 0,
+                "rotMargin": 0,
+                "posMargin": 0,
+                "friction": 0.001,
+                "prevPosition": [
+                    0,
+                    0
+                ],
+                "velocity": [
+                    0,
+                    0
+                ],
+                "acceleration": [
+                    0,
+                    0
+                ],
+                "netForce": [
+                    0,
+                    0
+                ],
+                "deltaV": [
+                    0,
+                    0
+                ],
+                "angularSpeed": 0,
+                "angularAcc": 0,
+                "netTorque": 0,
+                "deltaW": 0,
+                "deltaPhi": 0,
+                "constraintPosition": true,
+                "constraintRotation": true,
+                "gravity": true,
+                "gravAcc": [
+                    0,
+                    -9.8
+                ]
+            },
+            "ComponentType.Collider": {
+                "name": 4,
+                "parent": 11,
+                "colliderType": 2,
+                "tags": [
+                    "Ground"
+                ],
+                "collisions": [],
+                "_safetyMargin": 10,
+                "_edgeAlignmentMargin": 0.01,
+                "localPosition": [
+                    0,
+                    0
+                ],
+                "localRotation": 0,
+                "localScale": [
+                    1,
+                    1
+                ],
+                "lenX": 2,
+                "lenY": 1,
+                "sqRadius": 1.25,
+                "mags": [
+                    1.0,
+                    2.0,
+                    1.0,
+                    2.0
+                ],
+                "verts": [
+                    [
+                        -1.0,
+                        -0.5
+                    ],
+                    [
+                        -1.0,
+                        0.5
+                    ],
+                    [
+                        1.0,
+                        0.5
+                    ],
+                    [
+                        1.0,
+                        -0.5
+                    ]
+                ],
+                "norms": [
+                    [
+                        -1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        1.0
+                    ],
+                    [
+                        1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        -1.0
+                    ]
+                ]
+            },
+            "ComponentType.Sprite": {
+                "name": 3,
+                "parent": 11,
+                "spriteType": 1,
+                "spritePath": "data/GroundDirt.png",
+                "lenX": 2,
+                "lenY": 1,
+                "draw": true,
+                "sprite": null
+            }
+        },
+        "12": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 12,
+                "position": [
+                    3.1111915477010568,
+                    -2.2651125732030994
+                ],
+                "rotation": 0,
+                "scale": [
+                    1,
+                    6.703670990733823
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Ground": {
+                "name": 7,
+                "parent": 12,
+                "initPos": null,
+                "initRot": null,
+                "lenX": 2,
+                "lenY": 1,
+                "groundType": 1
+            },
+            "ComponentType.Physics": {
+                "name": 2,
+                "parent": 12,
+                "mass": 1.0,
+                "momentOfInertia": 5,
+                "restitution": 0.1,
+                "velDamping": 0.999,
+                "rotDamping": 0.99,
+                "forceMargin": 0,
+                "torqueMargin": 0,
+                "velMargin": 0,
+                "rotMargin": 0,
+                "posMargin": 0,
+                "friction": 0.001,
+                "prevPosition": [
+                    0,
+                    0
+                ],
+                "velocity": [
+                    0,
+                    0
+                ],
+                "acceleration": [
+                    0,
+                    0
+                ],
+                "netForce": [
+                    0,
+                    0
+                ],
+                "deltaV": [
+                    0,
+                    0
+                ],
+                "angularSpeed": 0,
+                "angularAcc": 0,
+                "netTorque": 0,
+                "deltaW": 0,
+                "deltaPhi": 0,
+                "constraintPosition": true,
+                "constraintRotation": true,
+                "gravity": true,
+                "gravAcc": [
+                    0,
+                    -9.8
+                ]
+            },
+            "ComponentType.Collider": {
+                "name": 4,
+                "parent": 12,
+                "colliderType": 2,
+                "tags": [
+                    "Ground"
+                ],
+                "collisions": [],
+                "_safetyMargin": 10,
+                "_edgeAlignmentMargin": 0.01,
+                "localPosition": [
+                    0,
+                    0
+                ],
+                "localRotation": 0,
+                "localScale": [
+                    1,
+                    1
+                ],
+                "lenX": 2,
+                "lenY": 1,
+                "sqRadius": 1.25,
+                "mags": [
+                    1.0,
+                    2.0,
+                    1.0,
+                    2.0
+                ],
+                "verts": [
+                    [
+                        -1.0,
+                        -0.5
+                    ],
+                    [
+                        -1.0,
+                        0.5
+                    ],
+                    [
+                        1.0,
+                        0.5
+                    ],
+                    [
+                        1.0,
+                        -0.5
+                    ]
+                ],
+                "norms": [
+                    [
+                        -1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        1.0
+                    ],
+                    [
+                        1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        -1.0
+                    ]
+                ]
+            },
+            "ComponentType.Sprite": {
+                "name": 3,
+                "parent": 12,
+                "spriteType": 1,
+                "spritePath": "data/GroundDirt.png",
+                "lenX": 2,
+                "lenY": 1,
+                "draw": true,
+                "sprite": null
+            }
+        },
+        "14": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 14,
+                "position": [
+                    3.5647806251984058,
+                    -0.45075626321370343
+                ],
+                "rotation": 0,
+                "scale": [
+                    1,
+                    1
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Background": {
+                "name": 8,
+                "parent": 14,
+                "backgroundType": 2,
+                "initPos": [
+                    0,
+                    0
+                ],
+                "lenX": 50,
+                "lenY": 50,
+                "spritePath": "data/BackgroundNature-Sky.png",
+                "scale": 3,
+                "transform": null
+            },
+            "ComponentType.Sprite": {
+                "name": 3,
+                "parent": 14,
+                "spriteType": 2,
+                "spritePath": "data/BackgroundNature-Sky.png",
+                "lenX": 50,
+                "lenY": 50,
+                "draw": true,
+                "sprite": null,
+                "scale": 3
+            }
+        },
+        "15": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 15,
+                "position": [
+                    10.041561994301901,
+                    -4.728471099216534
+                ],
+                "rotation": 0,
+                "scale": [
+                    1,
+                    1
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Structure": {
+                "name": 6,
+                "parent": 15,
+                "initPos": null,
+                "initRot": null,
+                "lenX": 0.25,
+                "lenY": 1.0,
+                "destructionMomentum": 100000,
+                "destroyed": false,
+                "structureType": 3
+            },
+            "ComponentType.Collider": {
+                "name": 4,
+                "parent": 15,
+                "colliderType": 2,
+                "tags": [
+                    "GoalStructure"
+                ],
+                "collisions": [],
+                "_safetyMargin": 10,
+                "_edgeAlignmentMargin": 0.01,
+                "localPosition": [
+                    0,
+                    0
+                ],
+                "localRotation": 0,
+                "localScale": [
+                    1,
+                    1
+                ],
+                "lenX": 0.25,
+                "lenY": 1.0,
+                "sqRadius": 0.265625,
+                "mags": [
+                    1.0,
+                    0.25,
+                    1.0,
+                    0.25
+                ],
+                "verts": [
+                    [
+                        -0.125,
+                        -0.5
+                    ],
+                    [
+                        -0.125,
+                        0.5
+                    ],
+                    [
+                        0.125,
+                        0.5
+                    ],
+                    [
+                        0.125,
+                        -0.5
+                    ]
+                ],
+                "norms": [
+                    [
+                        -1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        1.0
+                    ],
+                    [
+                        1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        -1.0
+                    ]
+                ]
+            },
+            "ComponentType.Physics": {
+                "name": 2,
+                "parent": 15,
+                "mass": 10,
+                "momentOfInertia": 0.8854166666666666,
+                "restitution": 0.1,
+                "velDamping": 0.999,
+                "rotDamping": 0.99,
+                "forceMargin": 0,
+                "torqueMargin": 0,
+                "velMargin": 0,
+                "rotMargin": 0,
+                "posMargin": 0,
+                "friction": 0.001,
+                "prevPosition": [
+                    0,
+                    0
+                ],
+                "velocity": [
+                    0,
+                    0
+                ],
+                "acceleration": [
+                    0,
+                    0
+                ],
+                "netForce": [
+                    0,
+                    0
+                ],
+                "deltaV": [
+                    0,
+                    0
+                ],
+                "angularSpeed": 0,
+                "angularAcc": 0,
+                "netTorque": 0,
+                "deltaW": 0,
+                "deltaPhi": 0,
+                "constraintPosition": false,
+                "constraintRotation": false,
+                "gravity": true,
+                "gravAcc": [
+                    0,
+                    -9.8
+                ]
+            },
+            "ComponentType.Sprite": {
+                "name": 3,
+                "parent": 15,
+                "spriteType": 1,
+                "spritePath": "data/StructureGoal.png",
+                "lenX": 0.25,
+                "lenY": 1.0,
+                "draw": true,
+                "sprite": null
+            }
+        },
+        "16": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 16,
+                "position": [
+                    7.839862215692761,
+                    -4.833162077737207
+                ],
+                "rotation": 0,
+                "scale": [
+                    1,
+                    1
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Structure": {
+                "name": 6,
+                "parent": 16,
+                "initPos": null,
+                "initRot": null,
+                "lenX": 0.3,
+                "lenY": 0.8,
+                "destructionMomentum": 15,
+                "destroyed": false,
+                "structureType": 1
+            },
+            "ComponentType.Collider": {
+                "name": 4,
+                "parent": 16,
+                "colliderType": 2,
+                "tags": [],
+                "collisions": [],
+                "_safetyMargin": 10,
+                "_edgeAlignmentMargin": 0.01,
+                "localPosition": [
+                    0,
+                    0
+                ],
+                "localRotation": 0,
+                "localScale": [
+                    1,
+                    1
+                ],
+                "lenX": 0.3,
+                "lenY": 0.8,
+                "sqRadius": 0.18250000000000002,
+                "mags": [
+                    0.8,
+                    0.3,
+                    0.8,
+                    0.3
+                ],
+                "verts": [
+                    [
+                        -0.15,
+                        -0.4
+                    ],
+                    [
+                        -0.15,
+                        0.4
+                    ],
+                    [
+                        0.15,
+                        0.4
+                    ],
+                    [
+                        0.15,
+                        -0.4
+                    ]
+                ],
+                "norms": [
+                    [
+                        -1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        1.0
+                    ],
+                    [
+                        1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        -1.0
+                    ]
+                ]
+            },
+            "ComponentType.Physics": {
+                "name": 2,
+                "parent": 16,
+                "mass": 5,
+                "momentOfInertia": 0.3041666666666667,
+                "restitution": 0.1,
+                "velDamping": 0.999,
+                "rotDamping": 0.99,
+                "forceMargin": 0,
+                "torqueMargin": 0,
+                "velMargin": 0,
+                "rotMargin": 0,
+                "posMargin": 0,
+                "friction": 0.001,
+                "prevPosition": [
+                    0,
+                    0
+                ],
+                "velocity": [
+                    0,
+                    0
+                ],
+                "acceleration": [
+                    0,
+                    0
+                ],
+                "netForce": [
+                    0,
+                    0
+                ],
+                "deltaV": [
+                    0,
+                    0
+                ],
+                "angularSpeed": 0,
+                "angularAcc": 0,
+                "netTorque": 0,
+                "deltaW": 0,
+                "deltaPhi": 0,
+                "constraintPosition": false,
+                "constraintRotation": false,
+                "gravity": true,
+                "gravAcc": [
+                    0,
+                    -9.8
+                ]
+            },
+            "ComponentType.Sprite": {
+                "name": 3,
+                "parent": 16,
+                "spriteType": 1,
+                "spritePath": "data/WoodStructure.png",
+                "lenX": 0.3,
+                "lenY": 0.8,
+                "draw": true,
+                "sprite": null
+            }
+        },
+        "17": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 17,
+                "position": [
+                    9.12506390583934,
+                    -4.826230895319208
+                ],
+                "rotation": 0,
+                "scale": [
+                    1,
+                    1
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Structure": {
+                "name": 6,
+                "parent": 17,
+                "initPos": null,
+                "initRot": null,
+                "lenX": 0.3,
+                "lenY": 0.8,
+                "destructionMomentum": 15,
+                "destroyed": false,
+                "structureType": 1
+            },
+            "ComponentType.Collider": {
+                "name": 4,
+                "parent": 17,
+                "colliderType": 2,
+                "tags": [],
+                "collisions": [],
+                "_safetyMargin": 10,
+                "_edgeAlignmentMargin": 0.01,
+                "localPosition": [
+                    0,
+                    0
+                ],
+                "localRotation": 0,
+                "localScale": [
+                    1,
+                    1
+                ],
+                "lenX": 0.3,
+                "lenY": 0.8,
+                "sqRadius": 0.18250000000000002,
+                "mags": [
+                    0.8,
+                    0.3,
+                    0.8,
+                    0.3
+                ],
+                "verts": [
+                    [
+                        -0.15,
+                        -0.4
+                    ],
+                    [
+                        -0.15,
+                        0.4
+                    ],
+                    [
+                        0.15,
+                        0.4
+                    ],
+                    [
+                        0.15,
+                        -0.4
+                    ]
+                ],
+                "norms": [
+                    [
+                        -1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        1.0
+                    ],
+                    [
+                        1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        -1.0
+                    ]
+                ]
+            },
+            "ComponentType.Physics": {
+                "name": 2,
+                "parent": 17,
+                "mass": 5,
+                "momentOfInertia": 0.3041666666666667,
+                "restitution": 0.1,
+                "velDamping": 0.999,
+                "rotDamping": 0.99,
+                "forceMargin": 0,
+                "torqueMargin": 0,
+                "velMargin": 0,
+                "rotMargin": 0,
+                "posMargin": 0,
+                "friction": 0.001,
+                "prevPosition": [
+                    0,
+                    0
+                ],
+                "velocity": [
+                    0,
+                    0
+                ],
+                "acceleration": [
+                    0,
+                    0
+                ],
+                "netForce": [
+                    0,
+                    0
+                ],
+                "deltaV": [
+                    0,
+                    0
+                ],
+                "angularSpeed": 0,
+                "angularAcc": 0,
+                "netTorque": 0,
+                "deltaW": 0,
+                "deltaPhi": 0,
+                "constraintPosition": false,
+                "constraintRotation": false,
+                "gravity": true,
+                "gravAcc": [
+                    0,
+                    -9.8
+                ]
+            },
+            "ComponentType.Sprite": {
+                "name": 3,
+                "parent": 17,
+                "spriteType": 1,
+                "spritePath": "data/WoodStructure.png",
+                "lenX": 0.3,
+                "lenY": 0.8,
+                "draw": true,
+                "sprite": null
+            }
+        },
+        "18": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 18,
+                "position": [
+                    8.465185282146297,
+                    -4.23967211870317
+                ],
+                "rotation": -1.5707963267948966,
+                "scale": [
+                    1.1346246522771948,
+                    1.9171314596797868
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Structure": {
+                "name": 6,
+                "parent": 18,
+                "initPos": null,
+                "initRot": null,
+                "lenX": 0.3,
+                "lenY": 0.8,
+                "destructionMomentum": 15,
+                "destroyed": false,
+                "structureType": 1
+            },
+            "ComponentType.Collider": {
+                "name": 4,
+                "parent": 18,
+                "colliderType": 2,
+                "tags": [],
+                "collisions": [],
+                "_safetyMargin": 10,
+                "_edgeAlignmentMargin": 0.01,
+                "localPosition": [
+                    0,
+                    0
+                ],
+                "localRotation": 0,
+                "localScale": [
+                    1,
+                    1
+                ],
+                "lenX": 0.3,
+                "lenY": 0.8,
+                "sqRadius": 0.18250000000000002,
+                "mags": [
+                    0.8,
+                    0.3,
+                    0.8,
+                    0.3
+                ],
+                "verts": [
+                    [
+                        -0.15,
+                        -0.4
+                    ],
+                    [
+                        -0.15,
+                        0.4
+                    ],
+                    [
+                        0.15,
+                        0.4
+                    ],
+                    [
+                        0.15,
+                        -0.4
+                    ]
+                ],
+                "norms": [
+                    [
+                        -1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        1.0
+                    ],
+                    [
+                        1.0,
+                        0.0
+                    ],
+                    [
+                        -0.0,
+                        -1.0
+                    ]
+                ]
+            },
+            "ComponentType.Physics": {
+                "name": 2,
+                "parent": 18,
+                "mass": 5,
+                "momentOfInertia": 0.3041666666666667,
+                "restitution": 0.1,
+                "velDamping": 0.999,
+                "rotDamping": 0.99,
+                "forceMargin": 0,
+                "torqueMargin": 0,
+                "velMargin": 0,
+                "rotMargin": 0,
+                "posMargin": 0,
+                "friction": 0.001,
+                "prevPosition": [
+                    0,
+                    0
+                ],
+                "velocity": [
+                    0,
+                    0
+                ],
+                "acceleration": [
+                    0,
+                    0
+                ],
+                "netForce": [
+                    0,
+                    0
+                ],
+                "deltaV": [
+                    0,
+                    0
+                ],
+                "angularSpeed": 0,
+                "angularAcc": 0,
+                "netTorque": 0,
+                "deltaW": 0,
+                "deltaPhi": 0,
+                "constraintPosition": false,
+                "constraintRotation": false,
+                "gravity": true,
+                "gravAcc": [
+                    0,
+                    -9.8
+                ]
+            },
+            "ComponentType.Sprite": {
+                "name": 3,
+                "parent": 18,
+                "spriteType": 1,
+                "spritePath": "data/WoodStructure.png",
+                "lenX": 0.3,
+                "lenY": 0.8,
+                "draw": true,
+                "sprite": null
+            }
+        },
+        "19": {
+            "ComponentType.Transform": {
+                "name": 1,
+                "parent": 19,
+                "position": [
+                    0.9,
+                    0.9
+                ],
+                "rotation": 0,
+                "scale": [
+                    1,
+                    1
+                ],
+                "up": [
+                    0,
+                    -1
+                ],
+                "forward": [
+                    1,
+                    0
+                ]
+            },
+            "ComponentType.Button": {
+                "name": 12,
+                "nPoly": 4,
+                "lenX": 0.2,
+                "lenY": 0.2,
+                "initPos": [
+                    0.9,
+                    0.9
+                ],
+                "animDuration": 0.2,
+                "animScale": 0.1,
+                "animate": false,
+                "buttonType": 1,
+                "spritePath": "data/Return.png",
+                "onEscape": false,
+                "function": null,
+                "atStart": true,
+                "scenePath": null,
+                "setupFunc": null,
+                "sceneName": "levelSelect",
+                "number": null,
+                "parent": 19,
+                "transform": null,
+                "verts": [
+                    [
+                        0.9707106781186547,
+                        0.9707106781186547
+                    ],
+                    [
+                        0.8292893218813453,
+                        0.9707106781186547
+                    ],
+                    [
+                        0.8292893218813453,
+                        0.8292893218813453
+                    ],
+                    [
+                        0.9707106781186547,
+                        0.8292893218813453
+                    ]
+                ]
+            },
+            "ComponentType.Sprite": {
+                "name": 3,
+                "parent": 19,
+                "spriteType": 3,
+                "spritePath": "data/Return.png",
+                "lenX": 0.2,
+                "lenY": 0.2,
+                "draw": true,
+                "sprite": null,
+                "number": null,
+                "numbers": null
+            }
+        }
+    }
+}

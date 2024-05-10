@@ -14,6 +14,8 @@ from Components import ComponentSlider
 from Components import ComponentSprite
 from Components import ComponentStructure
 from Components import ComponentTransform
+from Components import ComponentEditor
+from Components import ComponentManager
 
 class Scene:
     def __init__(self, name = ""):
@@ -23,6 +25,13 @@ class Scene:
         self.world = None
         self.removeQueue = list()
         self.addQueue = list()
+        self.hasStarted = False
+        self.CreateDefaultCamera()
+        
+    def CreateDefaultCamera(self):
+        defaultCamObj = GameObject.GameObject(self)
+        defaultCamObj.AddComponent(ComponentCamera.Camera())
+        self.defaultCam = defaultCamObj.GetComponent(ComponentType.Camera)
         
     def AddGameObject(self,gameObject):
         self.addQueue.append(gameObject)
@@ -30,12 +39,18 @@ class Scene:
     def RemoveGameObject(self,gameObject):
         self.removeQueue.append(gameObject)
         
+    def RemoveGameObjectID(self, id):
+        if self.__gameObjects.__contains__(int(id)):
+            self.removeQueue.append(self.__gameObjects[int(id)])
+        
     def CreateID(self):
         self.ID += 1
         return self.ID
     
     def GameObjectWithID(self,id):
-        return self.__gameObjects[int(id)]
+        if self.__gameObjects.__contains__(int(id)):
+            return self.__gameObjects[int(id)]
+        return None
     
     def GetObjectsWithComponent(self,compName):
         outList = list()
@@ -56,8 +71,16 @@ class Scene:
     def UpdateScene(self,deltaTime, updateFrequency):
         self.HandleAddQueue()
         self.HandleRemoveQueue()
+
+        self.UpdateComponents(deltaTime)
+        self.UpdatePhysicsScene(deltaTime, updateFrequency)
+        self.ShowScene(deltaTime)
+        
+    def UpdateComponents(self, deltaTime):
         for go in self.__gameObjects.values():
             go.Update(deltaTime)
+            
+    def UpdatePhysicsScene(self, deltaTime, updateFrequency):
         for i in range(updateFrequency):
             dt = float(deltaTime)/updateFrequency
             collisions = []
@@ -72,9 +95,11 @@ class Scene:
                 go.UpdatePhysics(dt,collisions,1)
             for go in self.__gameObjects.values():
                 go.UpdatePhysics(dt,None,2)
+                
+    def ShowScene(self,deltaTime):
         for go in self.__gameObjects.values():
             go.Show(deltaTime)
-            
+
     def HandleAddQueue(self):
         for gameObject in self.addQueue:
             if self.__gameObjects.__contains__(gameObject):
@@ -93,7 +118,7 @@ class Scene:
     def StartScene(self):
         self.HandleAddQueue()
         self.HandleRemoveQueue()
-        # deprecated
+        self.hasStarted = True
         for go in self.__gameObjects.values():
             go.Start()
             
@@ -124,10 +149,14 @@ class Scene:
         self.name = obj["name"]
         gameObjects = obj["__gameObjects"]
         for gameObjectID in gameObjects.keys():
+            self.ID = max(int(gameObjectID),self.ID)
+        for gameObjectID in gameObjects.keys():
             gameObjectID = int(gameObjectID)
             gameObject = GameObject.GameObject(self, gameObjectID)
             for componentObj in gameObjects[str(gameObjectID)].values():
                 componentConstr = self.GetComponent(componentObj)
+                if componentConstr is None:
+                    pass
                 component = componentConstr()
                 component.Decode(componentObj)
                 gameObject.AddComponent(component)
@@ -158,8 +187,10 @@ class Scene:
             buttonType = component["buttonType"]
             if buttonType == ComponentButton.ButtonType.Button.value:
                 return ComponentButton.Button
-            if buttonType == ComponentButton.ButtonType.Level.value:
-                return ComponentButton.ButtonLevel
+            if buttonType == ComponentButton.ButtonType.Scene.value:
+                return ComponentButton.ButtonScene
+            if buttonType == ComponentButton.ButtonType.Selectable.value:
+                return ComponentButton.ButtonSelectable
         if ctype == ComponentType.Camera.value:
             return ComponentCamera.Camera
         if ctype == ComponentType.Cannon.value:
@@ -188,9 +219,17 @@ class Scene:
                 return ComponentSprite.Sprite
             elif spriteType == ComponentSprite.SpriteType.Background.value:
                 return ComponentSprite.SpriteBackground
+            elif spriteType == ComponentSprite.SpriteType.UI.value:
+                return ComponentSprite.SpriteUI
         if ctype == ComponentType.Structure.value:
             structureType = component["structureType"]
             if structureType == ComponentStructure.StructureType.Metal.value:
                 return ComponentStructure.StructureMetal
             elif structureType == ComponentStructure.StructureType.Wood.value:
                 return ComponentStructure.StructureWood
+            elif structureType == ComponentStructure.StructureType.Goal.value:
+                return ComponentStructure.StructureGoal
+        if ctype == ComponentType.Editor.value:
+            return ComponentEditor.Editor
+        if ctype == ComponentType.Manager.value:
+            return ComponentManager.Manager

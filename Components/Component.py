@@ -32,15 +32,21 @@ class Component(object):
         import GameObject
         if isinstance(varValue, enum.Enum):
             return varValue.value
-        if isinstance(varValue, (int, float, str, bool)):
-            return varValue
         if isinstance(varValue, Vec2):
             return varValue.Encode()
+        if isinstance(varValue, (int, float, str, bool)):
+            return varValue
+        if isinstance(varValue, list):
+            outlist = list()
+            for value in varValue:
+                outlist.append(self.EncodeVariable(value))
+            return outlist
         if isinstance(varValue, GameObject.GameObject):
             return varValue.GetID()
     
     def Decode(self,obj):
-        self.started = obj["started"]
+        pass
+        #self.started = obj["started"]
     
 class ComponentType(enum.Enum):
     Transform = enum.auto()
@@ -57,10 +63,12 @@ class ComponentType(enum.Enum):
     Button = enum.auto()
     Slider = enum.auto()
     Base = enum.auto()
+    Editor = enum.auto()
+    Manager = enum.auto()
     
     def GetType(compType):
         members = list(vars(ComponentType).values())
-        members = members[8:len(members)-1]
+        members = members[12:len(members)-1]
         for ctype in members:
             if compType == ctype.value:
                 return ctype

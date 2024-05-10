@@ -4,9 +4,9 @@ from Components import ComponentCollider
 from Components import ComponentPhysics
 from Components import ComponentSprite
 from Components import Component
-from lib import GlobalVars
+import GlobalVars
 from Vector import Vec2
-from lib import GlobalVars
+import GlobalVars
 import enum
 import pygame
 import math
@@ -14,24 +14,18 @@ import math
 class BallType(enum.Enum):
     Bouncy = enum.auto()
     Heavy = enum.auto()
-    
+
     def Decode(value):
         members = list(vars(BallType).values())
-        members = members[8:len(members)-1]
+        members = members[GlobalVars.membersOffset:len(members)-1]
         for member in members:
             if value == member.value:
                 return member
 
 class Ball(Component.Component):
-    def __init__(self, sling = None):
+    def __init__(self):
         self.name = ComponentType.Ball
         self.parent = None
-        self.state = "Origin"
-        self.sling = sling
-        self.mousePosStart = None
-        GlobalVars.mousePressed = False
-        self.mouseLeft = False
-        self.slingD = 10
     
     def Start(self):
         self.radius = 0.2
@@ -43,41 +37,20 @@ class Ball(Component.Component):
         self.parent.AddComponent(physics)
         
     def Update(self, deltaTime):
-        if self.sling is None:
-            self.sling = self.parent.GetParentScene().GameObjectWithID(self.slingID)
-        slingTransform = self.sling.GetComponent(ComponentType.Transform)
+        if not self.IsInBound():
+            self.parent.GetParentScene().GetComponents(ComponentType.Cannon)[0].NextBall()
+
+    def IsInBound(self):
+        camera = self.parent.GetParentScene().camera
+        boundCenter = camera.parent.GetComponent(ComponentType.Transform).position
+        boundLen = camera.boundLen
         transform = self.parent.GetComponent(ComponentType.Transform)
-        
-        mousePosWorld = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen, self.parent.GetParentScene().camera)
-        self.parent.GetComponent(ComponentType.Collider).DisplayCollider()
-        if self.state == "Origin":
-            transform.position = slingTransform.position
-        if GlobalVars.mousePressed:
-            if self.state == "Origin" and GlobalVars.mouseLeft:
-                self.mousePosStart = mousePosWorld
-                self.state = "Dragged"
-            if self.state == "Dragged" and mousePosWorld:
-                mousePos = mousePosWorld
-                deltaVec = slingTransform.position - mousePosWorld
-                delta = deltaVec.Mag()
-                deltaNorm = deltaVec.Normalized()
-                transform.position = slingTransform.position + deltaNorm * 0.25
-                impulse = deltaNorm * math.log(1.5*delta + 1) * self.slingD
-                self.ProjectPath(40,impulse)
-            if self.state == "Released" and self.mouseLeft:
-                self.OnClick()
-        if not GlobalVars.mousePressed:
-             if self.state == "Dragged":
-                self.state = "Released"
-                deltaVec = self.mousePosStart - mousePosWorld
-                delta = deltaVec.Mag()
-                deltaNorm = deltaVec.Normalized()
-                impulse = deltaNorm * math.log(1.5*delta + 1) * self.slingD
-                physics = self.parent.GetComponent(ComponentType.Physics)
-                physics.constraintPosition = False
-                physics.constraintRotation = False
-                physics.AddImpulse(impulse)
-       
+        if transform.position.x + self.radius < boundCenter.x - boundLen.x or transform.position.x - self.radius > boundCenter.x + boundLen.x:
+            return False
+        if transform.position.y + self.radius < boundCenter.y - boundLen.y or transform.position.y - self.radius > boundCenter.y + boundLen.y:
+            return False
+        return True
+
     def ProjectPath(self, steps, impulse):
         path = self.GetPath(steps, impulse)
         camera = self.parent.GetParentScene().camera
@@ -117,15 +90,12 @@ class Ball(Component.Component):
     def Decode(self, obj):
         super().Decode(obj)
         self.radius = obj["radius"]
-        self.state = obj["state"]
-        self.slingID = obj["sling"]
-        self.slingD = obj["slingD"]
         self.ballType = BallType.Decode(obj["ballType"])
     
 class BallBouncy(Ball):
     '''type : "Bouncy"'''
-    def __init__(self, sling = None):
-        super().__init__(sling)
+    def __init__(self):
+        super().__init__()
         self.ballType = BallType.Bouncy
     
     def Start(self):
@@ -142,8 +112,8 @@ class BallBouncy(Ball):
 
 class BallBowling(Ball):
     '''type : "Heavy"'''
-    def __init__(self, sling = None):
-        super().__init__(sling)
+    def __init__(self):
+        super().__init__()
         self.ballType = BallType.Heavy
     
     def Start(self):

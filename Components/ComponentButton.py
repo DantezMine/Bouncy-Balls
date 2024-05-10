@@ -1,27 +1,31 @@
 import pygame
+from PIL import Image
 import math
 import time
 import enum
 from Components import Component
 from Components import ComponentTransform
 from Components import ComponentSprite
+from Components import ComponentCannon
 from Components.Component import ComponentType
-from lib import GlobalVars
+import GlobalVars
 from Vector import Vec2
 
 class ButtonType(enum.Enum):
-    Level = enum.auto()
+    Scene = enum.auto()
     Button = enum.auto()
+    Selectable = enum.auto()
+    Exit = enum.auto()
     
     def Decode(value):
         members = list(vars(ButtonType).values())
-        members = members[8:len(members)-1]
+        members = members[GlobalVars.membersOffset:len(members)-1]
         for member in members:
             if value == member.value:
                 return member
 
 class Button(Component.Component):
-    def __init__(self, nPoly = 4, lenX = None, lenY = None, radius = 0.2, position = Vec2(0,0)):
+    def __init__(self, nPoly = 4, lenX = None, lenY = None, radius = 0.2, position = None, spritePath="data/ButtonLocked.png", onEscape = False, function = None, atStart = True):
         '''If lenX and lenY aren't specified, 2*radius is chosen for both sidelengths'''
         self.name = ComponentType.Button
         
@@ -33,34 +37,42 @@ class Button(Component.Component):
         self.animScale = 0.1
         self.animate = False
         self.buttonType = ButtonType.Button
+        self.spritePath = spritePath
+        self.onEscape = onEscape
+        self.function = function
+        self.atStart = atStart
         
     def Start(self):
         self.transform = self.parent.GetComponent(ComponentType.Transform)
-        self.transform.position = self.initPos
+        self.transform.position = self.initPos if self.initPos is not None else self.transform.position
         self.verts = self.GetVertices()
         
-        self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/ButtonLocked.png", lenX=self.lenX, lenY=self.lenY))
+        self.parent.AddComponent(ComponentSprite.SpriteUI(self.spritePath, lenX=self.lenX, lenY=self.lenY))
         
     def Update(self, deltaTime):
         self.verts = self.GetVertices()
-        # self.DisplayButtonOutline((220,20,220))
         self.CheckClick()
         if self.animate:
             self.Animate()
 
     def CheckClick(self):
+        if self.onEscape and GlobalVars.escapeKey:
+            self.OnClick()
         if GlobalVars.mouseLeft:
-            mousePosWorld = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen,self.parent.GetParentScene().camera)
-            if self.PointInPolygon(mousePosWorld):
+            mousePosUI = ComponentTransform.Transform.ScreenToWorldPos(GlobalVars.mousePosScreen,self.parent.GetParentScene().defaultCam)
+            if self.PointInPolygon(mousePosUI):
                 self.OnClick()
     
     def OnClick(self):
         '''To use animation, super() this function'''
         self.clickStart = time.time()
         self.animate = True
+        if self.function is not None and self.atStart:
+            self.function()
         
     def EndOfClick(self):
-        pass
+        if not self.atStart:
+            self.function()
     
     def CubicEase(self,x):
         return 4*math.pow(x,3) if x < 0.5 else 1 - math.pow(-2 * x + 2, 3)/2.0
@@ -75,10 +87,11 @@ class Button(Component.Component):
         t = (time.time()-self.clickStart)/self.animDuration
         if t > 1:
             self.animate = False
-            self.transform.scale = 1
+            self.transform.scale = Vec2(1,1)
             self.EndOfClick()
             return
-        self.transform.scale = 1 + self.animScale * math.sin(math.pi * self.EaseOutQuint(t))
+        self.transform.scale.Normalize()
+        self.transform.scale *= 1 + self.animScale * math.sin(math.pi * self.EaseOutQuint(t))
         
     def PointInPolygon(self,point):
         inside = True
@@ -95,13 +108,13 @@ class Button(Component.Component):
         verts = list()
         deltaPhi = 2*math.pi/self.nPoly
         for i in range(self.nPoly):
-            verts.append(self.transform.position + Vec2(math.cos(deltaPhi*i+deltaPhi/2.0)*self.lenX/2.0, math.sin(deltaPhi*i+deltaPhi/2.0)*self.lenY/2.0))
+            verts.append(self.transform.position + Vec2(math.cos(deltaPhi*i+deltaPhi/2.0)*self.transform.scale.x*self.lenX/2.0, math.sin(deltaPhi*i+deltaPhi/2.0)*self.transform.scale.y*self.lenY/2.0))
         return verts
     
     def DisplayButtonOutline(self, color):
         vertices = []
         for v in self.verts:
-            vertScreen = ComponentTransform.Transform.WorldToScreenPos(v,self.parent.GetParentScene().camera)
+            vertScreen = v#ComponentTransform.Transform.WorldToScreenPos(v,self.parent.GetParentScene().camera)
             vertices.append((vertScreen.x,vertScreen.y))
         pygame.draw.polygon(GlobalVars.UILayer,color,vertices,1)
     
@@ -115,26 +128,122 @@ class Button(Component.Component):
         self.animScale = obj["animScale"]
         self.initPos = Vec2.FromList(obj["initPos"])
         self.buttonType = ButtonType.Decode(obj["buttonType"])
+        self.onEscape = obj["onEscape"]
+        self.spritePath = obj["spritePath"]
         
-class ButtonLevel(Button):
-    def __init__(self, nPoly=4, lenX = None, lenY = None, radius = 0.2, position=Vec2(0, 0), scenePath = None):
-        super().__init__(nPoly, lenX, lenY, radius, position)
+class ButtonScene(Button):
+    def __init__(self, nPoly=4, lenX = None, lenY = None, radius = 0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", scenePath = None, setupFunc = None, sceneName = None, onEscape = False, number = None):
+        '''Since the setup func cannot be saved, it can only be used on scenes that don't get saved, e.g. the main menu, the editor, level select. To return back to the editor, level select or main menu from a saved level, only the sceneName should be assigned.'''
+        super().__init__(nPoly, lenX, lenY, radius, position, spritePath, onEscape)
         self.scenePath = scenePath
-        self.buttonType = ButtonType.Level
+        self.setupFunc = setupFunc
+        self.sceneName = sceneName
+        self.buttonType = ButtonType.Scene
+        self.number = number
         
+    def Start(self):
+        self.transform = self.parent.GetComponent(ComponentType.Transform)
+        self.transform.position = self.initPos
+        self.verts = self.GetVertices()
+        
+        self.parent.AddComponent(ComponentSprite.SpriteUI(self.spritePath, lenX=self.lenX, lenY=self.lenY, number=self.number))
+    
     def EndOfClick(self):
         import Scene
         scene = Scene.Scene()
-        try:
+        if self.scenePath is not None:
             scene.FromJSON(self.scenePath)
             self.sceneName = scene.name
             
             world = self.parent.GetParentScene().world
             world.AddScene(scene)
             world.SetActiveScene(scene.name)
-        except:
-            print("File \"%s\" doesn't exist"%self.scenePath)
+        else:
+            # loads scenes that cannot be saved to JSON. Since the setup func cannot be saved, it can only be used on scenes that don't get saved, i.e. the main menu, the editor etc. To return back to the editor, level select or main menu from a saved level, only the sceneName should be assigned
+            if self.setupFunc is not None:
+                self.setupFunc(self.parent.GetParentScene().world)
+            self.parent.GetParentScene().world.SetActiveScene(self.sceneName)
         
     def Decode(self, obj):
         super().Decode(obj)
         self.scenePath = obj["scenePath"]
+        self.sceneName = obj["sceneName"]
+        
+class ButtonSelectable(Button):
+    def __init__(self, nPoly=4, lenX=None, lenY=None, radius=0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", backgroundPath = "Bouncy-Balls/data/ButtonSelectableBackground.png", editor = None, componentInit = None, onEscape = False):
+        super().__init__(nPoly, lenX, lenY, radius, position, spritePath, onEscape)
+        self.buttonType = ButtonType.Selectable
+        self.editor = editor
+        self.componentInit = componentInit
+        self.backgroundPath = backgroundPath
+        
+    def Start(self):
+        super().Start()
+        self.CreateButtonSprite()
+        
+    def EndOfClick(self):
+        self.editor.SelectType(self.componentInit)
+        
+    def Decode(self, obj):
+        super().Decode(obj)
+        
+    def CreateButtonSprite(self):
+        canvas = pygame.Surface((150,150), pygame.SRCALPHA, 32)
+        canvas = canvas.convert_alpha()
+        
+        width = canvas.get_width()
+        height = canvas.get_height()
+        imgScale = 0.8
+        
+        image = pygame.transform.scale(pygame.image.load(self.backgroundPath), (width,height))
+        canvas.blit(image, (0,0))
+        
+        if self.componentInit is not None:
+            comp = self.componentInit()
+            compLen = Vec2(comp.lenX,comp.lenY)
+            compLen = compLen/comp.lenX if comp.lenX > comp.lenY else compLen/comp.lenY
+            topLeft = (width * (1 - compLen.x * imgScale)/2.0, height * (1 - compLen.y * imgScale)/2.0)
+            sprite = pygame.image.load("Bouncy-Balls/" + self.spritePath)
+            image = pygame.transform.scale(sprite, (width * compLen.x * imgScale, height * compLen.y * imgScale))
+            canvas.blit(image, topLeft)
+        
+        imageData = pygame.image.tobytes(canvas, 'RGBA')
+        img = Image.frombytes('RGBA', (width,height), imageData)
+        img.save("Bouncy-Balls/data/" + self.spritePath[:-4] + "Button.png",'PNG')
+        
+        self.parent.AddComponent(ComponentSprite.SpriteUI("data/" + self.spritePath[:-4] + "Button.png", lenX=self.lenX, lenY=self.lenY))
+        
+
+class ButtonBallArrow(Button):
+    def __init__(self, nPoly=4, lenX=None, lenY=None, radius=0.2, position=None, spritePath="data/GizmoArrowUp.png", onEscape=False, function=None, ballType = None, weight = 1):
+        spritePath = "data/GizmoArrowUp.png" if weight == 1 else "data/GizmoArrowDown.png"
+        super().__init__(nPoly, lenX, lenY, radius, position, spritePath, onEscape, function)
+        self.ballType = ballType
+        self.weight = weight
+        
+    def OnClick(self):
+        self.clickStart = time.time()
+        self.animate = True
+    
+    def EndOfClick(self):
+        self.function(self.ballType, self.weight)
+        
+class ButtonBall(Button):
+    def __init__(self, nPoly=4, lenX=None, lenY=None, radius=0.2, position=Vec2(0, 0), spritePath="data/ButtonLocked.png", onEscape = False, ballType = None):
+        super().__init__(nPoly, lenX, lenY, radius, position, spritePath, onEscape)
+        self.buttonType = ButtonType.Selectable
+        self.ballType = ballType
+        
+    def Start(self):
+        super().Start()
+        self.parent.AddComponent(ComponentSprite.SpriteUI(self.spritePath, lenX=self.lenX, lenY=self.lenY))
+        
+    def EndOfClick(self):
+        cannon = self.parent.GetParentScene().GetObjectsWithComponent(ComponentType.Cannon)[0]
+        cannon.GetComponent(ComponentType.Cannon).SelectBall(self.ballType)
+        # ball = self.parent.GetParentScene().GetObjectsWithComponent(ComponentType.Ball)
+        # ball.AddComponent()
+        
+    def Decode(self, obj):
+        super().Decode(obj)
+        self.editorID = obj["editor"]

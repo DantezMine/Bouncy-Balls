@@ -5,7 +5,7 @@ from Components import Component
 from Components import ComponentCollider
 from Components import ComponentPhysics
 from Components.Component import ComponentType
-from lib import GlobalVars
+import GlobalVars
 
 class PhysicsState:
     def __init__(self, physics):
@@ -33,6 +33,8 @@ class Physics(Component.Component):
         self.velMargin = 0
         self.rotMargin = 0
         self.posMargin = 0
+        
+        self.friction = 0.001
         
         self.prevPosition = Vec2(0,0)
         self.velocity = Vec2(0,0)
@@ -78,7 +80,8 @@ class Physics(Component.Component):
                 collisionCounts = self.DetermineSimilarCollisions(collisions, allCollisions)
                 for i in range(len(collisions)):
                     if collisions[i].tags.__contains__("Ground"):
-                        self.CollisionResponseDynamic(collisions[i], collisionCounts, i)
+                        if collisions[i].collisionRespoinseTag:
+                            self.CollisionResponseDynamic(collisions[i], collisionCounts, i)
             self.VelocityVerletIntegration(deltaTime)
     
     def TempNextState(self,deltaTime):
@@ -129,13 +132,13 @@ class Physics(Component.Component):
         
         coll = self.parent.GetComponent(ComponentType.Collider)
         if coll is not None:
-            coll.Recalculate(temp=False)
+            coll.Recalculate(temp=False) 
     
     #Fully dynamic collision response as per Chris Hecker: http://www.chrishecker.com/images/e/e7/Gdmphys3.pdf with own modificiations
     def CollisionResponseDynamic(self,collisionInfo : ComponentCollider.CollisionInfo, collisionCounts, collisionIndex):
         physicsB = collisionInfo.objectB.GetComponent(ComponentType.Physics)
         transfA = self.parent.GetComponent(ComponentType.Transform)
-        transfB = physicsB.parent.GetComponent(ComponentType.Transform)
+        transfB = collisionInfo.objectB.GetComponent(ComponentType.Transform)
         
         moveA, moveB, rotateA, rotateB = 1,1,1,1
         if physicsB is None or physicsB.constraintPosition: #objectB is immovable
@@ -146,6 +149,9 @@ class Physics(Component.Component):
             rotateB = 0
         if self.constraintRotation: #self is nonrotatable
             rotateA = 0
+            
+        if not moveA and not moveB:
+            return
         
         collisionPointA = collisionInfo.collisionPoint
         collisionPointB = collisionInfo.otherCollisionPoint
@@ -154,9 +160,9 @@ class Physics(Component.Component):
         rAP_   =  (collisionPointA - transfA.position).Perp()
         rBP_   =  (collisionPointB - transfB.position).Perp()
         vAP    =   self.velocity + rAP_ * self.angularSpeed
-        vBP    =   physicsB.velocity + rBP_ * physicsB.angularSpeed
+        vBP    =   physicsB.velocity + rBP_ * physicsB.angularSpeed if moveB else Vec2(0,0)
         vAB    =   vAP - vBP
-        top    = -(1 + (self.restitution+physicsB.restitution)/2.0) * vAB.Dot(normal)
+        top    = -(1 + (self.restitution+physicsB.restitution)/2.0) * vAB.Dot(normal) if moveB else -2
         
         #if an object is immovable, its mass approaches infinity, thus 1/mass goes to zero
         bottomLeftLeft = 1.0/self.mass if moveA else 0.0
@@ -180,13 +186,13 @@ class Physics(Component.Component):
         accNormal = normal * -self.gravAcc.Mag() * math.cos(alpha)
         if self.gravity:
             forceNormalA = accNormal * (self.mass / collisionCounts[collisionIndex])
-        if physicsB.gravity:
+        if moveB and physicsB.gravity:
             forceNormalB = -accNormal * (physicsB.mass / collisionCounts[collisionIndex])
                 
-        deltaVA = normal * (deltaP/self.mass) * moveA
-        deltaVB = normal * (-deltaP/physicsB.mass) * moveB
+        deltaVA = normal * (deltaP/self.mass) * moveA - self.velocity * self.friction
+        deltaVB = normal * (-deltaP/physicsB.mass) * moveB - physicsB.velocity * physicsB.friction if moveB else Vec2(0,0)
         deltaWA = rAP_.Dot(normal*deltaP)/self.momentOfInertia * rotateA
-        deltaWB = rBP_.Dot(normal*-deltaP)/physicsB.momentOfInertia * rotateB
+        deltaWB = rBP_.Dot(normal*-deltaP)/physicsB.momentOfInertia * rotateB if moveB else 0
         
         if GlobalVars.debug:
             GlobalVars.update = False

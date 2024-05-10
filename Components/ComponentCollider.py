@@ -1,7 +1,8 @@
 from Vector import Vec2
 from Components.Component import ComponentType
+from Components import ComponentTransform
 from Components import Component
-from lib import GlobalVars
+import GlobalVars
 import enum
 import pygame
 
@@ -11,7 +12,7 @@ class ColliderType(enum.Enum):
     
     def Decode(value):
         members = list(vars(ColliderType).values())
-        members = members[8:len(members)-1]
+        members = members[GlobalVars.membersOffset:len(members)-1]
         for member in members:
             if value == member.value:
                 return member
@@ -34,7 +35,7 @@ class CollisionInfo:
         return ("Object A: %s, Object B: %s, Collision Type: %s, Collision Point: %s, Other Collision Point: %s, Collision Normal: %s, Other Normal: %s, Collision Response: %s"%(self.objectA.GetID(),self.objectB.GetID(),self.collisionType,self.collisionPoint,self.otherCollisionPoint,self.collisionNormal,self.otherNormal,self.collisionResponseTag))
 
 class Collider(Component.Component):
-    def __init__(self, localPosition=Vec2(0,0),localRotation=0,localScale=1,tags=[]):
+    def __init__(self, localPosition=Vec2(0,0),localRotation=0,localScale=Vec2(1,1),tags=[]):
         self.name = Component.ComponentType.Collider
         self.parent = None
         self.colliderType = None
@@ -47,13 +48,14 @@ class Collider(Component.Component):
         self.localRotation = localRotation
         self.localScale = localScale
         
-    def Recalculate(self,temp):
+    def Recalculate(self, temp):
         pass
 
     def DisplayCollider(self):
         pass
     
     def Update(self,deltaTime,colliders,updateOnCollision=True):
+        self.Recalculate(False)
         self.collisions = []
         self.CheckCollision(colliders)
         if updateOnCollision:
@@ -67,11 +69,12 @@ class Collider(Component.Component):
         super().Decode(obj)
         self.localPosition = Vec2.FromList(obj["localPosition"])
         self.localRotation = obj["localRotation"]
-        self.localScale = obj["localScale"]
+        self.localScale = Vec2.FromList(obj["localScale"])
         self.colliderType = ColliderType.Decode(obj["colliderType"])
+        self.tags = obj["tags"]
     
 class ColliderCircle(Collider):
-    def __init__(self, radius=50, localPosition=Vec2(0, 0), localRotation=0, localScale=1, tags=[]):
+    def __init__(self, radius=50, localPosition=Vec2(0, 0), localRotation=0, localScale=Vec2(1,1), tags=[]):
         super(ColliderCircle,self).__init__(localPosition, localRotation, localScale, tags)
         self.colliderType = ColliderType.Circle
         self.radius = radius
@@ -98,7 +101,7 @@ class ColliderCircle(Collider):
     def DisplayCollider(self):
         transform = self.parent.GetComponent(ComponentType.Transform)
         center = transform.position
-        pygame.draw.circle(GlobalVars.screen,(20,220,20),(center.x,center.y),self.radius*transform.scale)
+        pygame.draw.ellipse(GlobalVars.screen,(20,220,20),(center.x,center.y,self.radius*transform.scale.x,self.radius*transform.scale.y))
     
     def Decode(self, obj):
         super().Decode(obj)
@@ -106,7 +109,7 @@ class ColliderCircle(Collider):
         self.sqRadius = obj["sqRadius"]
 
 class ColliderRect(Collider):
-    def __init__(self, lenX = 50, lenY = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = 1, tags = []):
+    def __init__(self, lenX = 50, lenY = 50, localPosition = Vec2(0,0), localRotation = 0, localScale = Vec2(1,1), tags = []):
         super(ColliderRect,self).__init__(localPosition, localRotation, localScale, tags)
         self.colliderType = ColliderType.Rect
         self.lenX = lenX
@@ -126,8 +129,8 @@ class ColliderRect(Collider):
             #check if the objects are inside each others circumcircles
             posA = self.parent.GetComponent(ComponentType.Transform).position
             posB = collider.parent.GetComponent(ComponentType.Transform).position
-            if (posA-posB).SqMag() > self.sqRadius+collider.sqRadius + 0.1:
-                continue
+            # if (posA-posB).SqMag() > self.sqRadius+collider.sqRadius + 0.1:
+            #     continue
             
             if collider.colliderType == ColliderType.Rect:
                 collVerts = collider.verts
@@ -352,26 +355,22 @@ class ColliderRect(Collider):
         for i in range(len(verts)):
             AB = verts[(i+1)%len(verts)] - verts[i]
             mags.append(AB.Mag())
-        return mags       
+        return mags
     
     def GetVertices(self, temp=False):#CCW starting top left if not rotated
         physics = self.parent.GetComponent(ComponentType.Physics)
         transf = self.parent.GetComponent(ComponentType.Transform)
-        scale = self.localScale*transf.scale
+        scale = Vec2(self.localScale.x*transf.scale.x, self.localScale.y*transf.scale.y)
         if temp and physics is not None:
             center = physics.tempNextPos+self.localPosition
             angle = physics.tempNextAngle+self.localRotation
-            A = center + Vec2(-self.lenX/2,-self.lenY/2).Rotate(angle)*scale
-            B = center + Vec2(-self.lenX/2, self.lenY/2).Rotate(angle)*scale
-            C = center + Vec2( self.lenX/2, self.lenY/2).Rotate(angle)*scale
-            D = center + Vec2( self.lenX/2,-self.lenY/2).Rotate(angle)*scale
         else:
             center = transf.position+self.localPosition
             angle = transf.rotation+self.localRotation
-            A = center + Vec2(-self.lenX/2,-self.lenY/2).Rotate(angle)*scale
-            B = center + Vec2(-self.lenX/2, self.lenY/2).Rotate(angle)*scale
-            C = center + Vec2( self.lenX/2, self.lenY/2).Rotate(angle)*scale
-            D = center + Vec2( self.lenX/2,-self.lenY/2).Rotate(angle)*scale
+        A = center + Vec2(-(self.lenX/2)*scale.x,-(self.lenY/2)*scale.y).Rotate(angle)
+        B = center + Vec2(-(self.lenX/2)*scale.x, (self.lenY/2)*scale.y).Rotate(angle)
+        C = center + Vec2( (self.lenX/2)*scale.x, (self.lenY/2)*scale.y).Rotate(angle)
+        D = center + Vec2( (self.lenX/2)*scale.x,-(self.lenY/2)*scale.y).Rotate(angle)
         return [A,B,C,D]
     
     def GetNormals(self,verts):
@@ -385,7 +384,7 @@ class ColliderRect(Collider):
         verts = self.verts
         vertices = []
         for v in verts:
-            vertScreen = self.parent.GetComponent(ComponentType.Transform).WorldToScreenPos(v,self.parent.GetParentScene().camera)
+            vertScreen = ComponentTransform.Transform.WorldToScreenPos(v,self.parent.GetParentScene().camera)
             vertices.append((vertScreen.x,vertScreen.y))
         pygame.draw.polygon(GlobalVars.UILayer,(220,20,20),vertices,1)
     
@@ -394,3 +393,9 @@ class ColliderRect(Collider):
         self.lenX = obj["lenX"]
         self.lenY = obj["lenY"]
         self.sqRadius = obj["sqRadius"]
+        self.verts = []
+        for v in obj["verts"]:
+            self.verts.append(Vec2.FromList(v))
+        self.norms = []
+        for n in obj["norms"]:
+            self.norms.append(Vec2.FromList(n))

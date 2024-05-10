@@ -4,6 +4,7 @@ from Components import Component
 from Components import ComponentCollider
 from Components import ComponentPhysics
 from Components import ComponentSprite
+import GlobalVars
 import enum
 
 class GroundType(enum.Enum):
@@ -11,13 +12,13 @@ class GroundType(enum.Enum):
     
     def Decode(value):
         members = list(vars(GroundType).values())
-        members = members[8:len(members)-1]
+        members = members[GlobalVars.membersOffset:len(members)-1]
         for member in members:
             if value == member.value:
                 return member
 
 class Ground(Component.Component):
-    def __init__(self, position = Vec2(0,0), lenX = 50, lenY = 50, rotation = 0.0):
+    def __init__(self, position = None, lenX = 1, lenY = 1, rotation = None):
         self.name = ComponentType.Ground
         self.parent = None
 
@@ -28,8 +29,8 @@ class Ground(Component.Component):
     
     def Start(self):
         transform = self.parent.GetComponent(ComponentType.Transform)
-        transform.position = self.initPos
-        transform.rotation = self.initRot
+        transform.position = self.initPos if self.initPos is not None else transform.position
+        transform.rotation = self.initRot if self.initRot is not None else transform.rotation
         
         physics = ComponentPhysics.Physics()
         physics.constraintPosition = True
@@ -47,10 +48,10 @@ class Ground(Component.Component):
         self.initRot = obj["initRot"]
         
 class GroundDirt(Ground):
-    def __init__(self, position=Vec2(0, 0), lenX=50, lenY=50, rotation=0.0):
+    def __init__(self, position=None, lenX=2, lenY=1, rotation=None):
         super().__init__(position, lenX, lenY, rotation)
         self.groundType = GroundType.Dirt
     
     def Start(self):
         super().Start()
-        self.sprite = self.parent.AddComponent(ComponentSprite.Sprite("data/GroundDirt.png",self.lenX,self.lenY))
+        self.parent.AddComponent(ComponentSprite.Sprite("data/GroundDirt.png",self.lenX,self.lenY))

@@ -38,6 +38,7 @@ class World:
         if self.__scenes.__contains__(sceneName):
             self.__activeScene = self.__scenes[sceneName]
             self.__activeSceneKey = sceneName
+            self.__activeScene.StartScene()
             return True
         print("Scene %s doesn't exist"%sceneName)
         return False

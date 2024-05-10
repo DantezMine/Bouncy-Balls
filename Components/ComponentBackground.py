@@ -1,6 +1,7 @@
 from Components import ComponentSprite
 from Components import Component
 from Components.Component import ComponentType
+import GlobalVars
 from Vector import Vec2
 import enum
 
@@ -11,13 +12,13 @@ class BackgroundType(enum.Enum):
     
     def Decode(value):
         members = list(vars(BackgroundType).values())
-        members = members[8:len(members)-1]
+        members = members[GlobalVars.membersOffset:len(members)-1]
         for member in members:
             if value == member.value:
                 return member
 
 class Background(Component.Component):
-    def __init__(self, position = Vec2(0,0),lenX=50,lenY=50):
+    def __init__(self, position = None,lenX=50,lenY=50, spritePath = "data/BackgroundNature-Sky.png"):
         self.name = ComponentType.Background
         self.parent = None
         
@@ -25,9 +26,13 @@ class Background(Component.Component):
         self.initPos = position
         self.lenX = lenX
         self.lenY = lenY
+        self.spritePath = spritePath
+        self.scale = 3
         
     def Start(self):
-        self.parent.GetComponent(ComponentType.Transform).position = self.initPos
+        self.transform = self.parent.GetComponent(ComponentType.Transform)
+        self.transform.position = self.initPos if self.initPos is not None else self.transform.position
+        self.parent.AddComponent(ComponentSprite.SpriteBackground(self.spritePath,self.lenX,self.lenY,scale=self.scale))        
     
     def Decode(self, obj):
         super().Decode(obj)
@@ -35,21 +40,16 @@ class Background(Component.Component):
         self.lenX = obj["lenX"]
         self.lenY = obj["lenY"]
         self.initPos = Vec2.FromList(obj["initPos"])
+        self.spritePath = obj["spritePath"]
 
 class BackgroundNature(Background):
     def __init__(self, position=Vec2(0, 0), lenX=50, lenY=50):
-        super().__init__(position, lenX, lenY)
+        super().__init__(position, lenX, lenY, "data/BackgroundNature-Sky.png")
+        self.spritePath = "data/BackgroundNature-Sky.png"
         self.backgroundType = BackgroundType.Nature
-    
-    def Start(self):
-        super().Start()
-        self.parent.AddComponent(ComponentSprite.SpriteBackground("data/BackgroundNature-Sky.png",self.lenX,self.lenY))
 
 class BackgroundSkyline(Background):
     def __init__(self, position=Vec2(0, 0), lenX=50, lenY=50):
-        super().__init__(position, lenX, lenY)
+        super().__init__(position, lenX, lenY, "data/BackgroundSkyline-Sky.png")
+        self.spritePath = "data/BackgroundSkyline-Sky.png"
         self.backgroundType = BackgroundType.Skyline
-        
-    def Start(self):
-        super().Start()
-        self.parent.AddComponent(ComponentSprite.SpriteBackground("data/BackgroundSkyline-Sky.png",self.lenX,self.lenY))

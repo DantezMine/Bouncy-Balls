@@ -23,11 +23,14 @@ class Vec2:
     def __mul__(self,scalar):
         return Vec2(self.x * scalar,self.y*scalar)
     
-    def __div__(self,scalar : float):
+    def __truediv__(self,scalar):
         return Vec2(self.x/scalar,self.y/scalar)
     
     def __neg__(self):
         return Vec2(-self.x,-self.y)
+    
+    def __abs__(self):
+        return Vec2(abs(self.x),abs(self.y))
     
     def Dot(self,other):
         return self.x*other.x+self.y*other.y
@@ -81,6 +84,8 @@ class Vec2:
         return p * w_p + q * w_q
     
     def FromList(other):
+        if other is None:
+            return None
         return Vec2(other[0],other[1])
     
     def FromDict(other):
