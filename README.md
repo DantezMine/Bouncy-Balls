@@ -1,5 +1,10 @@
 # Bouncy-Balls
 
+## Requirements
+Python libraries:
+- pygame
+- pillow
+
 ## The Core Engine
 
 ### UML: Core Engine Diagram
