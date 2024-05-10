@@ -130,7 +130,7 @@ class StructureWood(Structure):
 
     def Start(self):
         super().Start()
-        self.destructionMomentum = 5
+        self.destructionMomentum = 15
         mass = 5
         self.parent.GetComponent(ComponentType.Physics).mass = mass
         self.parent.GetComponent(ComponentType.Physics).momentOfInertia = self.CalculateMomentOfInertia(mass)
@@ -144,7 +144,7 @@ class StructureMetal(Structure):
 
     def Start(self):
         super().Start()
-        self.destructionMomentum = 15
+        self.destructionMomentum = 25
         mass = 10
         self.parent.GetComponent(ComponentType.Physics).mass = mass
         self.parent.GetComponent(ComponentType.Physics).momentOfInertia = self.CalculateMomentOfInertia(mass)

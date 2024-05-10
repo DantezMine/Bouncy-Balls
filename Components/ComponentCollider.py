@@ -71,6 +71,7 @@ class Collider(Component.Component):
         self.localRotation = obj["localRotation"]
         self.localScale = Vec2.FromList(obj["localScale"])
         self.colliderType = ColliderType.Decode(obj["colliderType"])
+        self.tags = obj["tags"]
     
 class ColliderCircle(Collider):
     def __init__(self, radius=50, localPosition=Vec2(0, 0), localRotation=0, localScale=Vec2(1,1), tags=[]):
@@ -392,3 +393,9 @@ class ColliderRect(Collider):
         self.lenX = obj["lenX"]
         self.lenY = obj["lenY"]
         self.sqRadius = obj["sqRadius"]
+        self.verts = []
+        for v in obj["verts"]:
+            self.verts.append(Vec2.FromList(v))
+        self.norms = []
+        for n in obj["norms"]:
+            self.norms.append(Vec2.FromList(n))

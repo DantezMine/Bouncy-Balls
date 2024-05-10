@@ -85,8 +85,8 @@ def SetupLevelSelect(world):
     scene.AddGameObject(settingsButton)
     
     i = 0
-    rows = 4
-    cols = 4
+    rows = 3
+    cols = 3
     lvlButtons = []
     levels = listdir("Bouncy-Balls\Levels")
     for i in range(len(levels)):
@@ -95,7 +95,7 @@ def SetupLevelSelect(world):
         level = levels[i]
         lvlButtons.append(f'lvlButton{i}')
         lvlButtons[i] = GameObject.GameObject(scene)
-        lvlButtons[i].AddComponent(ComponentButton.ButtonScene(nPoly=4,radius=0.1,position=Vec2(-0.5+(x*0.25),0.5-(y*0.25)),spritePath="data/GizmoSquare.png",scenePath="Levels/%s" %level, number=i+1))
+        lvlButtons[i].AddComponent(ComponentButton.ButtonScene(nPoly=4,radius=0.15,position=Vec2(-0.4+(x*0.4),0.4-(y*0.4)),spritePath="data/GizmoSquare.png",scenePath="Levels/%s" %level, number=i+1))
         scene.AddGameObject(lvlButtons[i])
         
 

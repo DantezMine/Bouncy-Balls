@@ -83,7 +83,7 @@ class SpriteBackground(Sprite):
         if self.parent.GetParentScene().GetObjectsWithComponent(ComponentType.Cannon) == []:
             self.scale = 1
         camera = self.parent.GetParentScene().camera
-        pos = self.parent.GetComponent(ComponentType.Background).initPos - camera.parent.GetComponent(ComponentType.Transform).position * 5
+        pos = self.parent.GetComponent(ComponentType.Transform).position - camera.parent.GetComponent(ComponentType.Transform).position * 5
         self.DisplayImg(pos)
     
     def DisplayImg(self, pos):

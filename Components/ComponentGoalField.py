@@ -20,7 +20,7 @@ class GoalField(Component.Component):
         transform.rotation = self.initRot if self.initRot is not None else transform.rotation
                
         self.parent.AddComponent(ComponentCollider.ColliderRect(lenX = self.lenX, lenY = self.lenY))
-        self.parent.GetComponent(ComponentType.Collider).tags = ["NoCollisionsResponse","GoalField"]
+        self.parent.GetComponent(ComponentType.Collider).tags = ["NoCollisionResponse","GoalField"]
         self.parent.AddComponent(ComponentSprite.Sprite(spritePath="data/GoalField.png",lenX=self.lenX,lenY=self.lenY))
 
     def OnCollision(self, collider):

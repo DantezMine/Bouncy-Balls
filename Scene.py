@@ -149,6 +149,8 @@ class Scene:
         self.name = obj["name"]
         gameObjects = obj["__gameObjects"]
         for gameObjectID in gameObjects.keys():
+            self.ID = max(int(gameObjectID),self.ID)
+        for gameObjectID in gameObjects.keys():
             gameObjectID = int(gameObjectID)
             gameObject = GameObject.GameObject(self, gameObjectID)
             for componentObj in gameObjects[str(gameObjectID)].values():

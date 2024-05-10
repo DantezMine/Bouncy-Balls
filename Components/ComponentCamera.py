@@ -15,7 +15,7 @@ class Camera(Component.Component):
         self.maxZoom = 1.0
         
     def Start(self):
-        transform = self.parent.GetComponent(ComponentType.Transform).position
+        transform = self.parent.GetComponent(ComponentType.Transform)
         transform.position = self.initPos if self.initPos is not None else transform.position
         pass
         

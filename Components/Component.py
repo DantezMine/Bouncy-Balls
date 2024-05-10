@@ -32,10 +32,15 @@ class Component(object):
         import GameObject
         if isinstance(varValue, enum.Enum):
             return varValue.value
-        if isinstance(varValue, (int, float, str, bool)):
-            return varValue
         if isinstance(varValue, Vec2):
             return varValue.Encode()
+        if isinstance(varValue, (int, float, str, bool)):
+            return varValue
+        if isinstance(varValue, list):
+            outlist = list()
+            for value in varValue:
+                outlist.append(self.EncodeVariable(value))
+            return outlist
         if isinstance(varValue, GameObject.GameObject):
             return varValue.GetID()
     
