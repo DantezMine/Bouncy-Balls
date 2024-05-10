@@ -91,8 +91,14 @@ class Editor(Component.Component):
         
     def Update(self, deltaTime):
         if self.state == EditorState.Saving and self.workingScene.GameObjectWithID(self.gizmoObjectID) is None:
+            import SceneSetup
             sceneName = self.workingScene.name
             cannons = self.workingScene.GetObjectsWithComponent(ComponentType.Cannon)
+            
+            levelSelectButton = GameObject.GameObject(self.workingScene)
+            levelSelectButton.AddComponent(ComponentButton.ButtonScene(lenX=0.2,lenY=0.2,setupFunc=SceneSetup.SetupLevelSelect, sceneName="levelSelect", position=Vec2(0.9,0.9)))
+            self.workingScene.AddGameObject(levelSelectButton)
+            
             self.workingScene.camera.free = False
             if len(cannons) > 0:
                 cannons[0].ballData = self.ballData
@@ -129,7 +135,6 @@ class Editor(Component.Component):
             ("data/StructureMetal.png", ComponentStructure.StructureMetal),
             ("data/StructureGoal.png", ComponentStructure.StructureGoal),
             ("data/GroundDirt.png", ComponentGround.GroundDirt),
-            #("data/Barrel.png", ComponentCannon.Cannon),
             ("data/BackgroundSkyline-Sky.png", ComponentBackground.BackgroundSkyline),
             ("data/BackgroundNature-Sky.png", ComponentBackground.BackgroundNature)
         )

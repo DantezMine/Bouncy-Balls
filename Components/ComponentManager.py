@@ -4,9 +4,11 @@ from Components import Component
 from Vector import Vec2
 import GameObject
 import enum
+import time
 
 class GameState(enum.Enum):
     Start = enum.auto()
+    Touring = enum.auto()
     Playing = enum.auto()
     Success = enum.auto()
     Fail = enum.auto()
@@ -18,6 +20,7 @@ class Manager(Component.Component):
         
         self.inEditor = inEditor
         self.score = 0
+        self.tourDuration = 7
         self.state = GameState.Start
         
     def Start(self):
@@ -30,7 +33,15 @@ class Manager(Component.Component):
     def Update(self, deltaTime):
         if self.state == GameState.Start:
             self.cannon.StartGame()
-            self.state = GameState.Playing
+            self.tourStart = time.time()
+            self.state = GameState.Touring
+            
+        if self.state == GameState.Touring:
+            t = (time.time()-self.tourStart)/self.tourDuration
+            if t >= 1:
+                self.state = GameState.Playing
+            else:
+                self.TourFunction(t)
             
         if self.state == GameState.Playing:
             if self.goalField.success:
@@ -50,6 +61,19 @@ class Manager(Component.Component):
             scene = self.SuccessScene()
             self.parent.GetParentScene().world.AddScene(scene)
             self.parent.GetParentScene().world.SetActiveScene(scene.name)
+            
+    def TourFunction(self, t):
+        def lerp(A, B, t):
+            return A + (B-A) * t
+        
+        cannonTransf = self.cannon.parent.GetComponent(ComponentType.Transform)
+        cameraTransf = self.parent.GetParentScene().camera.parent.GetComponent(ComponentType.Transform)
+        goalTransf = self.goalField.parent.GetComponent(ComponentType.Transform)
+        waitTime = 0.4
+        if t < waitTime:
+            cameraTransf.position = goalTransf.position
+        else:
+            cameraTransf.position = lerp(goalTransf.position,cannonTransf.position, t)
         
     def FailScene(self):
         import Scene
@@ -70,8 +94,7 @@ class Manager(Component.Component):
         scene.AddGameObject(camera)
         
         levelSelectButton = GameObject.GameObject(scene)
-        levelSelectButton.AddComponent(ComponentButton.ButtonScene(lenX=size,lenY=size,setupFunc=SceneSetup.SetupLevelSelect, position=Vec2(0,-0.6)))
-        levelSelectButton.GetComponent(ComponentType.Button).sceneName = "levelSelect"
+        levelSelectButton.AddComponent(ComponentButton.ButtonScene(lenX=size,lenY=size,setupFunc=SceneSetup.SetupLevelSelect, sceneName="levelSelect", position=Vec2(0,-0.6)))
         scene.AddGameObject(levelSelectButton)
         
         size = 0.2
