@@ -5,6 +5,11 @@ Python libraries:
 - pygame
 - pillow
 
+## Installation and Running
+1. Unpack the ZIP into a folder
+2. Ensure you have the pygame and pillow libraries (pip install pygame pillow)
+3. Run Bouncy-Balls.py
+
 ## The Core Engine
 
 ### UML: Core Engine Diagram
